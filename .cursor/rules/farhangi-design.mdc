@@ -1,0 +1,47 @@
+---
+description: Material 3 فقط، Vazirmatn، minimal/elegant، accessibility، بدون noise بصری
+alwaysApply: true
+---
+
+# Farhangi — Design Rule
+
+## زبان طراحی
+
+**فقط Material Design 3.** هرگز زبان طراحی دیگری اختراع نکن.
+مرجع: [m3.material.io](https://m3.material.io/).
+
+## فلسفه
+
+Minimal، Elegant، Professional، Timeless، Readable، Simple، Fast.
+**هرگز over-design نکن.** از noise بصری پرهیز کن. کارایی بر تزئین اولویت دارد.
+
+## RTL و فارسی
+
+- RTL سراسری فعال.
+- تایپوگرافی: Vazirmatn به‌عنوان فونت اصلی.
+- اعداد و تاریخ شمسی مطابق قرارداد فارسی.
+- کپی UI فارسی، خوانا و کوتاه.
+
+## توکن‌های پایه
+
+- رنگ: Material 3 color roles (primary, surface, onSurfaceVariant, …)؛ پشتیبانی Dynamic Color اختیاری + تم ثابت fallback.
+- تایپوگرافی: مقیاس M3 (Display/Headline/Title/Body/Label) با Vazirmatn.
+- Shape: scale مقیاس M3 (extra-small تا extra-large).
+- Elevation: سطوح M3 (level 0–5).
+- Spacing: grid ثابت 4dp با مقیاس 4/8/12/16/24/32.
+
+## اصول
+
+- Large touch targets (حداقل 48dp).
+- Accessibility: کنتراست کافی، label برای کنترل‌های آیکن‌محور، focus visible.
+- padding/elevation/corner radius ثابت در کل اپ — بدون عدد جادویی.
+- هر اسکرین یک هدف روشن.
+- کارت فقط وقتی ظرف تعامل باشد، نه به‌خاطر زیبایی.
+
+## مهارت‌های مرجع (فعال‌سازی خودکار)
+
+- `ui-skills-root` برای مسیریابی قبل از کار UI.
+- `improve-ui` برای حساس‌سازی به drift طراحی.
+- `create-design-md` برای ثبت DESIGN.md پروژه.
+- `fixing-accessibility` برای دسترس‌پذیری.
+- `baseline-ui` برای جلوگیری از slop بصری.

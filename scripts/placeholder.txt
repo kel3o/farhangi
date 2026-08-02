@@ -1,0 +1,2 @@
+#!/usr/bin/env kotlin
+// Bootstrap helper — run via PowerShell instead

@@ -1,0 +1,14 @@
+## Copy to local.properties (gitignored) and fill values.
+## Leave blank to use Demo gateways for local UI development.
+
+sdk.dir=C\:\\Users\\YOU\\AppData\\Local\\Android\\Sdk
+
+# Supabase project URL, e.g. https://xxxx.supabase.co
+SUPABASE_URL=
+
+# Supabase anon/public key (never commit service_role)
+SUPABASE_ANON_KEY=
+
+# Real phone OTP requires an SMS provider in Supabase Auth settings.
+# Keep false to use Demo OTP (123456) while content still comes from Supabase.
+SUPABASE_AUTH_ENABLED=false

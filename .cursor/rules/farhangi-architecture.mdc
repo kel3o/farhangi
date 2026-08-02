@@ -1,0 +1,57 @@
+---
+description: Feature-first، Clean + MVVM + Repository، abstraction بک‌اند، DI، الگوی Now in Android
+alwaysApply: true
+---
+
+# Farhangi — Architecture Rule
+
+## الگوی کلی
+
+الگوی [android/nowinandroid](https://github.com/android/nowinandroid) به‌عنوان مرجع معماری:
+سه لایه — Data، Domain (UseCases)، UI (ViewModels + Compose) — با unidirectional data flow مبتنی بر Kotlin Flow.
+
+## Feature-first
+
+هر فیچر یک ماژول Gradle مستقل با دو زیرماژول (الگوی NiA):
+
+- `feature/<name>/api` — کلیدهای ناوبری و قرارداد عمومی
+- `feature/<name>/impl` — ViewModel، Screen، UI state
+
+یک فیچر `impl` فقط به `api` فیچر دیگر وابسته است، نه به `impl` آن.
+
+## ماژول‌های Core
+
+- `core/model` — مدل‌های دامنه (خالص Kotlin)
+- `core/common` — Dispatcherها، Result، utility
+- `core/designsystem` — تم M3، آیکن‌ها، کامپوننت‌های پایه
+- `core/ui` — کامپوننت‌های مرکب وابسته به دامنه
+- `core/data` — Repositoryها
+- `core/network` — کلاینت HTTP و مپینگ
+- `core/database` — Room
+- `core/datastore` — ترجیحات کاربر
+
+## الگوی MVVM + Repository
+
+- ViewModel: StateFlow از ترکیب Flowهای UseCase/Repository.
+- UI state: sealed interface با Loading/Success/Error.
+- Eventها از طریق lambda به ViewModel، نه shared state.
+- UseCase: `operator fun invoke`، تک‌مسئولیتی.
+
+## Abstraction بک‌اند (الزامی)
+
+بک‌اند فعلی Supabase است ولی موقتی و ممکن است به VPS خصوصی ایران مهاجرت کند.
+**هر ارتباط با بک‌اند باید پشت interface باشد:**
+
+- `AuthGateway` / `ContentGateway` در `core/network` به‌عنوان قرارداد.
+- پیاده‌سازی فعلی `SupabaseAdapter` در همان ماژول، قابل تعویض.
+- UI و Domain هرگز به Supabase SDK مستقیم وابسته نشوند.
+- هر Repository یک interface است؛ پیاده‌سازی قابل جایگزینی.
+
+## Dependency Injection
+
+Hilt برای DI. Moduleها به‌صورت interface → implementation bind شوند تا تعویض آینده ساده باشد.
+
+## ناوبری
+
+Jetpack Navigation 3 (الگوی NiA). مقاصد سطح‌بالا در Bottom Nav: Home، Books، Courses، Magazine، Profile.
+Search مقصد سراسری از Top App Bar و deep link، نه تب ششم.

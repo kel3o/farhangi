@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">فرهنگی</string>
+    <string name="nav_home">خانه</string>
+    <string name="nav_books">کتاب‌ها</string>
+    <string name="nav_courses">دوره‌ها</string>
+    <string name="nav_magazine">مجله</string>
+    <string name="nav_profile">پروفایل</string>
+    <string name="top_bar_title">فرهنگی</string>
+</resources>

@@ -1,0 +1,51 @@
+---
+description: Kotlin conventions، Compose state hoisting، بدون magic number، بدون کپی کد
+alwaysApply: true
+---
+
+# Farhangi — Coding Rule
+
+## Kotlin
+
+پیروی از [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html):
+- 4-space indent، بدون tab.
+- camelCase برای توابع/متغیر، PascalCase برای کلاس، SCREAMING_SNAKE برای ثابت.
+- ترجیح `val` و collectionهای immutable.
+- پارامتر پیش‌فرض به جای overload.
+- expression body برای توابع تک‌خطی.
+- trailing comma در declarationهای چندخطی.
+
+## Compose
+
+- **State hoisting:** Composableها stateless، state در ViewModel.
+- Composableها کوچک و قابل‌استفاده مجدد.
+- Modifier به‌عنوان آخرین پارامتر اختیاری.
+- Preview برای هر Composable مهم.
+- بدون logic سنگین در Composable — فقط نگاشت state به UI.
+
+## ممنوع
+
+- **بدون عدد جادویی:** اعداد در named constant یا token.
+- **بدون کد تکراری:** استخراج به کامپوننت/UseCase مشترک.
+- **بدون کپی کد** از ریپازیتوری‌های مرجع — فقط یادگیری الگو.
+- **بدون وابستگی مستقیم UI/Domain به Supabase SDK.**
+
+## نام‌گذاری
+
+- نام‌های معنادار، نه مخفف.
+- Repository interface بدون پیشوند `I`.
+- UseCase با فعل: `GetBooks`، `ToggleBookmark`.
+- ViewModel با پسوند `ViewModel`.
+- UI state: `<Feature>UiState` به‌صورت sealed interface.
+
+## تست
+
+- تست ViewModel با test double از Repository (نه mock library سنگین) — الگوی NiA.
+- تست snapshot با Roborazzi برای اسکرین‌های کلیدی.
+- هر فیچر تست‌های unit خود را دارد.
+
+## مهارت مرجع
+
+- `testing-setup` برای استراتژی تست.
+- `navigation-3` برای الگوی ناوبری.
+- `edge-to-edge` و `adaptive` برای تطبیق صفحه.

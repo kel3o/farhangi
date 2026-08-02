@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_navigate_back">بازگشت</string>
+    <string name="cd_search">جستجو</string>
+    <string name="cd_home">خانه</string>
+    <string name="cd_books">کتاب‌ها</string>
+    <string name="cd_courses">دوره‌ها</string>
+    <string name="cd_magazine">مجله</string>
+    <string name="cd_profile">پروفایل</string>
+</resources>
