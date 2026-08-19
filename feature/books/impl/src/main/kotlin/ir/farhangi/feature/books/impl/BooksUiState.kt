@@ -22,6 +22,7 @@ data class ReaderUiState(
     val totalPages: Int = 1,
     val isNightMode: Boolean = false,
     val pageText: String = "",
+    val pages: List<String> = emptyList(),
     val isBookmarked: Boolean = false,
     val highlights: List<Highlight> = emptyList(),
     val isLoading: Boolean = true,

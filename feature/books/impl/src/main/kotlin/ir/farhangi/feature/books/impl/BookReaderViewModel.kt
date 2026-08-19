@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.farhangi.core.common.result.Result
 import ir.farhangi.core.data.repository.AuthRepository
 import ir.farhangi.core.data.repository.BookRepository
+import ir.farhangi.core.data.repository.EngagementRepository
 import ir.farhangi.core.data.usecase.AddPageHighlight
 import ir.farhangi.core.data.usecase.ToggleBookmark
 import ir.farhangi.core.data.usecase.UpdateReadingProgress
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class BookReaderViewModel @Inject constructor(
     private val bookRepository: BookRepository,
     private val authRepository: AuthRepository,
+    private val engagementRepository: EngagementRepository,
     private val updateReadingProgress: UpdateReadingProgress,
     private val toggleBookmark: ToggleBookmark,
     private val addPageHighlight: AddPageHighlight,
@@ -40,21 +42,26 @@ class BookReaderViewModel @Inject constructor(
             when (val result = bookRepository.getBook(bookId)) {
                 is Result.Success -> {
                     val book = result.data
-                    val totalPages = book.totalPages.coerceAtLeast(1)
+                    val fallbackTotal = book.totalPages.coerceAtLeast(1)
+                    val pages = book.pages.ifEmpty {
+                        List(fallbackTotal) { index -> samplePage(book.title, index + 1) }
+                    }
+                    val safeTotal = pages.size.coerceAtLeast(1)
                     val userId = authRepository.observeSession().first()?.userId
                     val savedPage = if (userId != null) {
                         bookRepository.observeProgress(userId, bookId).first()?.page ?: 1
                     } else {
                         1
-                    }.coerceIn(1, totalPages)
+                    }.coerceIn(1, safeTotal)
 
                     _uiState.value = ReaderUiState(
                         bookId = bookId,
                         bookTitle = book.title,
                         page = savedPage,
-                        totalPages = totalPages,
+                        totalPages = safeTotal,
                         isNightMode = false,
-                        pageText = samplePage(book.title, savedPage),
+                        pages = pages,
+                        pageText = pages[savedPage - 1],
                         isLoading = false,
                     )
                     persistProgress()
@@ -71,21 +78,11 @@ class BookReaderViewModel @Inject constructor(
     }
 
     fun nextPage() {
-        _uiState.update { state ->
-            val next = (state.page + 1).coerceAtMost(state.totalPages)
-            state.copy(page = next, pageText = samplePage(state.bookTitle, next))
-        }
-        persistProgress()
-        observePageExtras()
+        turnPage(1)
     }
 
     fun previousPage() {
-        _uiState.update { state ->
-            val prev = (state.page - 1).coerceAtLeast(1)
-            state.copy(page = prev, pageText = samplePage(state.bookTitle, prev))
-        }
-        persistProgress()
-        observePageExtras()
+        turnPage(-1)
     }
 
     fun toggleNightMode() {
@@ -108,6 +105,16 @@ class BookReaderViewModel @Inject constructor(
                 text = "هایلایت صفحه ${state.page}",
             )
         }
+    }
+
+    private fun turnPage(delta: Int) {
+        val state = _uiState.value
+        val next = (state.page + delta).coerceIn(1, state.totalPages)
+        val text = state.pages.getOrNull(next - 1) ?: samplePage(state.bookTitle, next)
+        _uiState.update { it.copy(page = next, pageText = text) }
+        persistProgress()
+        observePageExtras()
+        viewModelScope.launch { engagementRepository.addReadingMinutes(READING_MINUTE_PER_PAGE) }
     }
 
     private fun persistProgress() {
@@ -143,4 +150,8 @@ class BookReaderViewModel @Inject constructor(
     private fun samplePage(title: String, page: Int): String =
         "صفحه $page از کتاب «$title».\n\n" +
             "این متن نمونه برای نمایشگر کتاب است. پیشرفت، نشانک و هایلایت صفحه ذخیره می‌شود."
+
+    companion object {
+        private const val READING_MINUTE_PER_PAGE = 1
+    }
 }

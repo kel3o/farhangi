@@ -10,11 +10,15 @@ import ir.farhangi.core.data.repository.CourseRepository
 import ir.farhangi.core.data.repository.DefaultAuthRepository
 import ir.farhangi.core.data.repository.DefaultBookRepository
 import ir.farhangi.core.data.repository.DefaultCourseRepository
+import ir.farhangi.core.data.repository.DefaultEngagementRepository
 import ir.farhangi.core.data.repository.DefaultMagazineRepository
 import ir.farhangi.core.data.repository.DefaultSearchRepository
+import ir.farhangi.core.data.repository.DefaultStudioRepository
 import ir.farhangi.core.data.repository.DefaultUserRepository
+import ir.farhangi.core.data.repository.EngagementRepository
 import ir.farhangi.core.data.repository.MagazineRepository
 import ir.farhangi.core.data.repository.SearchRepository
+import ir.farhangi.core.data.repository.StudioRepository
 import ir.farhangi.core.data.repository.UserRepository
 import javax.inject.Singleton
 
@@ -39,4 +43,10 @@ abstract class DataModule {
 
     @Binds @Singleton
     abstract fun bindUserRepository(impl: DefaultUserRepository): UserRepository
+
+    @Binds @Singleton
+    abstract fun bindEngagementRepository(impl: DefaultEngagementRepository): EngagementRepository
+
+    @Binds @Singleton
+    abstract fun bindStudioRepository(impl: DefaultStudioRepository): StudioRepository
 }

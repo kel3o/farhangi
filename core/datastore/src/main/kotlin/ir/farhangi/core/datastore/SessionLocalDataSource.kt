@@ -25,6 +25,18 @@ class SessionLocalDataSource @Inject constructor(
 
     fun observeLastPhone(): Flow<String?> = preferences.lastPhone
 
+    fun observeOnboardingCompleted(): Flow<Boolean> = preferences.onboardingCompleted
+
+    fun observeNotificationPromptCompleted(): Flow<Boolean> = preferences.notificationPromptCompleted
+
+    suspend fun setOnboardingCompleted() {
+        preferences.setOnboardingCompleted(true)
+    }
+
+    suspend fun setNotificationPromptCompleted() {
+        preferences.setNotificationPromptCompleted(true)
+    }
+
     suspend fun saveSession(session: Session) {
         preferences.saveSessionJson(json.encodeToString(session))
         preferences.setLastPhone(session.phone)

@@ -7,6 +7,7 @@ sealed interface CoursesUiState {
     data class Success(
         val practical: List<Course>,
         val professional: List<Course>,
+        val selectedCategory: String? = null,
     ) : CoursesUiState
     data class Error(val message: String) : CoursesUiState
 }

@@ -12,4 +12,7 @@ data class Book(
     val totalPages: Int = 0,
     val rating: Double? = null,
     val description: String = "",
+    val pdfUrl: String? = null,
+    val pages: List<String> = emptyList(),
+    val isSaved: Boolean = false,
 )

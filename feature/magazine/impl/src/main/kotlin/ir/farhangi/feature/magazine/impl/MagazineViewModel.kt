@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.farhangi.core.common.result.Result
 import ir.farhangi.core.data.repository.MagazineRepository
 import ir.farhangi.core.model.Article
-import ir.farhangi.core.model.MediaType
+import ir.farhangi.core.model.MagazineCategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +21,7 @@ class MagazineViewModel @Inject constructor(
     private val magazineRepository: MagazineRepository,
 ) : ViewModel() {
 
-    private val selectedType = MutableStateFlow<MediaType?>(null)
+    private val selectedCategory = MutableStateFlow<MagazineCategory?>(null)
     private val articlesResult = MutableStateFlow<Result<List<Article>>?>(null)
 
     init {
@@ -32,16 +32,15 @@ class MagazineViewModel @Inject constructor(
 
     val uiState: StateFlow<MagazineUiState> = combine(
         articlesResult.filterNotNull(),
-        selectedType,
-    ) { result, type ->
+        selectedCategory,
+    ) { result, category ->
         when (result) {
             is Result.Success -> {
                 val all = result.data
-                val types = all.map { it.type }.distinct().sortedBy { it.name }
                 MagazineUiState.Success(
-                    articles = all.filterByType(type),
-                    selectedType = type,
-                    availableTypes = types,
+                    articles = if (category == null) all else all.filter { it.category == category },
+                    selectedCategory = category,
+                    availableCategories = MagazineCategory.entries.toList(),
                 )
             }
             is Result.Error -> MagazineUiState.Error(result.exception.message ?: "خطا")
@@ -49,12 +48,9 @@ class MagazineViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), MagazineUiState.Loading)
 
-    fun selectType(type: MediaType?) {
-        selectedType.value = type
+    fun selectCategory(category: MagazineCategory?) {
+        selectedCategory.value = category
     }
-
-    private fun List<Article>.filterByType(type: MediaType?): List<Article> =
-        if (type == null) this else filter { it.type == type }
 
     companion object {
         private const val STOP_TIMEOUT_MS = 5_000L

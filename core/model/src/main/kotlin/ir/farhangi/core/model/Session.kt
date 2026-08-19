@@ -9,4 +9,5 @@ data class Session(
     val accessToken: String,
     val refreshToken: String? = null,
     val displayName: String? = null,
+    val role: UserRole = UserRole.USER,
 )

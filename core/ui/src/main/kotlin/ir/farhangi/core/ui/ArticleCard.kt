@@ -14,6 +14,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.Article
+import ir.farhangi.core.model.persianLabel
 
 private val CardTonalElevation = 1.dp
 
@@ -35,7 +36,7 @@ fun ArticleCard(
             verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xxs),
         ) {
             Text(
-                text = article.category,
+                text = article.category.persianLabel(),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
             )

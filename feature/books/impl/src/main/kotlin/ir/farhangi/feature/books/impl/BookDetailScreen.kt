@@ -18,6 +18,7 @@ import ir.farhangi.core.ui.LoadingState
 fun BookDetailScreen(
     uiState: BookDetailUiState,
     onReadClick: () -> Unit,
+    onSaveClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -37,7 +38,10 @@ fun BookDetailScreen(
                 Text("${book.totalPages} صفحه", style = MaterialTheme.typography.bodyMedium)
                 Text(book.description, style = MaterialTheme.typography.bodyLarge)
                 Button(onClick = onReadClick, modifier = Modifier.fillMaxWidth()) {
-                    Text("شروع مطالعه")
+                    Text("مطالعه آنلاین")
+                }
+                Button(onClick = onSaveClick, modifier = Modifier.fillMaxWidth()) {
+                    Text(if (book.isSaved) "حذف از کتاب‌خانه من" else "ذخیره در کتاب‌خانه من")
                 }
                 Button(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
                     Text("بازگشت")

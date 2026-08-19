@@ -44,6 +44,20 @@ class DefaultAuthRepository @Inject constructor(
     override fun observeLastPhone(): Flow<String?> =
         sessionLocalDataSource.observeLastPhone()
 
+    override fun observeOnboardingCompleted(): Flow<Boolean> =
+        sessionLocalDataSource.observeOnboardingCompleted()
+
+    override fun observeNotificationPromptCompleted(): Flow<Boolean> =
+        sessionLocalDataSource.observeNotificationPromptCompleted()
+
+    override suspend fun completeOnboarding() {
+        sessionLocalDataSource.setOnboardingCompleted()
+    }
+
+    override suspend fun completeNotificationPrompt() {
+        sessionLocalDataSource.setNotificationPromptCompleted()
+    }
+
     override suspend fun signOut(): Result<Unit> {
         val remote = authGateway.signOut()
         sessionLocalDataSource.clearSession()

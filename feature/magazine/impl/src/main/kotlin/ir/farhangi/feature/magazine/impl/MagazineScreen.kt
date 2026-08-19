@@ -14,7 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.Article
-import ir.farhangi.core.model.MediaType
+import ir.farhangi.core.model.MagazineCategory
+import ir.farhangi.core.model.persianLabel
 import ir.farhangi.core.ui.ArticleCard
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.LoadingState
@@ -23,7 +24,7 @@ import ir.farhangi.core.ui.LoadingState
 fun MagazineScreen(
     uiState: MagazineUiState,
     onArticleClick: (Article) -> Unit,
-    onTypeSelected: (MediaType?) -> Unit,
+    onCategorySelected: (MagazineCategory?) -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
     modifier: Modifier = Modifier,
 ) {
@@ -41,16 +42,16 @@ fun MagazineScreen(
             ) {
                 item {
                     FilterChip(
-                        selected = uiState.selectedType == null,
-                        onClick = { onTypeSelected(null) },
+                        selected = uiState.selectedCategory == null,
+                        onClick = { onCategorySelected(null) },
                         label = { Text("همه") },
                     )
                 }
-                items(uiState.availableTypes) { type ->
+                items(uiState.availableCategories) { category ->
                     FilterChip(
-                        selected = uiState.selectedType == type,
-                        onClick = { onTypeSelected(type) },
-                        label = { Text(typeLabel(type)) },
+                        selected = uiState.selectedCategory == category,
+                        onClick = { onCategorySelected(category) },
+                        label = { Text(category.persianLabel()) },
                     )
                 }
             }
@@ -78,13 +79,4 @@ fun MagazineScreen(
             }
         }
     }
-}
-
-private fun typeLabel(type: MediaType): String = when (type) {
-    MediaType.TEXT -> "مقاله"
-    MediaType.VIDEO -> "ویدیو"
-    MediaType.AUDIO -> "صوتی"
-    MediaType.PODCAST -> "پادکست"
-    MediaType.SPEECH -> "سخنرانی"
-    MediaType.NEWS -> "اخبار"
 }

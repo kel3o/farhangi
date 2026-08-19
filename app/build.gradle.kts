@@ -16,7 +16,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = "0.1.0"
+        versionName = "0.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -82,6 +82,10 @@ dependencies {
     implementation(project(":feature:profile:impl"))
     implementation(project(":feature:search:api"))
     implementation(project(":feature:search:impl"))
+    implementation(project(":feature:competitions:api"))
+    implementation(project(":feature:competitions:impl"))
+    implementation(project(":feature:studio:api"))
+    implementation(project(":feature:studio:impl"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)

@@ -14,6 +14,7 @@ import ir.farhangi.core.model.Bookmark
 import ir.farhangi.core.model.Highlight
 import ir.farhangi.core.model.ReadingProgress
 import ir.farhangi.core.network.gateway.ContentGateway
+import ir.farhangi.core.network.gateway.EngagementGateway
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -24,16 +25,28 @@ import javax.inject.Singleton
 @Singleton
 class DefaultBookRepository @Inject constructor(
     private val contentGateway: ContentGateway,
+    private val engagementGateway: EngagementGateway,
     private val bookProgressDao: BookProgressDao,
     private val bookmarkDao: BookmarkDao,
     private val highlightDao: HighlightDao,
 ) : BookRepository {
 
-    override suspend fun getBooks(query: String?): Result<List<Book>> =
-        contentGateway.getBooks(query).map { list -> list.map { it.toDomain() } }
+    override suspend fun getBooks(query: String?): Result<List<Book>> {
+        val saved = savedIds()
+        return contentGateway.getBooks(query).map { list ->
+            list.map { it.toDomain(isSaved = it.id in saved) }
+        }
+    }
 
-    override suspend fun getBook(id: String): Result<Book> =
-        contentGateway.getBook(id).map { it.toDomain() }
+    override suspend fun getBook(id: String): Result<Book> {
+        val saved = savedIds()
+        return contentGateway.getBook(id).map { it.toDomain(isSaved = it.id in saved) }
+    }
+
+    private suspend fun savedIds(): Set<String> = when (val result = engagementGateway.getSavedBookIds()) {
+        is Result.Success -> result.data
+        else -> emptySet()
+    }
 
     override fun observeProgress(userId: String, bookId: String): Flow<ReadingProgress?> =
         bookProgressDao.observeProgress(userId, bookId).map { it?.toDomain() }

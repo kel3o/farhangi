@@ -29,6 +29,7 @@ kotlin {
 dependencies {
     api(project(":feature:profile:api"))
     implementation(project(":feature:auth:api"))
+    implementation(project(":feature:studio:api"))
     implementation(project(":core:data"))
     implementation(project(":core:ui"))
     implementation(project(":core:designsystem"))

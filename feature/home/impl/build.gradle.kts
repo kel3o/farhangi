@@ -31,6 +31,7 @@ dependencies {
     implementation(project(":feature:books:api"))
     implementation(project(":feature:courses:api"))
     implementation(project(":feature:magazine:api"))
+    implementation(project(":feature:competitions:api"))
     implementation(project(":feature:search:api"))
     implementation(project(":core:data"))
     implementation(project(":core:ui"))

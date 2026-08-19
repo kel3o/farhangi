@@ -26,7 +26,7 @@ import ir.farhangi.core.ui.LoadingState
 @Composable
 fun CourseDetailScreen(
     uiState: CourseDetailUiState,
-    onCompleteSection: (String) -> Unit,
+    onOpenLesson: (String) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -59,22 +59,23 @@ fun CourseDetailScreen(
                     ListItem(
                         headlineContent = { Text(section.title) },
                         supportingContent = {
-                            Text("${section.durationMinutes} دقیقه")
+                            val kind = if (section.contentType == ir.farhangi.core.model.LessonContentType.VIDEO) {
+                                "ویدیو"
+                            } else {
+                                "متن"
+                            }
+                            Text("$kind · ${section.durationMinutes} دقیقه")
                         },
                         trailingContent = {
-                            if (section.isCompleted) {
-                                Text("تکمیل‌شده", color = MaterialTheme.colorScheme.primary)
-                            } else {
-                                TextButton(
-                                    onClick = { onCompleteSection(section.id) },
-                                    modifier = Modifier
-                                        .heightIn(min = FarhangiSize.touchTargetMin)
-                                        .semantics {
-                                            contentDescription = "تکمیل بخش ${section.title}"
-                                        },
-                                ) {
-                                    Text("تکمیل")
-                                }
+                            TextButton(
+                                onClick = { onOpenLesson(section.id) },
+                                modifier = Modifier
+                                    .heightIn(min = FarhangiSize.touchTargetMin)
+                                    .semantics {
+                                        contentDescription = "باز کردن بخش ${section.title}"
+                                    },
+                            ) {
+                                Text(if (section.isCompleted) "مرور" else "شروع")
                             }
                         },
                     )

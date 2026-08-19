@@ -28,6 +28,7 @@ kotlin {
 
 dependencies {
     api(project(":feature:books:api"))
+    implementation(project(":feature:competitions:api"))
     implementation(project(":core:data"))
     implementation(project(":core:ui"))
     implementation(project(":core:designsystem"))

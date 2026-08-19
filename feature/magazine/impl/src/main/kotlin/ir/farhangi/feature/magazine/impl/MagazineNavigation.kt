@@ -32,7 +32,7 @@ fun EntryProviderScope<NavKey>.magazineEntries(navigator: Navigator) {
         MagazineScreen(
             uiState = uiState,
             onArticleClick = { navigator.navigate(ArticleDetailRoute(it.id)) },
-            onTypeSelected = viewModel::selectType,
+            onCategorySelected = viewModel::selectCategory,
         )
     }
     entry<ArticleDetailRoute> { key ->

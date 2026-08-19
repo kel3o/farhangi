@@ -10,10 +10,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.multibindings.IntoSet
+import ir.farhangi.core.model.CourseType
 import ir.farhangi.core.navigation.EntryProviderInstaller
 import ir.farhangi.core.navigation.Navigator
 import ir.farhangi.feature.courses.api.CourseDetailRoute
 import ir.farhangi.feature.courses.api.CoursesRoute
+import ir.farhangi.feature.courses.api.LessonRoute
+import ir.farhangi.feature.courses.api.PracticalCatalogRoute
+import ir.farhangi.feature.courses.api.ProfessionalCatalogRoute
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -27,11 +31,29 @@ object CoursesNavigationModule {
 
 fun EntryProviderScope<NavKey>.coursesEntries(navigator: Navigator) {
     entry<CoursesRoute> {
-        val viewModel: CoursesViewModel = hiltViewModel()
-        val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
         CoursesScreen(
+            onProfessionalClick = { navigator.navigate(ProfessionalCatalogRoute) },
+            onPracticalClick = { navigator.navigate(PracticalCatalogRoute) },
+        )
+    }
+    entry<ProfessionalCatalogRoute> {
+        val viewModel: CourseCatalogViewModel = hiltViewModel()
+        LaunchedEffect(Unit) { viewModel.load(CourseType.PROFESSIONAL) }
+        val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+        CourseCatalogScreen(
             uiState = uiState,
             onCourseClick = { navigator.navigate(CourseDetailRoute(it.id)) },
+            onCategorySelected = viewModel::selectCategory,
+        )
+    }
+    entry<PracticalCatalogRoute> {
+        val viewModel: CourseCatalogViewModel = hiltViewModel()
+        LaunchedEffect(Unit) { viewModel.load(CourseType.PRACTICAL) }
+        val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+        CourseCatalogScreen(
+            uiState = uiState,
+            onCourseClick = { navigator.navigate(CourseDetailRoute(it.id)) },
+            onCategorySelected = viewModel::selectCategory,
         )
     }
     entry<CourseDetailRoute> { key ->
@@ -40,7 +62,17 @@ fun EntryProviderScope<NavKey>.coursesEntries(navigator: Navigator) {
         val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
         CourseDetailScreen(
             uiState = uiState,
-            onCompleteSection = viewModel::completeSection,
+            onOpenLesson = { sectionId -> navigator.navigate(LessonRoute(key.courseId, sectionId)) },
+            onBack = { navigator.pop() },
+        )
+    }
+    entry<LessonRoute> { key ->
+        val viewModel: LessonViewModel = hiltViewModel()
+        LaunchedEffect(key.courseId, key.sectionId) { viewModel.load(key.courseId, key.sectionId) }
+        val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+        LessonScreen(
+            uiState = uiState,
+            onComplete = viewModel::complete,
             onBack = { navigator.pop() },
         )
     }

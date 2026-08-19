@@ -34,7 +34,7 @@ fun CourseCard(
             verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs),
         ) {
             Text(
-                text = if (course.type == CourseType.PRACTICAL) "یادگیری عملی" else "دوره تخصصی",
+                text = if (course.type == CourseType.PRACTICAL) "دوره کاربردی" else "دوره تخصصی",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
             )

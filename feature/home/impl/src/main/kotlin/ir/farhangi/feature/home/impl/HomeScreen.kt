@@ -18,12 +18,15 @@ import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.Announcement
 import ir.farhangi.core.model.Article
 import ir.farhangi.core.model.Book
+import ir.farhangi.core.model.Contest
 import ir.farhangi.core.model.Course
 import ir.farhangi.core.ui.ArticleCard
 import ir.farhangi.core.ui.BookCard
+import ir.farhangi.core.ui.ContestCard
 import ir.farhangi.core.ui.CourseCard
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.LoadingState
+import ir.farhangi.core.ui.PointsSummaryCard
 import ir.farhangi.core.ui.SectionHeader
 
 @Composable
@@ -32,6 +35,7 @@ fun HomeScreen(
     onBookClick: (Book) -> Unit,
     onCourseClick: (Course) -> Unit,
     onArticleClick: (Article) -> Unit,
+    onContestClick: (Contest) -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
     modifier: Modifier = Modifier,
 ) {
@@ -52,16 +56,34 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.md),
             ) {
                 item {
+                    PointsSummaryCard(
+                        points = uiState.points,
+                        weeklyRank = uiState.weeklyRank,
+                        readingMinutes = uiState.readingMinutesThisWeek,
+                        modifier = Modifier.padding(horizontal = FarhangiSpacing.md),
+                    )
+                }
+                if (uiState.trophies.isNotEmpty()) {
+                    item { SectionHeader(title = "جام‌های شما") }
+                    item {
+                        Text(
+                            text = uiState.trophies.joinToString(" · ") { it.title },
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(horizontal = FarhangiSpacing.md),
+                        )
+                    }
+                }
+                item {
                     Surface(
                         modifier = Modifier.padding(horizontal = FarhangiSpacing.md),
                         shape = MaterialTheme.shapes.large,
-                        color = MaterialTheme.colorScheme.primaryContainer,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                     ) {
                         Text(
                             text = uiState.dailyQuote,
                             modifier = Modifier.padding(FarhangiSpacing.md),
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
                         )
                     }
                 }
@@ -76,19 +98,7 @@ fun HomeScreen(
                 }
                 if (uiState.continueReading.isNotEmpty()) {
                     item { SectionHeader(title = "ادامه مطالعه") }
-                    item {
-                        BookRow(books = uiState.continueReading, onBookClick = onBookClick)
-                    }
-                }
-                if (uiState.continueWatching.isNotEmpty()) {
-                    item { SectionHeader(title = "ادامه تماشا") }
-                    items(uiState.continueWatching, key = { it.id }) { article ->
-                        ArticleCard(
-                            article = article,
-                            onClick = { onArticleClick(article) },
-                            modifier = Modifier.padding(horizontal = FarhangiSpacing.md),
-                        )
-                    }
+                    item { BookRow(books = uiState.continueReading, onBookClick = onBookClick) }
                 }
                 if (uiState.continueCourses.isNotEmpty()) {
                     item { SectionHeader(title = "ادامه یادگیری") }
@@ -100,14 +110,18 @@ fun HomeScreen(
                         )
                     }
                 }
+                if (uiState.liveContests.isNotEmpty()) {
+                    item { SectionHeader(title = "مسابقه‌های در جریان") }
+                    items(uiState.liveContests, key = { it.id }) { contest ->
+                        ContestCard(
+                            contest = contest,
+                            onClick = { onContestClick(contest) },
+                            modifier = Modifier.padding(horizontal = FarhangiSpacing.md),
+                        )
+                    }
+                }
                 item { SectionHeader(title = "پیشنهاد کتاب") }
-                item {
-                    BookRow(books = uiState.recommendedBooks, onBookClick = onBookClick)
-                }
-                item { SectionHeader(title = "تازه‌ها") }
-                item {
-                    BookRow(books = uiState.recentlyAdded, onBookClick = onBookClick)
-                }
+                item { BookRow(books = uiState.recommendedBooks, onBookClick = onBookClick) }
                 item { SectionHeader(title = "تازه‌های مجله") }
                 items(uiState.latestArticles, key = { it.id }) { article ->
                     ArticleCard(

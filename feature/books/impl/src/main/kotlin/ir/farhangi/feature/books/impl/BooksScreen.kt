@@ -4,43 +4,63 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import ir.farhangi.core.designsystem.theme.FarhangiSize
+import ir.farhangi.core.designsystem.icon.FarhangiIcons
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
-import ir.farhangi.core.model.Book
-import ir.farhangi.core.ui.BookCard
-import ir.farhangi.core.ui.EmptyState
-import ir.farhangi.core.ui.LoadingState
+import ir.farhangi.core.ui.HubTile
 
 @Composable
 fun BooksScreen(
-    uiState: BooksUiState,
-    onBookClick: (Book) -> Unit,
+    onLibraryClick: () -> Unit,
+    onMyLibraryClick: () -> Unit,
+    onContestsClick: () -> Unit,
+    onHamkhanClick: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
     modifier: Modifier = Modifier,
 ) {
-    when (uiState) {
-        BooksUiState.Loading -> LoadingState(modifier.padding(contentPadding))
-        is BooksUiState.Error -> EmptyState("خطا", uiState.message, modifier.padding(contentPadding))
-        is BooksUiState.Success -> LazyVerticalGrid(
-            columns = GridCells.Adaptive(FarhangiSize.coverWidth),
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                start = FarhangiSpacing.md,
-                end = FarhangiSpacing.md,
-                top = contentPadding.calculateTopPadding() + FarhangiSpacing.sm,
-                bottom = contentPadding.calculateBottomPadding() + FarhangiSpacing.lg,
-            ),
-            horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
-            verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.md),
-        ) {
-            items(uiState.books, key = { it.id }) { book ->
-                BookCard(book = book, onClick = { onBookClick(book) })
-            }
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = FarhangiSpacing.md,
+            end = FarhangiSpacing.md,
+            top = contentPadding.calculateTopPadding() + FarhangiSpacing.sm,
+            bottom = contentPadding.calculateBottomPadding() + FarhangiSpacing.lg,
+        ),
+        verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
+    ) {
+        item {
+            HubTile(
+                title = "کتابخانه",
+                subtitle = "آرشیو موضوعی و مطالعه آنلاین",
+                icon = FarhangiIcons.Books,
+                onClick = onLibraryClick,
+            )
+        }
+        item {
+            HubTile(
+                title = "کتاب‌خانه من",
+                subtitle = "کتاب‌های ذخیره‌شده برای بعد",
+                icon = FarhangiIcons.BooksOutlined,
+                onClick = onMyLibraryClick,
+            )
+        }
+        item {
+            HubTile(
+                title = "مسابقات کتاب",
+                subtitle = "آزمون‌های در جریان و نتایج",
+                icon = FarhangiIcons.Competitions,
+                onClick = onContestsClick,
+            )
+        }
+        item {
+            HubTile(
+                title = "هم‌خوان",
+                subtitle = "باشگاه مطالعه، جدول و جام",
+                icon = FarhangiIcons.Trophy,
+                onClick = onHamkhanClick,
+            )
         }
     }
 }

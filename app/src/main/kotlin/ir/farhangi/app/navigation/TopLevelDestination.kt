@@ -5,10 +5,10 @@ import androidx.navigation3.runtime.NavKey
 import ir.farhangi.app.R
 import ir.farhangi.core.designsystem.icon.FarhangiIcons
 import ir.farhangi.feature.books.api.BooksRoute
+import ir.farhangi.feature.competitions.api.CompetitionsRoute
 import ir.farhangi.feature.courses.api.CoursesRoute
 import ir.farhangi.feature.home.api.HomeRoute
 import ir.farhangi.feature.magazine.api.MagazineRoute
-import ir.farhangi.feature.profile.api.ProfileRoute
 
 enum class TopLevelDestination(
     val route: NavKey,
@@ -38,18 +38,18 @@ enum class TopLevelDestination(
         selectedIcon = FarhangiIcons.Courses,
         unselectedIcon = FarhangiIcons.CoursesOutlined,
     ),
+    COMPETITIONS(
+        route = CompetitionsRoute,
+        labelResId = R.string.nav_competitions,
+        contentDescriptionResId = R.string.nav_competitions,
+        selectedIcon = FarhangiIcons.Competitions,
+        unselectedIcon = FarhangiIcons.CompetitionsOutlined,
+    ),
     MAGAZINE(
         route = MagazineRoute,
         labelResId = R.string.nav_magazine,
         contentDescriptionResId = R.string.nav_magazine,
         selectedIcon = FarhangiIcons.Magazine,
         unselectedIcon = FarhangiIcons.MagazineOutlined,
-    ),
-    PROFILE(
-        route = ProfileRoute,
-        labelResId = R.string.nav_profile,
-        contentDescriptionResId = R.string.nav_profile,
-        selectedIcon = FarhangiIcons.Profile,
-        unselectedIcon = FarhangiIcons.ProfileOutlined,
     ),
 }

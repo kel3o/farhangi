@@ -1,14 +1,14 @@
 package ir.farhangi.feature.magazine.impl
 
 import ir.farhangi.core.model.Article
-import ir.farhangi.core.model.MediaType
+import ir.farhangi.core.model.MagazineCategory
 
 sealed interface MagazineUiState {
     data object Loading : MagazineUiState
     data class Success(
         val articles: List<Article>,
-        val selectedType: MediaType?,
-        val availableTypes: List<MediaType>,
+        val selectedCategory: MagazineCategory?,
+        val availableCategories: List<MagazineCategory>,
     ) : MagazineUiState
     data class Error(val message: String) : MagazineUiState
 }

@@ -1,7 +1,9 @@
 package ir.farhangi.app.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -9,6 +11,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.entryProvider
@@ -18,9 +21,12 @@ import ir.farhangi.app.navigation.TopLevelDestination
 import ir.farhangi.core.designsystem.component.FarhangiTopAppBar
 import ir.farhangi.core.navigation.EntryProviderInstaller
 import ir.farhangi.core.navigation.Navigator
+import ir.farhangi.feature.auth.api.NotificationPermissionRoute
+import ir.farhangi.feature.auth.api.OnboardingRoute
 import ir.farhangi.feature.auth.api.OtpRoute
 import ir.farhangi.feature.auth.api.PhoneRoute
 import ir.farhangi.feature.home.api.HomeRoute
+import ir.farhangi.feature.profile.api.ProfileRoute
 import ir.farhangi.feature.search.api.SearchRoute
 
 @Composable
@@ -28,34 +34,39 @@ fun FarhangiApp(
     navigator: Navigator,
     entryProviderInstallers: Set<EntryProviderInstaller>,
     isAuthenticated: Boolean,
+    hasCompletedOnboarding: Boolean,
+    hasCompletedNotificationPrompt: Boolean,
+    profileInitial: String,
     modifier: Modifier = Modifier,
 ) {
     val topLevelRoutes = remember {
         TopLevelDestination.entries.map { it.route }.toSet()
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(isAuthenticated, hasCompletedOnboarding, hasCompletedNotificationPrompt) {
         navigator.configureMain(
             start = HomeRoute,
             topLevels = topLevelRoutes,
         )
-    }
-
-    LaunchedEffect(isAuthenticated) {
         val current = navigator.backStack.lastOrNull()
         when {
-            !isAuthenticated && current !is PhoneRoute && current !is OtpRoute -> {
-                navigator.replaceAll(PhoneRoute)
+            !hasCompletedOnboarding -> {
+                if (current !is OnboardingRoute) navigator.replaceAll(OnboardingRoute)
             }
-            isAuthenticated && (navigator.isAuthMode || current is PhoneRoute || current is OtpRoute) -> {
-                navigator.enterMain(HomeRoute)
-            }
-            navigator.backStack.isEmpty() -> {
-                if (isAuthenticated) {
-                    navigator.enterMain(HomeRoute)
-                } else {
+            !isAuthenticated -> {
+                if (current !is PhoneRoute && current !is OtpRoute) {
                     navigator.replaceAll(PhoneRoute)
                 }
+            }
+            !hasCompletedNotificationPrompt -> {
+                if (current !is NotificationPermissionRoute) {
+                    navigator.replaceAll(NotificationPermissionRoute)
+                }
+            }
+            navigator.backStack.isEmpty() -> navigator.enterMain(HomeRoute)
+            navigator.isAuthMode || current is PhoneRoute || current is OtpRoute ||
+                current is OnboardingRoute || current is NotificationPermissionRoute -> {
+                navigator.enterMain(HomeRoute)
             }
         }
     }
@@ -68,12 +79,22 @@ fun FarhangiApp(
         }
     }
 
-    // Read navigation state so Compose recomposes when tab/mode changes.
     val isAuthMode = navigator.isAuthMode
     val topLevelRoute = navigator.topLevelRoute
     val backStack = navigator.backStack
 
-    if (!isAuthenticated || isAuthMode) {
+    if (backStack.isEmpty()) {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
+    val inGate = !hasCompletedOnboarding || !isAuthenticated || !hasCompletedNotificationPrompt || isAuthMode
+    if (inGate) {
         NavDisplay(
             backStack = backStack,
             onBack = { navigator.pop() },
@@ -113,6 +134,8 @@ fun FarhangiApp(
                 FarhangiTopAppBar(
                     title = stringResource(R.string.top_bar_title),
                     onSearchClick = { navigator.navigate(SearchRoute) },
+                    profileInitial = profileInitial,
+                    onProfileClick = { navigator.navigate(ProfileRoute) },
                 )
             },
         ) { innerPadding ->

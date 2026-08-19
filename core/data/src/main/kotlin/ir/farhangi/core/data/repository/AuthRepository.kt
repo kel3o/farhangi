@@ -9,5 +9,9 @@ interface AuthRepository {
     suspend fun verifyOtp(phone: String, code: String): Result<Session>
     fun observeSession(): Flow<Session?>
     fun observeLastPhone(): Flow<String?>
+    fun observeOnboardingCompleted(): Flow<Boolean>
+    fun observeNotificationPromptCompleted(): Flow<Boolean>
+    suspend fun completeOnboarding()
+    suspend fun completeNotificationPrompt()
     suspend fun signOut(): Result<Unit>
 }

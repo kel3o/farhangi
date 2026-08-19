@@ -36,6 +36,10 @@ class ToggleBookmarkTest {
         override suspend fun verifyOtp(phone: String, code: String) = Result.Error(IllegalStateException())
         override fun observeSession(): Flow<Session?> = sessionFlow
         override fun observeLastPhone(): Flow<String?> = flowOf(null)
+        override fun observeOnboardingCompleted(): Flow<Boolean> = flowOf(true)
+        override fun observeNotificationPromptCompleted(): Flow<Boolean> = flowOf(true)
+        override suspend fun completeOnboarding() = Unit
+        override suspend fun completeNotificationPrompt() = Unit
         override suspend fun signOut() = Result.Success(Unit)
     }
 

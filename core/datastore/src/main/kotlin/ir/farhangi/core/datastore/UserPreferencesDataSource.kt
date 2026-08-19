@@ -33,8 +33,16 @@ class UserPreferencesDataSource @Inject constructor(
         prefs[Keys.SESSION_JSON]
     }
 
+    val notificationPromptCompleted: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[Keys.NOTIFICATION_PROMPT_COMPLETED] == true
+    }
+
     suspend fun setOnboardingCompleted(completed: Boolean) {
         context.dataStore.edit { it[Keys.ONBOARDING_COMPLETED] = completed }
+    }
+
+    suspend fun setNotificationPromptCompleted(completed: Boolean) {
+        context.dataStore.edit { it[Keys.NOTIFICATION_PROMPT_COMPLETED] = completed }
     }
 
     suspend fun setLastPhone(phone: String) {
@@ -51,6 +59,7 @@ class UserPreferencesDataSource @Inject constructor(
 
     private object Keys {
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        val NOTIFICATION_PROMPT_COMPLETED = booleanPreferencesKey("notification_prompt_completed")
         val LAST_PHONE = stringPreferencesKey("last_phone")
         val SESSION_JSON = stringPreferencesKey("session_json")
     }

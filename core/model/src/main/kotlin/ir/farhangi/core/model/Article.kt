@@ -18,7 +18,7 @@ data class Article(
     val id: String,
     val title: String,
     val type: MediaType,
-    val category: String,
+    val category: MagazineCategory,
     val summary: String = "",
     val body: String = "",
     val mediaUrl: String? = null,

@@ -54,6 +54,11 @@ fun PhoneScreen(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        Text(
+            text = "کد تأیید آزمایشی ۱۲۳۴۵۶ است. برای نقش‌ها: ۰۹۱۱۱۱۱۱۱۱۱ ویرایشگر، ۰۹۲۲۲۲۲۲۲۲۲ سازمانی، ۰۹۳۳۳۳۳۳۳۳۳ مدیرکل.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         OutlinedTextField(
             value = phone,
             onValueChange = { phone = it.filter { ch -> ch.isDigit() || ch == '+' }.take(MAX_PHONE_LENGTH) },

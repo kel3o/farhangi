@@ -14,6 +14,10 @@ import ir.farhangi.core.navigation.EntryProviderInstaller
 import ir.farhangi.core.navigation.Navigator
 import ir.farhangi.feature.auth.api.PhoneRoute
 import ir.farhangi.feature.profile.api.ProfileRoute
+import ir.farhangi.feature.studio.api.OrgInboxRoute
+import ir.farhangi.feature.studio.api.ReportsRoute
+import ir.farhangi.feature.studio.api.RolesRoute
+import ir.farhangi.feature.studio.api.StudioHomeRoute
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -37,6 +41,10 @@ fun EntryProviderScope<NavKey>.profileEntries(navigator: Navigator) {
         ProfileScreen(
             uiState = uiState,
             onSignOut = viewModel::signOut,
+            onStudioClick = { navigator.navigate(StudioHomeRoute) },
+            onOrgInboxClick = { navigator.navigate(OrgInboxRoute) },
+            onReportsClick = { navigator.navigate(ReportsRoute) },
+            onRolesClick = { navigator.navigate(RolesRoute) },
         )
     }
 }

@@ -24,12 +24,16 @@ class HomeViewModel @Inject constructor(
                 emit(
                     HomeUiState.Success(
                         continueReading = feed.continueReading,
-                        continueWatching = feed.continueWatching,
                         latestArticles = feed.latestArticles,
                         recommendedBooks = feed.recommendedBooks,
                         recentlyAdded = feed.recentlyAdded,
                         announcements = feed.announcements,
                         continueCourses = feed.continueCourses,
+                        liveContests = feed.liveContests,
+                        points = feed.points,
+                        weeklyRank = feed.weeklyRank,
+                        readingMinutesThisWeek = feed.readingMinutesThisWeek,
+                        trophies = feed.trophies,
                         dailyQuote = feed.dailyQuote,
                     ),
                 )

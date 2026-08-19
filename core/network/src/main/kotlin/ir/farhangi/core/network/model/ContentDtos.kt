@@ -13,6 +13,8 @@ data class BookDto(
     @SerialName("total_pages") val totalPages: Int = 0,
     val rating: Double? = null,
     val description: String = "",
+    @SerialName("pdf_url") val pdfUrl: String? = null,
+    val pages: List<String> = emptyList(),
 )
 
 @Serializable
@@ -22,6 +24,9 @@ data class CourseSectionDto(
     val order: Int,
     @SerialName("duration_minutes") val durationMinutes: Int = 0,
     @SerialName("is_completed") val isCompleted: Boolean = false,
+    @SerialName("content_type") val contentType: String = "ARTICLE",
+    @SerialName("aparat_url") val aparatUrl: String? = null,
+    val body: String = "",
 )
 
 @Serializable
@@ -31,6 +36,8 @@ data class CourseDto(
     val type: String,
     @SerialName("cover_url") val coverUrl: String? = null,
     val description: String = "",
+    val category: String = "",
+    @SerialName("is_free") val isFree: Boolean = true,
     val sections: List<CourseSectionDto> = emptyList(),
     val progress: Float = 0f,
 )

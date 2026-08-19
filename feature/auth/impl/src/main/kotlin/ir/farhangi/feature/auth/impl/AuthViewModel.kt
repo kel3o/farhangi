@@ -24,6 +24,14 @@ class AuthViewModel @Inject constructor(
     val lastPhone: StateFlow<String?> = authRepository.observeLastPhone()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
+    fun completeOnboarding() {
+        viewModelScope.launch { authRepository.completeOnboarding() }
+    }
+
+    fun completeNotificationPrompt() {
+        viewModelScope.launch { authRepository.completeNotificationPrompt() }
+    }
+
     fun sendOtp(phone: String) {
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading

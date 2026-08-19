@@ -12,6 +12,7 @@ import dagger.multibindings.IntoSet
 import ir.farhangi.core.navigation.EntryProviderInstaller
 import ir.farhangi.core.navigation.Navigator
 import ir.farhangi.feature.books.api.BookDetailRoute
+import ir.farhangi.feature.competitions.api.ContestDetailRoute
 import ir.farhangi.feature.courses.api.CourseDetailRoute
 import ir.farhangi.feature.home.api.HomeRoute
 import ir.farhangi.feature.magazine.api.ArticleDetailRoute
@@ -35,6 +36,7 @@ fun EntryProviderScope<NavKey>.homeEntries(navigator: Navigator) {
             onBookClick = { navigator.navigate(BookDetailRoute(it.id)) },
             onCourseClick = { navigator.navigate(CourseDetailRoute(it.id)) },
             onArticleClick = { navigator.navigate(ArticleDetailRoute(it.id)) },
+            onContestClick = { navigator.navigate(ContestDetailRoute(it.id)) },
         )
     }
 }

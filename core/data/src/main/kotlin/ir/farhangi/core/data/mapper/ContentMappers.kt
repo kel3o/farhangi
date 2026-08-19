@@ -14,7 +14,7 @@ import ir.farhangi.core.network.model.CourseDto
 import ir.farhangi.core.network.model.SearchResultDto
 import kotlinx.datetime.Instant
 
-fun BookDto.toDomain(): Book = Book(
+fun BookDto.toDomain(isSaved: Boolean = false): Book = Book(
     id = id,
     title = title,
     author = author,
@@ -23,6 +23,9 @@ fun BookDto.toDomain(): Book = Book(
     totalPages = totalPages,
     rating = rating,
     description = description,
+    pdfUrl = pdfUrl,
+    pages = pages,
+    isSaved = isSaved,
 )
 
 fun CourseDto.toDomain(): Course = Course(
@@ -31,6 +34,8 @@ fun CourseDto.toDomain(): Course = Course(
     type = runCatching { CourseType.valueOf(type) }.getOrDefault(CourseType.PRACTICAL),
     coverUrl = coverUrl,
     description = description,
+    category = category,
+    isFree = isFree,
     sections = sections.map {
         CourseSection(
             id = it.id,
@@ -38,6 +43,10 @@ fun CourseDto.toDomain(): Course = Course(
             order = it.order,
             durationMinutes = it.durationMinutes,
             isCompleted = it.isCompleted,
+            contentType = runCatching { ir.farhangi.core.model.LessonContentType.valueOf(it.contentType) }
+                .getOrDefault(ir.farhangi.core.model.LessonContentType.ARTICLE),
+            aparatUrl = it.aparatUrl,
+            body = it.body,
         )
     },
     progress = progress,
@@ -47,7 +56,8 @@ fun ArticleDto.toDomain(): Article = Article(
     id = id,
     title = title,
     type = runCatching { MediaType.valueOf(type) }.getOrDefault(MediaType.TEXT),
-    category = category,
+    category = runCatching { ir.farhangi.core.model.MagazineCategory.valueOf(category) }
+        .getOrDefault(ir.farhangi.core.model.MagazineCategory.CULTURE),
     summary = summary,
     body = body,
     mediaUrl = mediaUrl,

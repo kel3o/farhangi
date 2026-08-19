@@ -7,8 +7,12 @@ import dagger.hilt.components.SingletonComponent
 import ir.farhangi.core.network.BuildConfig
 import ir.farhangi.core.network.demo.DemoAuthGateway
 import ir.farhangi.core.network.demo.DemoContentGateway
+import ir.farhangi.core.network.demo.DemoEngagementGateway
+import ir.farhangi.core.network.demo.DemoStudioGateway
 import ir.farhangi.core.network.gateway.AuthGateway
 import ir.farhangi.core.network.gateway.ContentGateway
+import ir.farhangi.core.network.gateway.EngagementGateway
+import ir.farhangi.core.network.gateway.StudioGateway
 import ir.farhangi.core.network.supabase.SupabaseAuthAdapter
 import ir.farhangi.core.network.supabase.SupabaseConfig
 import ir.farhangi.core.network.supabase.SupabaseContentAdapter
@@ -41,4 +45,12 @@ object NetworkModule {
         demo: DemoContentGateway,
         supabase: SupabaseContentAdapter,
     ): ContentGateway = if (config.useSupabaseContent) supabase else demo
+
+    @Provides
+    @Singleton
+    fun provideEngagementGateway(demo: DemoEngagementGateway): EngagementGateway = demo
+
+    @Provides
+    @Singleton
+    fun provideStudioGateway(demo: DemoStudioGateway): StudioGateway = demo
 }

@@ -7,6 +7,18 @@ import kotlinx.serialization.Serializable
 data object BooksRoute : NavKey
 
 @Serializable
+data object LibraryRoute : NavKey
+
+@Serializable
+data object MyLibraryRoute : NavKey
+
+@Serializable
+data object HamkhanRoute : NavKey
+
+@Serializable
+data object BookContestsRoute : NavKey
+
+@Serializable
 data class BookDetailRoute(val bookId: String) : NavKey
 
 @Serializable

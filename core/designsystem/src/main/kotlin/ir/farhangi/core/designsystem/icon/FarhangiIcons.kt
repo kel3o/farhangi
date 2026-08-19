@@ -1,16 +1,20 @@
 package ir.farhangi.core.designsystem.icon
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.outlined.AutoStories
+import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.School
-import androidx.compose.material.icons.outlined.AutoStories
 import androidx.compose.ui.graphics.vector.ImageVector
 
 object FarhangiIcons {
@@ -22,6 +26,10 @@ object FarhangiIcons {
     val CoursesOutlined: ImageVector = Icons.Outlined.School
     val Magazine: ImageVector = Icons.Filled.AutoStories
     val MagazineOutlined: ImageVector = Icons.Outlined.AutoStories
+    val Competitions: ImageVector = Icons.Filled.EmojiEvents
+    val CompetitionsOutlined: ImageVector = Icons.Outlined.EmojiEvents
     val Profile: ImageVector = Icons.Filled.Person
     val ProfileOutlined: ImageVector = Icons.Outlined.Person
+    val Trophy: ImageVector = Icons.Filled.WorkspacePremium
+    val Notifications: ImageVector = Icons.Filled.Notifications
 }

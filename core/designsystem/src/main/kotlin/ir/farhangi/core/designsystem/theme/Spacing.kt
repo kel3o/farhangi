@@ -24,4 +24,8 @@ object FarhangiSize {
     val coverWidth: Dp = 96.dp
     val coverHeight: Dp = 144.dp
     val avatar: Dp = 72.dp
+    val avatarSmall: Dp = 40.dp
+    val iconLarge: Dp = 32.dp
+    val chartHeight: Dp = 160.dp
+    val barMinWidth: Dp = 16.dp
 }

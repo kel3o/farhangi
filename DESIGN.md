@@ -1,14 +1,14 @@
 ---
 product: Farhangi
 platform: android
-updated: 2026-08-02
+updated: 2026-08-18
 ---
 
 # Farhangi DESIGN.md
 
 ## Intent
 
-Minimal Material 3 cultural reading app. Persian RTL first. Efficiency over ornament.
+Minimal Material 3 cultural reading app for a governmental/religious cultural organization. Persian RTL first. Efficiency over ornament. Version 2 information architecture: Home plus four destinations (Books, Courses, Competitions, Magazine). Profile from the top-bar avatar.
 
 ## Foundations
 
@@ -41,6 +41,8 @@ Minimal Material 3 cultural reading app. Persian RTL first. Efficiency over orna
 
 - RTL via `LocalLayoutDirection.Rtl` in `FarhangiTheme`
 - Adaptive navigation: `NavigationSuiteScaffold` (bar on phone, rail on larger)
+- Five destinations: Home, Books, Courses, Competitions, Magazine
+- Profile from Top App Bar avatar
 - Edge-to-edge from MainActivity; Scaffold / Material bars own insets
 - Search is global from Top App Bar — not a sixth tab
 

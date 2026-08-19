@@ -17,9 +17,10 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.multibindings.IntoSet
 import ir.farhangi.core.navigation.EntryProviderInstaller
 import ir.farhangi.core.navigation.Navigator
+import ir.farhangi.feature.auth.api.NotificationPermissionRoute
+import ir.farhangi.feature.auth.api.OnboardingRoute
 import ir.farhangi.feature.auth.api.OtpRoute
 import ir.farhangi.feature.auth.api.PhoneRoute
-import ir.farhangi.feature.home.api.HomeRoute
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -33,6 +34,15 @@ object AuthNavigationModule {
 }
 
 fun EntryProviderScope<NavKey>.authEntries(navigator: Navigator) {
+    entry<OnboardingRoute> {
+        val viewModel: AuthViewModel = hiltViewModel()
+        OnboardingScreen(
+            onFinished = {
+                viewModel.completeOnboarding()
+                navigator.replaceAll(PhoneRoute)
+            },
+        )
+    }
     entry<PhoneRoute> {
         val viewModel: AuthViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -49,13 +59,19 @@ fun EntryProviderScope<NavKey>.authEntries(navigator: Navigator) {
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         LaunchedEffect(uiState) {
             if (uiState is AuthUiState.Authenticated) {
-                navigator.enterMain(HomeRoute)
+                navigator.replaceAll(NotificationPermissionRoute)
             }
         }
         OtpScreen(
             phone = key.phone,
             uiState = uiState,
             onVerify = { code -> viewModel.verifyOtp(key.phone, code) },
+        )
+    }
+    entry<NotificationPermissionRoute> {
+        val viewModel: AuthViewModel = hiltViewModel()
+        NotificationPermissionRouteContent(
+            onCompleted = viewModel::completeNotificationPrompt,
         )
     }
 }
@@ -80,5 +96,26 @@ private fun PhoneRouteContent(
             pendingPhone = phone
             onSendOtp(phone)
         },
+    )
+}
+
+@Composable
+private fun NotificationPermissionRouteContent(
+    onCompleted: () -> Unit,
+) {
+    val launcher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission(),
+    ) {
+        onCompleted()
+    }
+    NotificationPermissionScreen(
+        onAllow = {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                launcher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                onCompleted()
+            }
+        },
+        onLater = onCompleted,
     )
 }

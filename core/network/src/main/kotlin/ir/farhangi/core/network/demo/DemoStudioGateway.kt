@@ -1,0 +1,85 @@
+package ir.farhangi.core.network.demo
+
+import ir.farhangi.core.common.result.Result
+import ir.farhangi.core.network.gateway.StudioGateway
+import ir.farhangi.core.network.model.ArticleDto
+import ir.farhangi.core.network.model.BookDto
+import ir.farhangi.core.network.model.ContestDto
+import ir.farhangi.core.network.model.CourseDto
+import ir.farhangi.core.network.model.OrgMessageDto
+import ir.farhangi.core.network.model.PlatformReportDto
+import ir.farhangi.core.network.model.QuizQuestionDto
+import ir.farhangi.core.network.model.StaffMemberDto
+import kotlinx.coroutines.delay
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class DemoStudioGateway @Inject constructor(
+    private val store: DemoPlatformStore,
+) : StudioGateway {
+
+    override suspend fun upsertBook(book: BookDto): Result<BookDto> {
+        delay(NETWORK_DELAY_MS)
+        return Result.Success(store.upsertBook(book))
+    }
+
+    override suspend fun upsertCourse(course: CourseDto): Result<CourseDto> {
+        delay(NETWORK_DELAY_MS)
+        return Result.Success(store.upsertCourse(course))
+    }
+
+    override suspend fun upsertArticle(article: ArticleDto): Result<ArticleDto> {
+        delay(NETWORK_DELAY_MS)
+        return Result.Success(store.upsertArticle(article))
+    }
+
+    override suspend fun upsertContest(
+        contest: ContestDto,
+        questions: List<QuizQuestionDto>,
+    ): Result<ContestDto> {
+        delay(NETWORK_DELAY_MS)
+        return Result.Success(store.upsertContest(contest, questions))
+    }
+
+    override suspend fun getOrgMessages(): Result<List<OrgMessageDto>> {
+        delay(NETWORK_DELAY_MS)
+        return Result.Success(store.orgMessages.value)
+    }
+
+    override suspend fun sendOrgMessage(title: String, body: String): Result<OrgMessageDto> {
+        delay(NETWORK_DELAY_MS)
+        return Result.Success(
+            store.sendOrgMessage(
+                fromName = "شما",
+                fromRole = "ORGANIZATIONAL",
+                title = title,
+                body = body,
+            ),
+        )
+    }
+
+    override suspend fun getReport(): Result<PlatformReportDto> {
+        delay(NETWORK_DELAY_MS)
+        return Result.Success(store.report())
+    }
+
+    override suspend fun getStaff(): Result<List<StaffMemberDto>> {
+        delay(NETWORK_DELAY_MS)
+        return Result.Success(store.staff.value)
+    }
+
+    override suspend fun updateStaffRole(userId: String, role: String): Result<StaffMemberDto> {
+        delay(NETWORK_DELAY_MS)
+        val updated = store.updateRole(userId, role)
+        return if (updated != null) {
+            Result.Success(updated)
+        } else {
+            Result.Error(NoSuchElementException("کاربر یافت نشد"))
+        }
+    }
+
+    companion object {
+        private const val NETWORK_DELAY_MS = 180L
+    }
+}

@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
+import ir.farhangi.core.model.persianLabel
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.LoadingState
 
@@ -34,7 +35,7 @@ fun ArticleDetailScreen(
                     .padding(FarhangiSpacing.lg),
                 verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
             ) {
-                Text(article.category, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                Text(article.category.persianLabel(), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                 Text(article.title, style = MaterialTheme.typography.headlineSmall)
                 Text(article.body.ifBlank { article.summary }, style = MaterialTheme.typography.bodyLarge)
                 Button(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text("بازگشت") }

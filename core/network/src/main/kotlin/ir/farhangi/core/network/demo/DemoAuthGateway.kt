@@ -2,6 +2,7 @@ package ir.farhangi.core.network.demo
 
 import ir.farhangi.core.common.result.Result
 import ir.farhangi.core.model.Session
+import ir.farhangi.core.model.UserRole
 import ir.farhangi.core.network.gateway.AuthGateway
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -35,7 +36,8 @@ class DemoAuthGateway @Inject constructor() : AuthGateway {
                 userId = "demo-user",
                 phone = phone,
                 accessToken = "demo-token",
-                displayName = "کاربر فرهنگی",
+                displayName = displayNameFor(phone),
+                role = roleFor(phone),
             )
             sessionState.value = session
             Result.Success(session)
@@ -53,8 +55,28 @@ class DemoAuthGateway @Inject constructor() : AuthGateway {
 
     companion object {
         const val DEMO_OTP_CODE = "123456"
+        const val DEMO_EDITOR_PHONE = "09111111111"
+        const val DEMO_ORG_PHONE = "09222222222"
+        const val DEMO_ADMIN_PHONE = "09333333333"
         private const val MIN_PHONE_DIGITS = 10
         private const val OTP_SEND_DELAY_MS = 400L
         private const val OTP_VERIFY_DELAY_MS = 400L
+        private const val LAST_TEN_EDITOR = "9111111111"
+        private const val LAST_TEN_ORG = "9222222222"
+        private const val LAST_TEN_ADMIN = "9333333333"
+
+        fun roleFor(phone: String): UserRole = when (phone.filter(Char::isDigit).takeLast(10)) {
+            LAST_TEN_EDITOR -> UserRole.EDITOR
+            LAST_TEN_ORG -> UserRole.ORGANIZATIONAL
+            LAST_TEN_ADMIN -> UserRole.SUPER_ADMIN
+            else -> UserRole.USER
+        }
+
+        private fun displayNameFor(phone: String): String = when (roleFor(phone)) {
+            UserRole.EDITOR -> "ویرایشگر فرهنگی"
+            UserRole.ORGANIZATIONAL -> "کاربر سازمانی"
+            UserRole.SUPER_ADMIN -> "مدیرکل"
+            UserRole.USER -> "کاربر فرهنگی"
+        }
     }
 }
