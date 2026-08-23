@@ -3,6 +3,7 @@ package ir.farhangi.feature.books.impl
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,11 +17,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
+import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.LoadingState
+import ir.farhangi.core.ui.ReadingBackdrop
 
 @Composable
 fun BookReaderScreen(
@@ -39,28 +43,66 @@ fun BookReaderScreen(
     }
 
     val colorScheme = MaterialTheme.colorScheme
-    val background = if (uiState.isNightMode) {
-        colorScheme.inverseSurface
+    val foreground: Color
+    val secondary: Color
+    if (uiState.isNightMode) {
+        foreground = colorScheme.inverseOnSurface
+        secondary = colorScheme.inverseOnSurface.copy(alpha = SECONDARY_ALPHA)
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(colorScheme.inverseSurface)
+                .padding(FarhangiSpacing.md),
+        ) {
+            ReaderBody(
+                uiState = uiState,
+                foreground = foreground,
+                secondary = secondary,
+                onNext = onNext,
+                onPrevious = onPrevious,
+                onToggleNight = onToggleNight,
+                onToggleBookmark = onToggleBookmark,
+                onAddHighlight = onAddHighlight,
+                onBack = onBack,
+            )
+        }
     } else {
-        colorScheme.surface
+        foreground = colorScheme.onSurface
+        secondary = colorScheme.onSurfaceVariant
+        ReadingBackdrop(modifier) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(FarhangiSpacing.md),
+            ) {
+                ReaderBody(
+                    uiState = uiState,
+                    foreground = foreground,
+                    secondary = secondary,
+                    onNext = onNext,
+                    onPrevious = onPrevious,
+                    onToggleNight = onToggleNight,
+                    onToggleBookmark = onToggleBookmark,
+                    onAddHighlight = onAddHighlight,
+                    onBack = onBack,
+                )
+            }
+        }
     }
-    val foreground = if (uiState.isNightMode) {
-        colorScheme.inverseOnSurface
-    } else {
-        colorScheme.onSurface
-    }
-    val secondary = if (uiState.isNightMode) {
-        colorScheme.inverseOnSurface.copy(alpha = SECONDARY_ALPHA)
-    } else {
-        colorScheme.onSurfaceVariant
-    }
+}
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(background)
-            .padding(FarhangiSpacing.md),
-    ) {
+@Composable
+private fun ColumnScope.ReaderBody(
+    uiState: ReaderUiState,
+    foreground: Color,
+    secondary: Color,
+    onNext: () -> Unit,
+    onPrevious: () -> Unit,
+    onToggleNight: () -> Unit,
+    onToggleBookmark: () -> Unit,
+    onAddHighlight: () -> Unit,
+    onBack: () -> Unit,
+) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -92,7 +134,7 @@ fun BookReaderScreen(
             color = foreground,
         )
         Text(
-            text = "صفحه ${uiState.page} از ${uiState.totalPages}",
+            text = "صفحه ${uiState.page.toPersianDigits()} از ${uiState.totalPages.toPersianDigits()}",
             style = MaterialTheme.typography.labelMedium,
             color = secondary,
             modifier = Modifier.padding(vertical = FarhangiSpacing.xs),
@@ -159,7 +201,6 @@ fun BookReaderScreen(
                     .heightIn(min = FarhangiSize.touchTargetMin),
             ) { Text("بعدی") }
         }
-    }
 }
 
 private const val SECONDARY_ALPHA = 0.7f

@@ -56,7 +56,7 @@ fun EntryProviderScope<NavKey>.competitionsEntries(navigator: Navigator) {
             onSelectOption = viewModel::selectOption,
             onNext = viewModel::next,
             onSubmit = viewModel::submit,
-            onBack = { navigator.pop() },
+            onBack = { navigator.popToRoot() },
         )
     }
 }

@@ -15,7 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.Contest
+import ir.farhangi.core.model.formatDurationClock
 import ir.farhangi.core.model.persianLabel
+import ir.farhangi.core.model.toPersianDigits
 
 @Composable
 fun ContestCard(
@@ -34,6 +36,12 @@ fun ContestCard(
             modifier = Modifier.padding(FarhangiSpacing.md),
             verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs),
         ) {
+            Text(text = contest.title, style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = contest.summary,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs)) {
                 AssistChip(
                     onClick = onClick,
@@ -44,15 +52,9 @@ fun ContestCard(
                     label = { Text(contest.status.persianLabel()) },
                 )
             }
-            Text(text = contest.title, style = MaterialTheme.typography.titleMedium)
+            val result = contest.userScorePercent?.let { "نتیجه شما: ${it.toPersianDigits()} درصد · " }.orEmpty()
             Text(
-                text = contest.summary,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            val result = contest.userScorePercent?.let { "نتیجه شما: $it درصد · " }.orEmpty()
-            Text(
-                text = "$result${contest.questionCount} سؤال · ${contest.participantCount} شرکت‌کننده",
+                text = "$result${contest.questionCount.toPersianDigits()} سؤال · ${contest.participantCount.toPersianDigits()} شرکت‌کننده · ${formatDurationClock(contest.durationSeconds)}",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

@@ -29,7 +29,9 @@ sealed interface QuizUiState {
         val questions: List<QuizQuestion>,
         val answers: Map<String, Int> = emptyMap(),
         val currentIndex: Int = 0,
+        val remainingSeconds: Int,
+        val timedOut: Boolean = false,
     ) : QuizUiState
-    data class Submitted(val result: QuizSubmissionResult) : QuizUiState
+    data class Submitted(val result: QuizSubmissionResult, val timedOut: Boolean = false) : QuizUiState
     data class Error(val message: String) : QuizUiState
 }

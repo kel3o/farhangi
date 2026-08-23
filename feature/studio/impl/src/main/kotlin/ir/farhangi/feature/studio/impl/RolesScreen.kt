@@ -22,6 +22,7 @@ import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.StaffMember
 import ir.farhangi.core.model.UserRole
 import ir.farhangi.core.model.persianLabel
+import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.LoadingState
 
@@ -57,7 +58,7 @@ fun RolesScreen(
                 Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(FarhangiSpacing.md), verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs)) {
                         Text(member.displayName, style = MaterialTheme.typography.titleSmall)
-                        Text(member.phone, style = MaterialTheme.typography.bodySmall)
+                        Text(member.phone.toPersianDigits(), style = MaterialTheme.typography.bodySmall)
                         LazyRow(horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs)) {
                             items(UserRole.entries) { role ->
                                 FilterChip(

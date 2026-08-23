@@ -20,6 +20,7 @@ import ir.farhangi.core.model.LeaderboardEntry
 import ir.farhangi.core.model.LeaderboardPeriod
 import ir.farhangi.core.model.ScoreBoard
 import ir.farhangi.core.model.persianLabel
+import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.LoadingState
 import ir.farhangi.core.ui.SectionHeader
@@ -95,12 +96,12 @@ private fun LeaderboardRow(
         verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xxs),
     ) {
         Text(
-            text = "${entry.rank}. ${entry.displayName}${if (entry.isCurrentUser) " (شما)" else ""}",
+            text = "${entry.rank.toPersianDigits()}. ${entry.displayName}${if (entry.isCurrentUser) " (شما)" else ""}",
             style = MaterialTheme.typography.titleSmall,
             color = if (entry.isCurrentUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
         )
         Text(
-            text = "${entry.points} امتیاز",
+            text = "${entry.points.toPersianDigits()} امتیاز",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

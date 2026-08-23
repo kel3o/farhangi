@@ -31,6 +31,7 @@ data class Course(
     val id: String,
     val title: String,
     val type: CourseType,
+    val instructor: String = "",
     val coverUrl: String? = null,
     val description: String = "",
     val category: String = "",

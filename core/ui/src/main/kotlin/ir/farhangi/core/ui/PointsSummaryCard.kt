@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.PointsBreakdown
+import ir.farhangi.core.model.toPersianDigits
 
 @Composable
 fun PointsSummaryCard(
@@ -35,17 +36,17 @@ fun PointsSummaryCard(
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
             Text(
-                text = points.total.toString(),
+                text = points.total.toPersianDigits(),
                 style = MaterialTheme.typography.displaySmall,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
             Text(
-                text = weeklyRank?.let { "رتبه این هفته: $it" } ?: "هنوز در جدول هفته نیستید",
+                text = weeklyRank?.let { "رتبه این هفته: ${it.toPersianDigits()}" } ?: "هنوز در جدول هفته نیستید",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
             Text(
-                text = "مطالعه این هفته: $readingMinutes دقیقه",
+                text = "مطالعه این هفته: ${readingMinutes.toPersianDigits()} دقیقه",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
@@ -63,7 +64,7 @@ fun PointsSummaryCard(
 private fun PointChip(label: String, value: Int) {
     Column {
         Text(
-            text = value.toString(),
+            text = value.toPersianDigits(),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )

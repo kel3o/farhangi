@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.farhangi.core.common.result.Result
 import ir.farhangi.core.data.repository.BookRepository
 import ir.farhangi.core.model.Book
+import ir.farhangi.core.model.BookCategories
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +34,7 @@ class LibraryViewModel @Inject constructor(
         when (result) {
             is Result.Success -> {
                 val all = result.data
-                val categories = all.flatMap { it.categories }.distinct()
+                val categories = BookCategories.ALL
                 LibraryUiState.Success(
                     books = if (category == null) all else all.filter { category in it.categories },
                     categories = categories,

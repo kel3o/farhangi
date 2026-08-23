@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
+import ir.farhangi.core.model.toPersianDigits
 
 @Composable
 fun OtpScreen(
@@ -47,12 +48,12 @@ fun OtpScreen(
     ) {
         Text(text = "تأیید شماره", style = MaterialTheme.typography.headlineSmall)
         Text(
-            text = "کد ارسال‌شده به $phone را وارد کنید",
+            text = "کد ارسال‌شده به ${phone.toPersianDigits()} را وارد کنید",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
-            text = "کد آزمایشی: $DEMO_OTP_HINT",
+            text = "کد آزمایشی: ${DEMO_OTP_HINT.toPersianDigits()}",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary,
         )

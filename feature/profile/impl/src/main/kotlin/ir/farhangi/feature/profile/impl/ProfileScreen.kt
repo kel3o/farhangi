@@ -29,6 +29,7 @@ import ir.farhangi.core.model.canEditContent
 import ir.farhangi.core.model.canManageRoles
 import ir.farhangi.core.model.canViewReports
 import ir.farhangi.core.model.persianLabel
+import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.LoadingState
 import ir.farhangi.core.ui.PointsSummaryCard
@@ -79,7 +80,7 @@ fun ProfileScreen(
                 Text(profile.displayName, style = MaterialTheme.typography.headlineSmall)
                 Text(profile.role.persianLabel(), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                 Text(
-                    profile.phone,
+                    profile.phone.toPersianDigits(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -96,9 +97,9 @@ fun ProfileScreen(
                 }
                 HorizontalDivider()
                 Text("آمار مطالعه", style = MaterialTheme.typography.titleMedium)
-                Text("کتاب‌های خوانده‌شده: ${profile.booksRead}", style = MaterialTheme.typography.bodyLarge)
-                Text("دوره‌های تکمیل‌شده: ${profile.coursesCompleted}", style = MaterialTheme.typography.bodyLarge)
-                Text("رشته مطالعه: ${profile.readingStreakDays} روز", style = MaterialTheme.typography.bodyLarge)
+                Text("کتاب‌های خوانده‌شده: ${profile.booksRead.toPersianDigits()}", style = MaterialTheme.typography.bodyLarge)
+                Text("دوره‌های تکمیل‌شده: ${profile.coursesCompleted.toPersianDigits()}", style = MaterialTheme.typography.bodyLarge)
+                Text("رشته مطالعه: ${profile.readingStreakDays.toPersianDigits()} روز", style = MaterialTheme.typography.bodyLarge)
                 if (profile.role.canEditContent()) {
                     Button(
                         onClick = onStudioClick,

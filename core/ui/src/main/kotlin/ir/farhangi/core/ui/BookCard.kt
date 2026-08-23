@@ -4,11 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,27 +20,19 @@ fun BookCard(
     book: Book,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    compact: Boolean = true,
 ) {
     Column(
         modifier = modifier
-            .width(FarhangiSize.coverWidth)
+            .then(if (compact) Modifier.width(FarhangiSize.coverWidth) else Modifier.fillMaxWidth())
             .clickable(role = Role.Button, onClick = onClick),
         verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xxs),
     ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(FarhangiSize.coverHeight),
-            shape = MaterialTheme.shapes.medium,
-            color = MaterialTheme.colorScheme.primaryContainer,
-        ) {
-            Text(
-                text = book.title.take(1),
-                modifier = Modifier.padding(FarhangiSpacing.md),
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
-        }
+        BookCover(
+            coverUrl = book.coverUrl,
+            title = book.title,
+            modifier = Modifier.fillMaxWidth(),
+        )
         Text(
             text = book.title,
             style = MaterialTheme.typography.titleSmall,

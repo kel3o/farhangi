@@ -16,6 +16,8 @@ data class ContestDto(
     @SerialName("related_course_id") val relatedCourseId: String? = null,
     @SerialName("ends_at") val endsAt: String,
     @SerialName("user_score_percent") val userScorePercent: Int? = null,
+    @SerialName("duration_seconds") val durationSeconds: Int = 180,
+    @SerialName("points_per_correct") val pointsPerCorrect: Int = 10,
 )
 
 @Serializable

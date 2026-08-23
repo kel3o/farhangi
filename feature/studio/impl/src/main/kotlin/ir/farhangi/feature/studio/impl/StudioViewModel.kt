@@ -32,7 +32,7 @@ class StudioViewModel @Inject constructor(
     private val _status = MutableStateFlow<String?>(null)
     val status: StateFlow<String?> = _status.asStateFlow()
 
-    fun createBook(title: String, author: String, body: String) {
+    fun createBook(title: String, author: String, body: String, durationMinutes: Int? = null) {
         viewModelScope.launch {
             val result = studioRepository.upsertBook(
                 Book(
@@ -49,7 +49,7 @@ class StudioViewModel @Inject constructor(
         }
     }
 
-    fun createCourse(title: String, category: String, body: String) {
+    fun createCourse(title: String, category: String, body: String, durationMinutes: Int? = null) {
         viewModelScope.launch {
             val result = studioRepository.upsertCourse(
                 Course(
@@ -73,7 +73,7 @@ class StudioViewModel @Inject constructor(
         }
     }
 
-    fun createArticle(title: String, category: String, body: String) {
+    fun createArticle(title: String, category: String, body: String, durationMinutes: Int? = null) {
         viewModelScope.launch {
             val magCategory = MagazineCategory.entries.find { it.persianMatch(category) }
                 ?: MagazineCategory.CULTURE
@@ -92,10 +92,11 @@ class StudioViewModel @Inject constructor(
         }
     }
 
-    fun createContest(title: String, category: String, body: String) {
+    fun createContest(title: String, category: String, body: String, durationMinutes: Int? = null) {
         viewModelScope.launch {
             val contestCategory = ContestCategory.entries.find { it.name.contains(category, ignoreCase = true) }
                 ?: ContestCategory.GENERAL_KNOWLEDGE
+            val durationSeconds = (durationMinutes ?: (MIN_CONTEST_MINUTES..MAX_CONTEST_MINUTES).random()) * SECONDS_PER_MINUTE
             val result = studioRepository.upsertContest(
                 Contest(
                     id = "",
@@ -106,6 +107,7 @@ class StudioViewModel @Inject constructor(
                     questionCount = 1,
                     participantCount = 0,
                     endsAt = Instant.parse("2026-09-01T20:00:00Z"),
+                    durationSeconds = durationSeconds,
                 ),
                 listOf(
                     QuizQuestion(
@@ -121,6 +123,9 @@ class StudioViewModel @Inject constructor(
 
     companion object {
         private const val SUMMARY_LIMIT = 80
+        private const val MIN_CONTEST_MINUTES = 3
+        private const val MAX_CONTEST_MINUTES = 5
+        private const val SECONDS_PER_MINUTE = 60
     }
 }
 

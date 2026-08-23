@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.NamedCount
+import ir.farhangi.core.model.toPersianDigits
 
 @Composable
 fun AudienceBarChart(
@@ -38,7 +39,7 @@ fun AudienceBarChart(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xxs),
             ) {
-                Text(text = item.count.toString(), style = MaterialTheme.typography.labelSmall)
+                Text(text = item.count.toPersianDigits(), style = MaterialTheme.typography.labelSmall)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

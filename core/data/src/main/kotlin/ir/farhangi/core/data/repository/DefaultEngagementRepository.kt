@@ -1,9 +1,11 @@
 package ir.farhangi.core.data.repository
 
 import ir.farhangi.core.common.result.Result
+import ir.farhangi.core.common.result.getOrNull
 import ir.farhangi.core.common.result.map
 import ir.farhangi.core.data.mapper.toDomain
 import ir.farhangi.core.model.Contest
+import ir.farhangi.core.model.DEFAULT_POINTS_PER_CORRECT
 import ir.farhangi.core.model.LeaderboardEntry
 import ir.farhangi.core.model.LeaderboardPeriod
 import ir.farhangi.core.model.PointsBreakdown
@@ -39,15 +41,28 @@ class DefaultEngagementRepository @Inject constructor(
             is Result.Error -> return questionsResult
             Result.Loading -> 0
         }
-        return engagementGateway.submitQuiz(contestId, answers).map { percent ->
-            val correct = (percent * total) / PERCENT_BASE
+        val contest = getContest(contestId).getOrNull()
+        val submitResult = engagementGateway.submitQuiz(contestId, answers)
+        if (submitResult is Result.Error) return submitResult
+        if (submitResult !is Result.Success) return Result.Error(IllegalStateException("ثبت آزمون ناموفق بود"))
+        val percent = submitResult.data
+        val correct = (percent * total) / PERCENT_BASE
+        val pointsPerCorrect = contest?.pointsPerCorrect ?: DEFAULT_POINTS_PER_CORRECT
+        val rank = when (val board = getLeaderboard(LeaderboardPeriod.WEEKLY, ScoreBoard.CONTESTS)) {
+            is Result.Success -> board.data.find { it.isCurrentUser }?.rank
+            else -> null
+        }
+        return Result.Success(
             QuizSubmissionResult(
                 contestId = contestId,
                 correctCount = correct,
                 totalCount = total,
                 percent = percent,
-            )
-        }
+                rank = rank,
+                pointsAwarded = correct * pointsPerCorrect,
+                endsAt = contest?.endsAt,
+            ),
+        )
     }
 
     override suspend fun getLeaderboard(

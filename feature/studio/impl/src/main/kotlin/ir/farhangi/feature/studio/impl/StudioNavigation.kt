@@ -78,10 +78,11 @@ fun EntryProviderScope<NavKey>.studioEntries(navigator: Navigator) {
         val status by viewModel.status.collectAsStateWithLifecycle()
         SimpleCreateScreen(
             title = "مسابقه تازه",
-            subtitle = "عنوان، دسته و صورت سؤال نمونه را وارد کنید.",
+            subtitle = "عنوان، دسته، صورت سؤال نمونه و مدت پاسخ را وارد کنید.",
             onSubmit = viewModel::createContest,
             onBack = { navigator.pop() },
             statusMessage = status,
+            showDurationField = true,
         )
     }
     entry<OrgInboxRoute> {

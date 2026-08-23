@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
+import ir.farhangi.core.model.toPersianDigits
 import kotlinx.coroutines.launch
 
 @Composable
@@ -55,7 +56,7 @@ fun OnboardingScreen(
             }
         }
         Text(
-            text = "${pagerState.currentPage + 1} از ${PAGES.size}",
+            text = "${(pagerState.currentPage + 1).toPersianDigits()} از ${PAGES.size.toPersianDigits()}",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.align(Alignment.CenterHorizontally),

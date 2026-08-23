@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -14,12 +15,13 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.Book
 import ir.farhangi.core.ui.BookCard
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.LoadingState
+
+private const val LIBRARY_COLUMNS = 3
 
 @Composable
 fun LibraryScreen(
@@ -56,7 +58,7 @@ fun LibraryScreen(
                 EmptyState("موردی نیست", "در این دسته کتابی نیست.", Modifier.padding(FarhangiSpacing.lg))
             } else {
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive(FarhangiSize.coverWidth),
+                    columns = GridCells.Fixed(LIBRARY_COLUMNS),
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
                         start = FarhangiSpacing.md,
@@ -68,7 +70,12 @@ fun LibraryScreen(
                     verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.md),
                 ) {
                     items(uiState.books, key = { it.id }) { book ->
-                        BookCard(book = book, onClick = { onBookClick(book) })
+                        BookCard(
+                            book = book,
+                            onClick = { onBookClick(book) },
+                            modifier = Modifier.fillMaxWidth(),
+                            compact = false,
+                        )
                     }
                 }
             }

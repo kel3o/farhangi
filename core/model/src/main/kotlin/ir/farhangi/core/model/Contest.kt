@@ -42,7 +42,12 @@ data class Contest(
     val relatedCourseId: String? = null,
     val endsAt: Instant,
     val userScorePercent: Int? = null,
+    val durationSeconds: Int = DEFAULT_CONTEST_DURATION_SECONDS,
+    val pointsPerCorrect: Int = DEFAULT_POINTS_PER_CORRECT,
 )
+
+const val DEFAULT_CONTEST_DURATION_SECONDS = 180
+const val DEFAULT_POINTS_PER_CORRECT = 10
 
 @Serializable
 data class QuizQuestion(
@@ -57,4 +62,7 @@ data class QuizSubmissionResult(
     val correctCount: Int,
     val totalCount: Int,
     val percent: Int,
+    val rank: Int? = null,
+    val pointsAwarded: Int = 0,
+    val endsAt: Instant? = null,
 )

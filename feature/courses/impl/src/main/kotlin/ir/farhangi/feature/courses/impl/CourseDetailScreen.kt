@@ -20,6 +20,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
+import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.LoadingState
 
@@ -64,7 +65,7 @@ fun CourseDetailScreen(
                             } else {
                                 "متن"
                             }
-                            Text("$kind · ${section.durationMinutes} دقیقه")
+                            Text("$kind · ${section.durationMinutes.toPersianDigits()} دقیقه")
                         },
                         trailingContent = {
                             TextButton(

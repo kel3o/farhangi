@@ -95,7 +95,9 @@ class DemoPlatformStore @Inject constructor() {
         val correct = questions.count { question -> answers[question.id] == question.correctIndex }
         val percent = if (questions.isEmpty()) 0 else (correct * PERCENT_BASE) / questions.size
         quizScores.update { it + (contestId to percent) }
-        points.update { it.copy(contests = it.contests + correct * CONTEST_POINT_PER_CORRECT) }
+        val pointsPerCorrect = contests.value.find { it.id == contestId }?.pointsPerCorrect
+            ?: CONTEST_POINT_PER_CORRECT
+        points.update { it.copy(contests = it.contests + correct * pointsPerCorrect) }
         contests.update { list ->
             list.map { contest ->
                 if (contest.id == contestId) contest.copy(userScorePercent = percent) else contest
@@ -198,8 +200,10 @@ private fun seedBooks(): List<BookDto> = listOf(
     BookDto(
         id = "book-1",
         title = "گلستان سعدی",
-        author = "سعدی شیرازی",
-        categories = listOf("ادبیات کلاسیک", "اخلاق"),
+        author = "شیخ مصلح‌الدین سعدی شیرازی",
+        publisher = "انتشارات خوارزمی",
+        coverUrl = "cover_golestan",
+        categories = listOf("ادبیات"),
         totalPages = 4,
         rating = 4.8,
         description = "حکایت‌هایی کوتاه که هنوز بعد از هفت قرن، به کار زندگی روزمره می‌آیند.",
@@ -214,7 +218,9 @@ private fun seedBooks(): List<BookDto> = listOf(
         id = "book-2",
         title = "کیمیاگر",
         author = "پائولو کوئیلو",
-        categories = listOf("رمان", "سفر"),
+        publisher = "نشر کاروان",
+        coverUrl = "cover_kimiagar",
+        categories = listOf("داستان و رمان"),
         totalPages = 3,
         rating = 4.5,
         description = "چوپانی که به‌جای ماندن در همان تپه، راهی شن‌های مصر می‌شود.",
@@ -227,8 +233,10 @@ private fun seedBooks(): List<BookDto> = listOf(
     BookDto(
         id = "book-3",
         title = "تاریخ تمدن ایران",
-        author = "جمعی از نویسندگان",
-        categories = listOf("تاریخ", "فرهنگ"),
+        author = "حسن پیرنیا و عباس اقبال آشتیانی",
+        publisher = "انتشارات دنیای کتاب",
+        coverUrl = "cover_tarikh_tamadon",
+        categories = listOf("تاریخ"),
         totalPages = 3,
         rating = 4.6,
         description = "از تخت‌جمشید تا کتابخانه‌های نیشابور؛ تمدن یعنی حافظه جمعی.",
@@ -240,12 +248,14 @@ private fun seedBooks(): List<BookDto> = listOf(
     ),
     BookDto(
         id = "book-4",
-        title = "آداب معاشرت در خانه",
-        author = "لیلا احمدی",
-        categories = listOf("خانواده", "سبک زندگی"),
+        title = "آداب معاشرت",
+        author = "آزاده بهرامچی",
+        publisher = "نشر قطره",
+        coverUrl = "cover_adab_moasherat",
+        categories = listOf("روان‌شناسی و موفقیت"),
         totalPages = 3,
         rating = 4.4,
-        description = "راهنمای کوتاه برای گفت‌وگو، مهمانی و آرامش در خانه ایرانی.",
+        description = "راهنمای جامعه‌پذیری برای نوجوانان، جوانان و مهاجرین.",
         pages = listOf(
             "خانه وقتی آرام است که کسی وسط حرف دیگری نپرد.",
             "مهمانی خوب با سفره شروع نمی‌شود؛ با خوش‌آمدگویی تمام می‌شود.",
@@ -254,9 +264,11 @@ private fun seedBooks(): List<BookDto> = listOf(
     ),
     BookDto(
         id = "book-5",
-        title = "خوشنویسی برای همه",
+        title = "خوش‌نویسی",
         author = "استاد محمود نوری",
-        categories = listOf("هنر", "مهارت"),
+        publisher = "انتشارات یساولی",
+        coverUrl = "cover_khoshnevisi",
+        categories = listOf("آموزشی"),
         totalPages = 3,
         rating = 4.7,
         description = "از قطعهٔ مشق تا دیوار آشپزخانه؛ خط را می‌شود زندگی کرد.",
@@ -269,8 +281,10 @@ private fun seedBooks(): List<BookDto> = listOf(
     BookDto(
         id = "book-6",
         title = "اقتصاد به زبان ساده",
-        author = "کامران یوسفی",
-        categories = listOf("اقتصاد", "عمومی"),
+        author = "لس لیوینگستون",
+        publisher = "نشر نی",
+        coverUrl = "cover_eghtesad",
+        categories = listOf("آموزشی"),
         totalPages = 3,
         rating = 4.2,
         description = "تورم و پس‌انداز بدون اصطلاح ترسناک.",
@@ -282,12 +296,14 @@ private fun seedBooks(): List<BookDto> = listOf(
     ),
     BookDto(
         id = "book-7",
-        title = "قصه‌های مادربزرگ",
-        author = "روایت شفاهی",
-        categories = listOf("روایت", "خانواده"),
+        title = "قصه‌های شیرین مادربزرگ",
+        author = "معصومه طاهری",
+        publisher = "کانون پرورش فکری",
+        coverUrl = "cover_ghese_madarbozorg",
+        categories = listOf("کودک و نوجوان"),
         totalPages = 3,
         rating = 4.9,
-        description = "جلدهای کهنه و چای دارچین؛ قصه‌هایی که نباید با نسل بعدی قطع شوند.",
+        description = "ویژه کودکان و نوجوانان؛ قصه‌هایی که نباید با نسل بعدی قطع شوند.",
         pages = listOf(
             "مادربزرگ می‌گفت کتاب اگر زمین بخورد، باید ببوسی و سر جایش بگذاری.",
             "شب‌های برق‌رفته، رادیو و قصه جای صفحه را می‌گرفت.",
@@ -296,12 +312,14 @@ private fun seedBooks(): List<BookDto> = listOf(
     ),
     BookDto(
         id = "book-8",
-        title = "گفت‌وگوی محترمانه",
-        author = "حسن طاهری",
-        categories = listOf("فرهنگ عمومی", "اجتماع"),
+        title = "مهارت گفتوگو",
+        author = "سیمون گرانت",
+        publisher = "نشر دانژه",
+        coverUrl = "cover_maharat_goftogo",
+        categories = listOf("روان‌شناسی و موفقیت"),
         totalPages = 3,
         rating = 4.3,
-        description = "چطور مخالف باشیم و هنوز سر یک سفره بنشینیم.",
+        description = "بیست راهکار کلیدی برای کامیابی زندگی زناشویی و گفت‌وگوی محترمانه.",
         pages = listOf(
             "مخالفت اگر با توهین شروع شود، به حقیقت نمی‌رسد.",
             "شنیدن دقیق، نیمی از سیاست فرهنگی است.",
@@ -315,6 +333,8 @@ private fun seedCourses(): List<CourseDto> = listOf(
         id = "course-1",
         title = "آشنایی با خوشنویسی",
         type = "PRACTICAL",
+        instructor = "استاد محمود نوری",
+        coverUrl = "cover_khoshnevisi",
         description = "یک نشست کامل برای شروع نستعلیق؛ ابزار، نشستن و اولین سطر.",
         category = "هنر",
         isFree = true,
@@ -334,6 +354,8 @@ private fun seedCourses(): List<CourseDto> = listOf(
         id = "course-2",
         title = "مدیریت زمان خانواده",
         type = "PRACTICAL",
+        instructor = "زهرا احمدی",
+        coverUrl = "cover_adab_moasherat",
         description = "یک راهنمای فشرده برای تقسیم کار خانه و زمان مطالعه فرزندان.",
         category = "خانواده",
         isFree = true,
@@ -353,6 +375,8 @@ private fun seedCourses(): List<CourseDto> = listOf(
         id = "course-3",
         title = "سواد رسانه‌ای روزانه",
         type = "PRACTICAL",
+        instructor = "دکتر علی رضایی",
+        coverUrl = "cover_maharat_goftogo",
         description = "چطور خبر را از شایعه جدا کنیم؛ یک درس کامل.",
         category = "فرهنگ عمومی",
         isFree = true,
@@ -372,6 +396,8 @@ private fun seedCourses(): List<CourseDto> = listOf(
         id = "course-4",
         title = "مسیر ادبیات معاصر",
         type = "PROFESSIONAL",
+        instructor = "دکتر لیلا موسوی",
+        coverUrl = "cover_golestan",
         description = "سه جلسه برای فهم شعر و نثر معاصر فارسی؛ ویدیو و متن.",
         category = "ادبیات",
         isFree = true,
@@ -394,6 +420,8 @@ private fun seedCourses(): List<CourseDto> = listOf(
         id = "course-5",
         title = "تربیت مطالعه در نوجوان",
         type = "PROFESSIONAL",
+        instructor = "مریم حسینی",
+        coverUrl = "cover_ghese_madarbozorg",
         description = "مسیر چهارجلسه‌ای برای والدین؛ از انتخاب کتاب تا گفت‌وگوی بعد از خواندن.",
         category = "خانواده",
         isFree = true,
@@ -417,6 +445,8 @@ private fun seedCourses(): List<CourseDto> = listOf(
         id = "course-6",
         title = "آشنایی با هنر ایرانی",
         type = "PROFESSIONAL",
+        instructor = "استاد رضا صالحی",
+        coverUrl = "cover_tarikh_tamadon",
         description = "کاشی، مینیاتور و موسیقی؛ مسیر مقدماتی سه جلسه.",
         category = "هنر",
         isFree = true,
@@ -454,11 +484,11 @@ private fun seedAnnouncements(): List<AnnouncementDto> = listOf(
 )
 
 private fun seedContests(): List<ContestDto> = listOf(
-    ContestDto("contest-1", "مسابقه گلستان", "چهار سؤال از حکایت‌های آغاز کتاب.", "BOOK", "LIVE", 4, 218, "book-1", null, "2026-08-25T20:00:00Z", null),
-    ContestDto("contest-2", "دانستنی‌های سبک زندگی", "سؤال‌هایی از عادت خانه و مطالعه خانوادگی.", "LIFESTYLE", "LIVE", 4, 96, null, "course-2", "2026-08-22T20:00:00Z", null),
-    ContestDto("contest-3", "اطلاعات عمومی فرهنگی", "تاریخ، هنر و کتاب؛ چهارگزینه‌ای.", "GENERAL_KNOWLEDGE", "LIVE", 4, 154, null, null, "2026-08-28T20:00:00Z", null),
-    ContestDto("contest-4", "آزمون دوره خوشنویسی", "برای کسانی که درس کاربردی خوشنویسی را دیده‌اند.", "PRACTICAL_COURSE", "LIVE", 4, 41, null, "course-1", "2026-08-21T20:00:00Z", null),
-    ContestDto("contest-5", "مسابقه کیمیاگر", "نتایج اعلام شد.", "BOOK", "FINISHED", 4, 310, "book-2", null, "2026-08-10T20:00:00Z", 75),
+    ContestDto("contest-1", "مسابقه گلستان", "چهار سؤال از حکایت‌های آغاز کتاب.", "BOOK", "LIVE", 4, 218, "book-1", null, "2026-09-05T20:00:00Z", null, 180, 10),
+    ContestDto("contest-2", "دانستنی‌های سبک زندگی", "سؤال‌هایی از عادت خانه و مطالعه خانوادگی.", "LIFESTYLE", "LIVE", 4, 96, null, "course-2", "2026-08-30T20:00:00Z", null, 240, 15),
+    ContestDto("contest-3", "اطلاعات عمومی فرهنگی", "تاریخ، هنر و کتاب؛ چهارگزینه‌ای.", "GENERAL_KNOWLEDGE", "LIVE", 4, 154, null, null, "2026-09-10T20:00:00Z", null, 300, 10),
+    ContestDto("contest-4", "آزمون دوره خوشنویسی", "برای کسانی که درس کاربردی خوشنویسی را دیده‌اند.", "PRACTICAL_COURSE", "LIVE", 4, 41, null, "course-1", "2026-08-28T20:00:00Z", null, 210, 20),
+    ContestDto("contest-5", "مسابقه کیمیاگر", "نتایج اعلام شد.", "BOOK", "FINISHED", 4, 310, "book-2", null, "2026-08-10T20:00:00Z", 75, 270, 10),
 )
 
 private fun seedQuestions(): Map<String, List<QuizQuestionDto>> = mapOf(

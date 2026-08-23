@@ -37,6 +37,8 @@ fun ContestDto.toDomain(): Contest = Contest(
     relatedCourseId = relatedCourseId,
     endsAt = Instant.parse(endsAt),
     userScorePercent = userScorePercent,
+    durationSeconds = durationSeconds,
+    pointsPerCorrect = pointsPerCorrect,
 )
 
 fun QuizQuestionDto.toDomain(): QuizQuestion = QuizQuestion(

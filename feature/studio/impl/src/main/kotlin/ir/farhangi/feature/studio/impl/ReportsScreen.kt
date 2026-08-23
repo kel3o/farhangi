@@ -17,6 +17,7 @@ import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.NamedCount
 import ir.farhangi.core.model.PlatformReport
+import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.AudienceBarChart
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.LoadingState
@@ -68,5 +69,5 @@ fun ReportsScreen(
 
 @Composable
 private fun NamedCountRow(item: NamedCount) {
-    Text("${item.name}: ${item.count}", style = MaterialTheme.typography.bodyLarge)
+    Text("${item.name}: ${item.count.toPersianDigits()}", style = MaterialTheme.typography.bodyLarge)
 }

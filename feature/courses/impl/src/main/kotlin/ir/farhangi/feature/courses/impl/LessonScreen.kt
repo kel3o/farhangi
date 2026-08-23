@@ -21,6 +21,7 @@ import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.CourseSection
 import ir.farhangi.core.model.LessonContentType
+import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.LoadingState
 
@@ -44,7 +45,7 @@ fun LessonScreen(
                 verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
             ) {
                 Text(section.title, style = MaterialTheme.typography.headlineSmall)
-                Text("${section.durationMinutes} دقیقه", style = MaterialTheme.typography.labelMedium)
+                Text("${section.durationMinutes.toPersianDigits()} دقیقه", style = MaterialTheme.typography.labelMedium)
                 if (section.contentType == LessonContentType.VIDEO && !section.aparatUrl.isNullOrBlank()) {
                     AndroidView(
                         factory = { context ->
