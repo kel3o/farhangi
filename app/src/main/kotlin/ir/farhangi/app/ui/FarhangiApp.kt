@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import ir.farhangi.app.R
 import ir.farhangi.app.navigation.TopLevelDestination
+import ir.farhangi.app.navigation.breadcrumbTitle
 import ir.farhangi.core.designsystem.component.FarhangiTopAppBar
 import ir.farhangi.core.navigation.EntryProviderInstaller
 import ir.farhangi.core.navigation.Navigator
@@ -132,7 +132,7 @@ fun FarhangiApp(
         Scaffold(
             topBar = {
                 FarhangiTopAppBar(
-                    title = stringResource(R.string.top_bar_title),
+                    title = breadcrumbTitle(backStack),
                     onSearchClick = { navigator.navigate(SearchRoute) },
                     profileInitial = profileInitial,
                     onProfileClick = { navigator.navigate(ProfileRoute) },

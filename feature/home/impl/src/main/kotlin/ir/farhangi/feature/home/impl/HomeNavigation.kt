@@ -33,7 +33,14 @@ fun EntryProviderScope<NavKey>.homeEntries(navigator: Navigator) {
         val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
         HomeScreen(
             uiState = uiState,
-            onBookClick = { navigator.navigate(BookDetailRoute(it.id)) },
+            onBookClick = {
+                navigator.navigate(
+                    BookDetailRoute(
+                        bookId = it.id,
+                        categoryLabel = it.categories.firstOrNull().orEmpty(),
+                    ),
+                )
+            },
             onCourseClick = { navigator.navigate(CourseDetailRoute(it.id)) },
             onArticleClick = { navigator.navigate(ArticleDetailRoute(it.id)) },
             onContestClick = { navigator.navigate(ContestDetailRoute(it.id)) },

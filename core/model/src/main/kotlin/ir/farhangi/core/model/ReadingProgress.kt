@@ -13,6 +13,7 @@ data class ReadingProgress(
 @Serializable
 data class Bookmark(
     val bookId: String,
+    val bookTitle: String = "",
     val page: Int,
     val note: String = "",
     val createdAtEpochMs: Long,

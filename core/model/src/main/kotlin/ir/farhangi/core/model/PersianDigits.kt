@@ -61,6 +61,40 @@ fun formatRemainingDaysAndMinutes(endsAt: Instant, now: Instant): String {
     return "${days.toPersianDigits()} روز و ${minutes.toPersianDigits()} دقیقه"
 }
 
+fun formatPublishedDate(instant: Instant): String {
+    val epochDay = instant.toEpochMilliseconds() / MILLIS_PER_DAY
+    // Stable demo display: YYYY-MM-DD from UTC epoch without calendar deps
+    val days = epochDay
+    var y = 1970
+    var remaining = days
+    while (true) {
+        val yearDays = if (isLeapYear(y)) 366L else 365L
+        if (remaining < yearDays) break
+        remaining -= yearDays
+        y++
+    }
+    val monthDays = monthLengths(isLeapYear(y))
+    var m = 1
+    for (len in monthDays) {
+        if (remaining < len) break
+        remaining -= len
+        m++
+    }
+    val d = (remaining + 1).toInt()
+    val yyyy = y.toString()
+    val mm = m.toString().padStart(2, '0')
+    val dd = d.toString().padStart(2, '0')
+    return "$yyyy/$mm/$dd".toPersianDigits()
+}
+
+private fun isLeapYear(year: Int): Boolean =
+    (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+
+private fun monthLengths(leap: Boolean): List<Long> = listOf(
+    31, if (leap) 29 else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
+)
+
 private const val SECONDS_PER_MINUTE = 60
 private const val MILLIS_PER_MINUTE = 60_000L
 private const val MINUTES_PER_DAY = 24 * 60
+private const val MILLIS_PER_DAY = 86_400_000L

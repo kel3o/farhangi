@@ -13,11 +13,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.Contest
 import ir.farhangi.core.model.formatDurationClock
 import ir.farhangi.core.model.persianLabel
 import ir.farhangi.core.model.toPersianDigits
+
+private const val CARD_SUMMARY_LINES = 3
 
 @Composable
 fun ContestCard(
@@ -29,18 +32,21 @@ fun ContestCard(
         modifier = modifier
             .fillMaxWidth()
             .clickable(role = Role.Button, onClick = onClick),
-        shape = MaterialTheme.shapes.medium,
+        shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
+        tonalElevation = FarhangiSpacing.xxs,
     ) {
         Column(
             modifier = Modifier.padding(FarhangiSpacing.md),
-            verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs),
+            verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
         ) {
             Text(text = contest.title, style = MaterialTheme.typography.titleMedium)
             Text(
                 text = contest.summary,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = CARD_SUMMARY_LINES,
+                overflow = TextOverflow.Ellipsis,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs)) {
                 AssistChip(

@@ -69,6 +69,16 @@ class DemoEngagementGateway @Inject constructor(
         return Result.Success(store.toggleSaved(bookId))
     }
 
+    override suspend fun getSavedArticleIds(): Result<Set<String>> {
+        delay(NETWORK_DELAY_MS)
+        return Result.Success(store.savedArticleIds.value)
+    }
+
+    override suspend fun toggleSavedArticle(articleId: String): Result<Set<String>> {
+        delay(NETWORK_DELAY_MS)
+        return Result.Success(store.toggleSavedArticle(articleId))
+    }
+
     override suspend fun addReadingMinutes(minutes: Int): Result<PointsDto> {
         delay(NETWORK_DELAY_MS)
         return Result.Success(store.addReadingMinutes(minutes))

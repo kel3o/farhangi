@@ -37,6 +37,7 @@ fun CourseDto.toDomain(): Course = Course(
     coverUrl = coverUrl,
     description = description,
     category = category,
+    level = level.ifBlank { Course.LEVEL_BEGINNER },
     isFree = isFree,
     sections = sections.map {
         CourseSection(
@@ -54,7 +55,7 @@ fun CourseDto.toDomain(): Course = Course(
     progress = progress,
 )
 
-fun ArticleDto.toDomain(): Article = Article(
+fun ArticleDto.toDomain(isSaved: Boolean = false): Article = Article(
     id = id,
     title = title,
     type = runCatching { MediaType.valueOf(type) }.getOrDefault(MediaType.TEXT),
@@ -65,6 +66,7 @@ fun ArticleDto.toDomain(): Article = Article(
     mediaUrl = mediaUrl,
     coverUrl = coverUrl,
     publishedAt = Instant.parse(publishedAt),
+    isSaved = isSaved,
 )
 
 fun SearchResultDto.toDomain(): SearchResult = SearchResult(

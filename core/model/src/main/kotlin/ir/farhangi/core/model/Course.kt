@@ -35,7 +35,17 @@ data class Course(
     val coverUrl: String? = null,
     val description: String = "",
     val category: String = "",
+    val level: String = LEVEL_BEGINNER,
     val isFree: Boolean = true,
     val sections: List<CourseSection> = emptyList(),
     val progress: Float = 0f,
-)
+) {
+    val sessionCount: Int get() = sections.size
+    val totalDurationMinutes: Int get() = sections.sumOf { it.durationMinutes }
+
+    companion object {
+        const val LEVEL_BEGINNER = "مبتدی"
+        const val LEVEL_INTERMEDIATE = "متوسط"
+        const val LEVEL_ADVANCED = "پیشرفته"
+    }
+}

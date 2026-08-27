@@ -16,7 +16,13 @@ interface BookRepository {
     suspend fun updateProgress(userId: String, bookId: String, page: Int, totalPages: Int)
 
     fun observeBookmark(userId: String, bookId: String, page: Int): Flow<Bookmark?>
-    suspend fun toggleBookmark(userId: String, bookId: String, page: Int, note: String = "")
+    suspend fun toggleBookmark(
+        userId: String,
+        bookId: String,
+        page: Int,
+        bookTitle: String = "",
+        note: String = "",
+    )
 
     fun observeHighlights(userId: String, bookId: String, page: Int): Flow<List<Highlight>>
     suspend fun addHighlight(userId: String, bookId: String, page: Int, text: String): Highlight

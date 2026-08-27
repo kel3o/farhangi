@@ -10,7 +10,8 @@ import androidx.room.Entity
 data class BookmarkEntity(
     @ColumnInfo(name = "user_id") val userId: String,
     @ColumnInfo(name = "book_id") val bookId: String,
+    @ColumnInfo(name = "book_title") val bookTitle: String = "",
     @ColumnInfo(name = "page") val page: Int,
-    @ColumnInfo(name = "note") val note: String,
+    @ColumnInfo(name = "note") val note: String = "",
     @ColumnInfo(name = "created_at") val createdAt: Long,
 )

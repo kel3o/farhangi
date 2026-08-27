@@ -3,7 +3,6 @@ package ir.farhangi.feature.books.impl
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,16 +33,8 @@ fun BooksScreen(
             HubTile(
                 title = "کتابخانه",
                 subtitle = "آرشیو موضوعی و مطالعه آنلاین",
-                icon = FarhangiIcons.Books,
+                icon = FarhangiIcons.Library,
                 onClick = onLibraryClick,
-            )
-        }
-        item {
-            HubTile(
-                title = "کتاب‌خانه من",
-                subtitle = "کتاب‌های ذخیره‌شده برای بعد",
-                icon = FarhangiIcons.BooksOutlined,
-                onClick = onMyLibraryClick,
             )
         }
         item {
@@ -60,6 +51,14 @@ fun BooksScreen(
                 subtitle = "باشگاه مطالعه، جدول و جام",
                 icon = FarhangiIcons.Trophy,
                 onClick = onHamkhanClick,
+            )
+        }
+        item {
+            HubTile(
+                title = "کتابخانه من",
+                subtitle = "کتاب‌های ذخیره‌شده برای بعد",
+                icon = FarhangiIcons.MyLibrary,
+                onClick = onMyLibraryClick,
             )
         }
     }

@@ -89,6 +89,7 @@ private fun Course.toDto(): CourseDto = CourseDto(
     coverUrl = coverUrl,
     description = description,
     category = category,
+    level = level,
     isFree = isFree,
     sections = sections.map { section ->
         CourseSectionDto(

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.farhangi.core.common.result.Result
+import ir.farhangi.core.data.repository.EngagementRepository
 import ir.farhangi.core.data.repository.MagazineRepository
 import ir.farhangi.core.model.Article
 import ir.farhangi.core.model.MagazineCategory
@@ -19,15 +20,14 @@ import javax.inject.Inject
 @HiltViewModel
 class MagazineViewModel @Inject constructor(
     private val magazineRepository: MagazineRepository,
+    private val engagementRepository: EngagementRepository,
 ) : ViewModel() {
 
     private val selectedCategory = MutableStateFlow<MagazineCategory?>(null)
     private val articlesResult = MutableStateFlow<Result<List<Article>>?>(null)
 
     init {
-        viewModelScope.launch {
-            articlesResult.value = magazineRepository.getArticles()
-        }
+        refresh()
     }
 
     val uiState: StateFlow<MagazineUiState> = combine(
@@ -50,6 +50,19 @@ class MagazineViewModel @Inject constructor(
 
     fun selectCategory(category: MagazineCategory?) {
         selectedCategory.value = category
+    }
+
+    fun toggleSaved(articleId: String) {
+        viewModelScope.launch {
+            engagementRepository.toggleSavedArticle(articleId)
+            refresh()
+        }
+    }
+
+    private fun refresh() {
+        viewModelScope.launch {
+            articlesResult.value = magazineRepository.getArticles()
+        }
     }
 
     companion object {

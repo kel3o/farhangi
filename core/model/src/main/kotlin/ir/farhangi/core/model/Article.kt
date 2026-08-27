@@ -24,4 +24,5 @@ data class Article(
     val mediaUrl: String? = null,
     val coverUrl: String? = null,
     val publishedAt: Instant,
+    val isSaved: Boolean = false,
 )

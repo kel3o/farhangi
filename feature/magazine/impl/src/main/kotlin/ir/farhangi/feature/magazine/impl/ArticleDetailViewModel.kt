@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.farhangi.core.common.result.Result
+import ir.farhangi.core.data.repository.EngagementRepository
 import ir.farhangi.core.data.repository.MagazineRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,11 +15,15 @@ import javax.inject.Inject
 @HiltViewModel
 class ArticleDetailViewModel @Inject constructor(
     private val magazineRepository: MagazineRepository,
+    private val engagementRepository: EngagementRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<ArticleDetailUiState>(ArticleDetailUiState.Loading)
     val uiState: StateFlow<ArticleDetailUiState> = _uiState.asStateFlow()
 
+    private var articleId: String = ""
+
     fun load(articleId: String) {
+        this.articleId = articleId
         viewModelScope.launch {
             _uiState.value = ArticleDetailUiState.Loading
             when (val result = magazineRepository.getArticle(articleId)) {
@@ -27,6 +32,14 @@ class ArticleDetailViewModel @Inject constructor(
                     ArticleDetailUiState.Error(result.exception.message ?: "خطا")
                 Result.Loading -> Unit
             }
+        }
+    }
+
+    fun toggleSaved() {
+        if (articleId.isBlank()) return
+        viewModelScope.launch {
+            engagementRepository.toggleSavedArticle(articleId)
+            load(articleId)
         }
     }
 }

@@ -32,6 +32,7 @@ fun EntryProviderScope<NavKey>.magazineEntries(navigator: Navigator) {
         MagazineScreen(
             uiState = uiState,
             onArticleClick = { navigator.navigate(ArticleDetailRoute(it.id)) },
+            onSaveClick = { viewModel.toggleSaved(it.id) },
             onCategorySelected = viewModel::selectCategory,
         )
     }
@@ -39,6 +40,10 @@ fun EntryProviderScope<NavKey>.magazineEntries(navigator: Navigator) {
         val viewModel: ArticleDetailViewModel = hiltViewModel()
         LaunchedEffect(key.articleId) { viewModel.load(key.articleId) }
         val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-        ArticleDetailScreen(uiState = uiState, onBack = { navigator.pop() })
+        ArticleDetailScreen(
+            uiState = uiState,
+            onSaveClick = viewModel::toggleSaved,
+            onBack = { navigator.pop() },
+        )
     }
 }

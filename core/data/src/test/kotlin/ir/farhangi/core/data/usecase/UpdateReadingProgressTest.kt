@@ -71,7 +71,13 @@ class UpdateReadingProgressTest {
             updates += Update(bookId, page)
         }
         override fun observeBookmark(userId: String, bookId: String, page: Int) = flowOf<Bookmark?>(null)
-        override suspend fun toggleBookmark(userId: String, bookId: String, page: Int, note: String) = Unit
+        override suspend fun toggleBookmark(
+            userId: String,
+            bookId: String,
+            page: Int,
+            bookTitle: String,
+            note: String,
+        ) = Unit
         override fun observeHighlights(userId: String, bookId: String, page: Int) = flowOf(emptyList<Highlight>())
         override suspend fun addHighlight(userId: String, bookId: String, page: Int, text: String) =
             Highlight("1", bookId, page, text, 0L)

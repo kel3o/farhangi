@@ -7,14 +7,12 @@ import ir.farhangi.core.common.result.Result
 import ir.farhangi.core.data.repository.AuthRepository
 import ir.farhangi.core.data.repository.BookRepository
 import ir.farhangi.core.data.repository.EngagementRepository
-import ir.farhangi.core.data.usecase.AddPageHighlight
 import ir.farhangi.core.data.usecase.ToggleBookmark
 import ir.farhangi.core.data.usecase.UpdateReadingProgress
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -27,7 +25,6 @@ class BookReaderViewModel @Inject constructor(
     private val engagementRepository: EngagementRepository,
     private val updateReadingProgress: UpdateReadingProgress,
     private val toggleBookmark: ToggleBookmark,
-    private val addPageHighlight: AddPageHighlight,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ReaderUiState())
@@ -62,6 +59,7 @@ class BookReaderViewModel @Inject constructor(
                         isNightMode = false,
                         pages = pages,
                         pageText = pages[savedPage - 1],
+                        fontSizeSp = FONT_DEFAULT_SP,
                         isLoading = false,
                     )
                     persistProgress()
@@ -85,31 +83,36 @@ class BookReaderViewModel @Inject constructor(
         turnPage(-1)
     }
 
+    fun jumpToPage(page: Int) {
+        val state = _uiState.value
+        val target = page.coerceIn(1, state.totalPages)
+        val text = state.pages.getOrNull(target - 1) ?: samplePage(state.bookTitle, target)
+        _uiState.update { it.copy(page = target, pageText = text) }
+        persistProgress()
+        observePageExtras()
+    }
+
     fun toggleNightMode() {
         _uiState.update { it.copy(isNightMode = !it.isNightMode) }
+    }
+
+    fun setFontSizeSp(sizeSp: Int) {
+        _uiState.update {
+            it.copy(fontSizeSp = sizeSp.coerceIn(FONT_MIN_SP, FONT_MAX_SP))
+        }
     }
 
     fun onToggleBookmark() {
         val state = _uiState.value
         viewModelScope.launch {
-            toggleBookmark(state.bookId, state.page)
-        }
-    }
-
-    fun onAddHighlight() {
-        val state = _uiState.value
-        viewModelScope.launch {
-            addPageHighlight(
-                bookId = state.bookId,
-                page = state.page,
-                text = "هایلایت صفحه ${state.page}",
-            )
+            toggleBookmark(state.bookId, state.page, state.bookTitle)
         }
     }
 
     private fun turnPage(delta: Int) {
         val state = _uiState.value
         val next = (state.page + delta).coerceIn(1, state.totalPages)
+        if (next == state.page) return
         val text = state.pages.getOrNull(next - 1) ?: samplePage(state.bookTitle, next)
         _uiState.update { it.copy(page = next, pageText = text) }
         persistProgress()
@@ -131,27 +134,27 @@ class BookReaderViewModel @Inject constructor(
         if (state.bookId.isBlank()) return
         observeJob = viewModelScope.launch {
             val userId = authRepository.observeSession().first()?.userId ?: return@launch
-            combine(
-                bookRepository.observeBookmark(userId, state.bookId, state.page),
-                bookRepository.observeHighlights(userId, state.bookId, state.page),
-            ) { bookmark, highlights ->
-                bookmark to highlights
-            }.collect { (bookmark, highlights) ->
-                _uiState.update {
-                    it.copy(
-                        isBookmarked = bookmark != null,
-                        highlights = highlights,
-                    )
-                }
+            bookRepository.observeBookmark(userId, state.bookId, state.page).collect { bookmark ->
+                _uiState.update { it.copy(isBookmarked = bookmark != null) }
             }
         }
     }
 
     private fun samplePage(title: String, page: Int): String =
         "صفحه $page از کتاب «$title».\n\n" +
-            "این متن نمونه برای نمایشگر کتاب است. پیشرفت، نشانک و هایلایت صفحه ذخیره می‌شود."
+            "در این صفحه می‌خوانید که چگونه اندیشه‌های کوتاه، مسیر زندگی روزمره را روشن می‌کنند.\n" +
+            "هر بند فرصتی است برای مکث؛ نه شتاب برای تمام کردن جلد.\n" +
+            "خانه وقتی آرام‌تر می‌شود که چند خط با صدای معمولی خوانده شود.\n" +
+            "کتابخانهٔ شخصی از همین صفحه‌ها ساخته می‌شود: صفحه به صفحه، روز به روز.\n" +
+            "اگر جمله را دوباره بخوانید، معنای تازه‌ای پیدا می‌کند.\n" +
+            "تمرین امروز ساده است: یک جمله را برای فردا علامت بگذارید.\n" +
+            "مطالعه فقط جمع‌کردن اطلاعات نیست؛ تمرین ادب و صبر است.\n" +
+            "پایان این صفحه آغاز صفحه بعد است؛ نفس بکشید و ورق بزنید."
 
     companion object {
         private const val READING_MINUTE_PER_PAGE = 1
+        private const val FONT_DEFAULT_SP = 16
+        private const val FONT_MIN_SP = 14
+        private const val FONT_MAX_SP = 28
     }
 }

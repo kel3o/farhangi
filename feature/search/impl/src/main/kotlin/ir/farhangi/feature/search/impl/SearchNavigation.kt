@@ -37,7 +37,12 @@ fun EntryProviderScope<NavKey>.searchEntries(navigator: Navigator) {
             onTypeSelected = viewModel::onTypeSelected,
             onResultClick = { result ->
                 when (result.type) {
-                    SearchContentType.BOOK -> navigator.navigate(BookDetailRoute(result.id))
+                    SearchContentType.BOOK -> navigator.navigate(
+                        BookDetailRoute(
+                            bookId = result.id,
+                            categoryLabel = result.subtitle,
+                        ),
+                    )
                     SearchContentType.COURSE -> navigator.navigate(CourseDetailRoute(result.id))
                     else -> navigator.navigate(ArticleDetailRoute(result.id))
                 }

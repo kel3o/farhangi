@@ -20,5 +20,7 @@ interface EngagementRepository {
     suspend fun getTrophies(): Result<List<Trophy>>
     suspend fun getSavedBookIds(): Result<Set<String>>
     suspend fun toggleSavedBook(bookId: String): Result<Set<String>>
+    suspend fun getSavedArticleIds(): Result<Set<String>>
+    suspend fun toggleSavedArticle(articleId: String): Result<Set<String>>
     suspend fun addReadingMinutes(minutes: Int): Result<PointsBreakdown>
 }

@@ -45,7 +45,14 @@ fun EntryProviderScope<NavKey>.booksEntries(navigator: Navigator) {
         val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
         LibraryScreen(
             uiState = uiState,
-            onBookClick = { navigator.navigate(BookDetailRoute(it.id)) },
+            onBookClick = { book ->
+                navigator.navigate(
+                    BookDetailRoute(
+                        bookId = book.id,
+                        categoryLabel = book.categories.firstOrNull().orEmpty(),
+                    ),
+                )
+            },
             onCategorySelected = viewModel::selectCategory,
         )
     }
@@ -54,7 +61,14 @@ fun EntryProviderScope<NavKey>.booksEntries(navigator: Navigator) {
         val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
         LibraryScreen(
             uiState = uiState,
-            onBookClick = { navigator.navigate(BookDetailRoute(it.id)) },
+            onBookClick = { book ->
+                navigator.navigate(
+                    BookDetailRoute(
+                        bookId = book.id,
+                        categoryLabel = book.categories.firstOrNull().orEmpty(),
+                    ),
+                )
+            },
             onCategorySelected = {},
         )
     }
@@ -81,7 +95,14 @@ fun EntryProviderScope<NavKey>.booksEntries(navigator: Navigator) {
         val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
         BookDetailScreen(
             uiState = uiState,
-            onReadClick = { navigator.navigate(BookReaderRoute(key.bookId)) },
+            onReadClick = {
+                navigator.navigate(
+                    BookReaderRoute(
+                        bookId = key.bookId,
+                        categoryLabel = key.categoryLabel,
+                    ),
+                )
+            },
             onSaveClick = viewModel::toggleSaved,
             onBack = { navigator.pop() },
         )
@@ -94,9 +115,10 @@ fun EntryProviderScope<NavKey>.booksEntries(navigator: Navigator) {
             uiState = uiState,
             onNext = viewModel::nextPage,
             onPrevious = viewModel::previousPage,
+            onJumpToPage = viewModel::jumpToPage,
             onToggleNight = viewModel::toggleNightMode,
             onToggleBookmark = viewModel::onToggleBookmark,
-            onAddHighlight = viewModel::onAddHighlight,
+            onFontSizeChange = viewModel::setFontSizeSp,
             onBack = { navigator.pop() },
         )
     }

@@ -39,6 +39,7 @@ data class CourseDto(
     @SerialName("cover_url") val coverUrl: String? = null,
     val description: String = "",
     val category: String = "",
+    val level: String = "مبتدی",
     @SerialName("is_free") val isFree: Boolean = true,
     val sections: List<CourseSectionDto> = emptyList(),
     val progress: Float = 0f,

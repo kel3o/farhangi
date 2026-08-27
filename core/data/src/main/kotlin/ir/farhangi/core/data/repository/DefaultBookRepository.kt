@@ -81,6 +81,7 @@ class DefaultBookRepository @Inject constructor(
         userId: String,
         bookId: String,
         page: Int,
+        bookTitle: String,
         note: String,
     ) {
         val existing = bookmarkDao.observeBookmark(userId, bookId, page).first()
@@ -91,6 +92,7 @@ class DefaultBookRepository @Inject constructor(
                 BookmarkEntity(
                     userId = userId,
                     bookId = bookId,
+                    bookTitle = bookTitle,
                     page = page,
                     note = note,
                     createdAt = System.currentTimeMillis(),
@@ -137,6 +139,7 @@ class DefaultBookRepository @Inject constructor(
 
     private fun BookmarkEntity.toDomain() = Bookmark(
         bookId = bookId,
+        bookTitle = bookTitle,
         page = page,
         note = note,
         createdAtEpochMs = createdAt,

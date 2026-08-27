@@ -51,7 +51,13 @@ class ToggleBookmarkTest {
         override fun observeContinueReading(userId: String) = flowOf(emptyList<ReadingProgress>())
         override suspend fun updateProgress(userId: String, bookId: String, page: Int, totalPages: Int) = Unit
         override fun observeBookmark(userId: String, bookId: String, page: Int) = flowOf<Bookmark?>(null)
-        override suspend fun toggleBookmark(userId: String, bookId: String, page: Int, note: String) {
+        override suspend fun toggleBookmark(
+            userId: String,
+            bookId: String,
+            page: Int,
+            bookTitle: String,
+            note: String,
+        ) {
             toggles += "$bookId:$page"
         }
         override fun observeHighlights(userId: String, bookId: String, page: Int) = flowOf(emptyList<Highlight>())

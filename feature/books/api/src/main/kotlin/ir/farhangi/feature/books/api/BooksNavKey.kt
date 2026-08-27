@@ -19,7 +19,13 @@ data object HamkhanRoute : NavKey
 data object BookContestsRoute : NavKey
 
 @Serializable
-data class BookDetailRoute(val bookId: String) : NavKey
+data class BookDetailRoute(
+    val bookId: String,
+    val categoryLabel: String = "",
+) : NavKey
 
 @Serializable
-data class BookReaderRoute(val bookId: String) : NavKey
+data class BookReaderRoute(
+    val bookId: String,
+    val categoryLabel: String = "",
+) : NavKey

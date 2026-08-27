@@ -15,7 +15,7 @@ import ir.farhangi.core.database.entity.HighlightEntity
         BookmarkEntity::class,
         HighlightEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class FarhangiDatabase : RoomDatabase() {

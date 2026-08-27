@@ -41,6 +41,7 @@ fun FarhangiTopAppBar(
         title = {
             Text(
                 text = title,
+                style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

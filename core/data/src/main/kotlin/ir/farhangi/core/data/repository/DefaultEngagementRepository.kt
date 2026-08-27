@@ -84,6 +84,12 @@ class DefaultEngagementRepository @Inject constructor(
     override suspend fun toggleSavedBook(bookId: String): Result<Set<String>> =
         engagementGateway.toggleSavedBook(bookId)
 
+    override suspend fun getSavedArticleIds(): Result<Set<String>> =
+        engagementGateway.getSavedArticleIds()
+
+    override suspend fun toggleSavedArticle(articleId: String): Result<Set<String>> =
+        engagementGateway.toggleSavedArticle(articleId)
+
     override suspend fun addReadingMinutes(minutes: Int): Result<PointsBreakdown> =
         engagementGateway.addReadingMinutes(minutes).map { it.toDomain() }
 

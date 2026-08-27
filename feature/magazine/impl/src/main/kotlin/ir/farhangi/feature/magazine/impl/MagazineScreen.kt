@@ -24,6 +24,7 @@ import ir.farhangi.core.ui.LoadingState
 fun MagazineScreen(
     uiState: MagazineUiState,
     onArticleClick: (Article) -> Unit,
+    onSaveClick: (Article) -> Unit,
     onCategorySelected: (MagazineCategory?) -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
     modifier: Modifier = Modifier,
@@ -70,10 +71,14 @@ fun MagazineScreen(
                         top = FarhangiSpacing.sm,
                         bottom = contentPadding.calculateBottomPadding() + FarhangiSpacing.lg,
                     ),
-                    verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.md),
                 ) {
                     items(uiState.articles, key = { it.id }) { article ->
-                        ArticleCard(article = article, onClick = { onArticleClick(article) })
+                        ArticleCard(
+                            article = article,
+                            onClick = { onArticleClick(article) },
+                            onSaveClick = { onSaveClick(article) },
+                        )
                     }
                 }
             }

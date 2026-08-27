@@ -1,7 +1,6 @@
 package ir.farhangi.feature.books.impl
 
 import ir.farhangi.core.model.Book
-import ir.farhangi.core.model.Highlight
 
 sealed interface BooksUiState {
     data object Loading : BooksUiState
@@ -24,6 +23,6 @@ data class ReaderUiState(
     val pageText: String = "",
     val pages: List<String> = emptyList(),
     val isBookmarked: Boolean = false,
-    val highlights: List<Highlight> = emptyList(),
+    val fontSizeSp: Int = 16,
     val isLoading: Boolean = true,
 )
