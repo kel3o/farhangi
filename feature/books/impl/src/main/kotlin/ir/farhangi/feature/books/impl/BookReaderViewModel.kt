@@ -60,6 +60,8 @@ class BookReaderViewModel @Inject constructor(
                         pages = pages,
                         pageText = pages[savedPage - 1],
                         fontSizeSp = FONT_DEFAULT_SP,
+                        lineHeightSp = LINE_HEIGHT_DEFAULT_SP,
+                        wordSpacingEm = WORD_SPACING_MIN_EM,
                         isLoading = false,
                     )
                     persistProgress()
@@ -99,6 +101,18 @@ class BookReaderViewModel @Inject constructor(
     fun setFontSizeSp(sizeSp: Int) {
         _uiState.update {
             it.copy(fontSizeSp = sizeSp.coerceIn(FONT_MIN_SP, FONT_MAX_SP))
+        }
+    }
+
+    fun setLineHeightSp(lineHeightSp: Int) {
+        _uiState.update {
+            it.copy(lineHeightSp = lineHeightSp.coerceIn(LINE_HEIGHT_MIN_SP, LINE_HEIGHT_MAX_SP))
+        }
+    }
+
+    fun setWordSpacingEm(wordSpacingEm: Float) {
+        _uiState.update {
+            it.copy(wordSpacingEm = wordSpacingEm.coerceIn(WORD_SPACING_MIN_EM, WORD_SPACING_MAX_EM))
         }
     }
 
@@ -156,5 +170,10 @@ class BookReaderViewModel @Inject constructor(
         private const val FONT_DEFAULT_SP = 16
         private const val FONT_MIN_SP = 14
         private const val FONT_MAX_SP = 28
+        private const val LINE_HEIGHT_DEFAULT_SP = 24
+        private const val LINE_HEIGHT_MIN_SP = 20
+        private const val LINE_HEIGHT_MAX_SP = 40
+        private const val WORD_SPACING_MIN_EM = 0f
+        private const val WORD_SPACING_MAX_EM = 0.35f
     }
 }

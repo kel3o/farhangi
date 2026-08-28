@@ -29,11 +29,15 @@ class DefaultCourseRepository @Inject constructor(
         return getCourse(courseId)
     }
 
+    override suspend fun uncompleteSection(courseId: String, sectionId: String): Result<Course> {
+        completedSections[courseId]?.remove(sectionId)
+        return getCourse(courseId)
+    }
+
     private fun applyLocalProgress(course: Course): Course {
         val done = completedSections[course.id].orEmpty()
-        if (done.isEmpty()) return course
         val sections = course.sections.map { section ->
-            section.copy(isCompleted = section.isCompleted || section.id in done)
+            section.copy(isCompleted = section.id in done)
         }
         val completedCount = sections.count { it.isCompleted }
         val progress = if (sections.isEmpty()) {

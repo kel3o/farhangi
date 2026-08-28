@@ -24,5 +24,7 @@ data class ReaderUiState(
     val pages: List<String> = emptyList(),
     val isBookmarked: Boolean = false,
     val fontSizeSp: Int = 16,
+    val lineHeightSp: Int = 24,
+    val wordSpacingEm: Float = 0f,
     val isLoading: Boolean = true,
 )

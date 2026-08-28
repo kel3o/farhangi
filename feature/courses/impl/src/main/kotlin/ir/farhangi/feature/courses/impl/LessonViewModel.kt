@@ -27,9 +27,19 @@ class LessonViewModel @Inject constructor(
             _uiState.value = LessonUiState.Loading
             when (val result = courseRepository.getCourse(courseId)) {
                 is Result.Success -> {
-                    val section = result.data.sections.find { it.id == sectionId }
+                    val sections = result.data.sections.sortedBy { it.order }
+                    val index = sections.indexOfFirst { it.id == sectionId }
+                    val section = sections.getOrNull(index)
                     _uiState.value = if (section != null) {
-                        LessonUiState.Success(section)
+                        val previous = sections.getOrNull(index - 1)
+                        val next = sections.getOrNull(index + 1)
+                        LessonUiState.Success(
+                            section = section,
+                            hasPrevious = previous != null,
+                            hasNext = next != null,
+                            previousSectionId = previous?.id,
+                            nextSectionId = next?.id,
+                        )
                     } else {
                         LessonUiState.Error("جلسه یافت نشد")
                     }
@@ -40,9 +50,14 @@ class LessonViewModel @Inject constructor(
         }
     }
 
-    fun complete() {
+    fun toggleCompleted() {
         viewModelScope.launch {
-            courseRepository.completeSection(courseId, sectionId)
+            val current = _uiState.value as? LessonUiState.Success ?: return@launch
+            if (current.section.isCompleted) {
+                courseRepository.uncompleteSection(courseId, sectionId)
+            } else {
+                courseRepository.completeSection(courseId, sectionId)
+            }
             load(courseId, sectionId)
         }
     }

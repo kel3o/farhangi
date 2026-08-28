@@ -7,4 +7,5 @@ interface CourseRepository {
     suspend fun getCourses(query: String? = null): Result<List<Course>>
     suspend fun getCourse(id: String): Result<Course>
     suspend fun completeSection(courseId: String, sectionId: String): Result<Course>
+    suspend fun uncompleteSection(courseId: String, sectionId: String): Result<Course>
 }

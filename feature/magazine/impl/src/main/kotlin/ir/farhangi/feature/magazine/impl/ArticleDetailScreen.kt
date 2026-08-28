@@ -2,24 +2,21 @@ package ir.farhangi.feature.magazine.impl
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import ir.farhangi.core.designsystem.icon.FarhangiIcons
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.formatPublishedDate
@@ -65,8 +62,8 @@ fun ArticleDetailScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text(
-                    text = article.category.persianLabel(),
-                    style = MaterialTheme.typography.titleMedium,
+                    text = "دسته‌بندی: ${article.category.persianLabel()}",
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
@@ -78,36 +75,25 @@ fun ArticleDetailScreen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    IconButton(onClick = onSaveClick) {
-                        Icon(
-                            imageVector = if (article.isSaved) {
-                                FarhangiIcons.Bookmark
-                            } else {
-                                FarhangiIcons.BookmarkBorder
-                            },
-                            contentDescription = if (article.isSaved) {
-                                "حذف از ذخیره‌ها"
-                            } else {
-                                "ذخیره مقاله"
-                            },
-                        )
-                    }
-                    Text(
-                        text = if (article.isSaved) "ذخیره شده" else "ذخیره",
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
                 Text(
                     text = article.body.ifBlank { article.summary },
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                Button(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onSaveClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = FarhangiSize.touchTargetMin),
+                ) {
+                    Text(if (article.isSaved) "حذف از ذخیره‌ها" else "ذخیره")
+                }
+                Button(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = FarhangiSize.touchTargetMin),
+                ) {
                     Text("بازگشت")
                 }
             }

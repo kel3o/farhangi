@@ -72,7 +72,23 @@ fun EntryProviderScope<NavKey>.coursesEntries(navigator: Navigator) {
         val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
         LessonScreen(
             uiState = uiState,
-            onComplete = viewModel::complete,
+            onToggleCompleted = viewModel::toggleCompleted,
+            onPreviousLesson = {
+                val success = uiState as? LessonUiState.Success
+                val previousId = success?.previousSectionId
+                if (previousId != null) {
+                    navigator.pop()
+                    navigator.navigate(LessonRoute(key.courseId, previousId))
+                }
+            },
+            onNextLesson = {
+                val success = uiState as? LessonUiState.Success
+                val nextId = success?.nextSectionId
+                if (nextId != null) {
+                    navigator.pop()
+                    navigator.navigate(LessonRoute(key.courseId, nextId))
+                }
+            },
             onBack = { navigator.pop() },
         )
     }

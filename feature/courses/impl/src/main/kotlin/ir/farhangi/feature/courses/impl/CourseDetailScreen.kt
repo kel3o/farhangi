@@ -1,6 +1,7 @@
 package ir.farhangi.feature.courses.impl
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,27 +10,40 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.foundation.border
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.Course
+import ir.farhangi.core.model.CourseSection
 import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.BookCover
 import ir.farhangi.core.ui.EmptyState
+import ir.farhangi.core.ui.ExpandableBodyText
 import ir.farhangi.core.ui.LoadingState
+
+private const val DESCRIPTION_COLLAPSED_LINES = 4
+private const val PROGRESS_PERCENT_BASE = 100
+private val TableBorderWidth = 1.dp
 
 @Composable
 fun CourseDetailScreen(
@@ -43,6 +57,7 @@ fun CourseDetailScreen(
         is CourseDetailUiState.Error -> EmptyState("خطا", uiState.message, modifier)
         is CourseDetailUiState.Success -> {
             val course = uiState.course
+            var descriptionExpanded by remember(course.id) { mutableStateOf(false) }
             LazyColumn(
                 modifier = modifier.fillMaxSize().padding(FarhangiSpacing.md),
                 verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
@@ -85,49 +100,35 @@ fun CourseDetailScreen(
                     CourseMetaRow(course = course)
                 }
                 item {
-                    Text(
+                    ExpandableBodyText(
                         text = course.description,
-                        style = MaterialTheme.typography.bodyLarge,
+                        expanded = descriptionExpanded,
+                        onToggle = { descriptionExpanded = !descriptionExpanded },
+                        collapsedLines = DESCRIPTION_COLLAPSED_LINES,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
                 item {
-                    LinearProgressIndicator(
-                        progress = { course.progress },
+                    CourseProgressSection(progress = course.progress)
+                }
+                item {
+                    Text(
+                        text = "جلسات آموزشی",
+                        style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .semantics {
-                                contentDescription =
-                                    "پیشرفت دوره ${(course.progress * 100).toInt()} درصد"
-                            },
+                            .padding(top = FarhangiSpacing.xs),
+                        textAlign = TextAlign.Start,
                     )
                 }
-                items(course.sections, key = { it.id }) { section ->
-                    ListItem(
-                        headlineContent = { Text(section.title) },
-                        supportingContent = null,
-                        trailingContent = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs),
-                            ) {
-                                Text(
-                                    text = "${section.durationMinutes.toPersianDigits()} دقیقه",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                TextButton(
-                                    onClick = { onOpenLesson(section.id) },
-                                    modifier = Modifier
-                                        .heightIn(min = FarhangiSize.touchTargetMin)
-                                        .semantics {
-                                            contentDescription = "باز کردن بخش ${section.title}"
-                                        },
-                                ) {
-                                    Text(if (section.isCompleted) "مرور" else "شروع")
-                                }
-                            }
-                        },
+                item {
+                    SessionsTableHeader()
+                }
+                itemsIndexed(course.sections, key = { _, section -> section.id }) { index, section ->
+                    SessionTableRow(
+                        index = index + 1,
+                        section = section,
+                        onStart = { onOpenLesson(section.id) },
                     )
                 }
                 item {
@@ -143,6 +144,152 @@ fun CourseDetailScreen(
             }
         }
     }
+}
+
+@Composable
+private fun CourseProgressSection(
+    progress: Float,
+    modifier: Modifier = Modifier,
+) {
+    val percent = (progress * PROGRESS_PERCENT_BASE).toInt().coerceIn(0, PROGRESS_PERCENT_BASE)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = FarhangiSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
+    ) {
+        HorizontalDivider()
+        Text(
+            text = "میزان پیشرفت شما",
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Start,
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = FarhangiSpacing.xs),
+        ) {
+            LinearProgressIndicator(
+                progress = { progress.coerceIn(0f, 1f) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+                    .semantics {
+                        contentDescription = "پیشرفت دوره ${percent.toPersianDigits()} درصد"
+                    },
+            )
+            if (percent > 0) {
+                Text(
+                    text = "${percent.toPersianDigits()}٪",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = "۰٪",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = "۱۰۰٪",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        HorizontalDivider()
+    }
+}
+
+@Composable
+private fun SessionsTableHeader(modifier: Modifier = Modifier) {
+    val outline = MaterialTheme.colorScheme.outlineVariant
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .border(width = TableBorderWidth, color = outline)
+            .padding(vertical = FarhangiSpacing.xs, horizontal = FarhangiSpacing.xxs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TableHeaderCell("شماره", Modifier.weight(SESSION_COL_NUMBER))
+        TableHeaderCell("عنوان", Modifier.weight(SESSION_COL_TITLE))
+        TableHeaderCell("مدت (د)", Modifier.weight(SESSION_COL_DURATION))
+        TableHeaderCell("شروع", Modifier.weight(SESSION_COL_ACTION))
+    }
+}
+
+@Composable
+private fun SessionTableRow(
+    index: Int,
+    section: CourseSection,
+    onStart: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val outline = MaterialTheme.colorScheme.outlineVariant
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .border(width = TableBorderWidth, color = outline)
+            .padding(vertical = FarhangiSpacing.xxs, horizontal = FarhangiSpacing.xxs)
+            .heightIn(min = FarhangiSize.touchTargetMin),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = index.toPersianDigits(),
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(SESSION_COL_NUMBER),
+        )
+        Text(
+            text = section.title,
+            style = MaterialTheme.typography.bodySmall,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(SESSION_COL_TITLE),
+        )
+        Text(
+            text = section.durationMinutes.toPersianDigits(),
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(SESSION_COL_DURATION),
+        )
+        TextButton(
+            onClick = onStart,
+            modifier = Modifier
+                .weight(SESSION_COL_ACTION)
+                .semantics {
+                    contentDescription = "باز کردن بخش ${section.title}"
+                },
+        ) {
+            Text(
+                text = if (section.isCompleted) "مرور" else "شروع",
+                style = MaterialTheme.typography.labelSmall,
+            )
+        }
+    }
+}
+
+@Composable
+private fun TableHeaderCell(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -205,3 +352,8 @@ private fun MetaChip(
         }
     }
 }
+
+private const val SESSION_COL_NUMBER = 0.14f
+private const val SESSION_COL_TITLE = 0.46f
+private const val SESSION_COL_DURATION = 0.18f
+private const val SESSION_COL_ACTION = 0.22f

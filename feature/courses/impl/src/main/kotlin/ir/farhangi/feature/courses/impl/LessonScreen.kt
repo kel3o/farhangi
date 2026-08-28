@@ -1,34 +1,41 @@
 package ir.farhangi.feature.courses.impl
 
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
-import ir.farhangi.core.model.CourseSection
-import ir.farhangi.core.model.LessonContentType
 import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.LoadingState
+import ir.farhangi.core.ui.R as UiR
+
+private const val VIDEO_PLACEHOLDER_ASPECT = 16f / 9f
 
 @Composable
 fun LessonScreen(
     uiState: LessonUiState,
-    onComplete: () -> Unit,
+    onToggleCompleted: () -> Unit,
+    onPreviousLesson: () -> Unit,
+    onNextLesson: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -45,34 +52,68 @@ fun LessonScreen(
                 verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
             ) {
                 Text(section.title, style = MaterialTheme.typography.headlineSmall)
-                Text("${section.durationMinutes.toPersianDigits()} دقیقه", style = MaterialTheme.typography.labelMedium)
-                if (section.contentType == LessonContentType.VIDEO && !section.aparatUrl.isNullOrBlank()) {
-                    AndroidView(
-                        factory = { context ->
-                            WebView(context).apply {
-                                webViewClient = WebViewClient()
-                                settings.javaScriptEnabled = true
-                                loadUrl(section.aparatUrl.orEmpty())
-                            }
+                Text(
+                    text = "${section.durationMinutes.toPersianDigits()} دقیقه",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Image(
+                    painter = painterResource(UiR.drawable.video_placeholder),
+                    contentDescription = "محل قرارگیری ویدیو در آینده",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(VIDEO_PLACEHOLDER_ASPECT)
+                        .semantics {
+                            contentDescription = "پیش‌نمایش پخش‌کننده ویدیو"
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(FarhangiSize.chartHeight),
+                    contentScale = ContentScale.Fit,
+                )
+                Text(section.body, style = MaterialTheme.typography.bodyLarge)
+                Button(
+                    onClick = onToggleCompleted,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = FarhangiSize.touchTargetMin),
+                ) {
+                    Text(
+                        if (section.isCompleted) {
+                            "لغو علامت دیده‌شده"
+                        } else {
+                            "علامت به‌عنوان دیده‌شده"
+                        },
                     )
                 }
-                Text(section.body, style = MaterialTheme.typography.bodyLarge)
-                if (!section.isCompleted) {
-                    Button(
-                        onClick = onComplete,
-                        modifier = Modifier.fillMaxWidth().heightIn(min = FarhangiSize.touchTargetMin),
-                    ) { Text("علامت به‌عنوان دیده‌شده") }
-                } else {
-                    Text("این جلسه تکمیل شده است.", color = MaterialTheme.colorScheme.primary)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs),
+                ) {
+                    FilledTonalButton(
+                        onClick = onPreviousLesson,
+                        enabled = uiState.hasPrevious,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = FarhangiSize.touchTargetMin),
+                    ) {
+                        Text("جلسه قبل")
+                    }
+                    FilledTonalButton(
+                        onClick = onNextLesson,
+                        enabled = uiState.hasNext,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = FarhangiSize.touchTargetMin),
+                    ) {
+                        Text("جلسه بعد")
+                    }
                 }
                 Button(
                     onClick = onBack,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = FarhangiSize.touchTargetMin),
-                ) { Text("بازگشت") }
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = FarhangiSize.touchTargetMin),
+                ) {
+                    Text("بازگشت")
+                }
             }
         }
     }
@@ -80,6 +121,12 @@ fun LessonScreen(
 
 sealed interface LessonUiState {
     data object Loading : LessonUiState
-    data class Success(val section: CourseSection) : LessonUiState
+    data class Success(
+        val section: ir.farhangi.core.model.CourseSection,
+        val hasPrevious: Boolean,
+        val hasNext: Boolean,
+        val previousSectionId: String? = null,
+        val nextSectionId: String? = null,
+    ) : LessonUiState
     data class Error(val message: String) : LessonUiState
 }

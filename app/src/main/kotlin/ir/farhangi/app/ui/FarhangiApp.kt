@@ -25,7 +25,7 @@ import ir.farhangi.feature.auth.api.NotificationPermissionRoute
 import ir.farhangi.feature.auth.api.OnboardingRoute
 import ir.farhangi.feature.auth.api.OtpRoute
 import ir.farhangi.feature.auth.api.PhoneRoute
-import ir.farhangi.feature.home.api.HomeRoute
+import ir.farhangi.feature.books.api.BooksRoute
 import ir.farhangi.feature.profile.api.ProfileRoute
 import ir.farhangi.feature.search.api.SearchRoute
 
@@ -45,7 +45,7 @@ fun FarhangiApp(
 
     LaunchedEffect(isAuthenticated, hasCompletedOnboarding, hasCompletedNotificationPrompt) {
         navigator.configureMain(
-            start = HomeRoute,
+            start = BooksRoute,
             topLevels = topLevelRoutes,
         )
         val current = navigator.backStack.lastOrNull()
@@ -63,10 +63,10 @@ fun FarhangiApp(
                     navigator.replaceAll(NotificationPermissionRoute)
                 }
             }
-            navigator.backStack.isEmpty() -> navigator.enterMain(HomeRoute)
+            navigator.backStack.isEmpty() -> navigator.enterMain(BooksRoute)
             navigator.isAuthMode || current is PhoneRoute || current is OtpRoute ||
                 current is OnboardingRoute || current is NotificationPermissionRoute -> {
-                navigator.enterMain(HomeRoute)
+                navigator.enterMain(BooksRoute)
             }
         }
     }
@@ -105,7 +105,7 @@ fun FarhangiApp(
     }
 
     val selected = TopLevelDestination.entries.firstOrNull { it.route == topLevelRoute }
-        ?: TopLevelDestination.HOME
+        ?: TopLevelDestination.BOOKS
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {

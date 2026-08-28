@@ -119,6 +119,8 @@ fun EntryProviderScope<NavKey>.booksEntries(navigator: Navigator) {
             onToggleNight = viewModel::toggleNightMode,
             onToggleBookmark = viewModel::onToggleBookmark,
             onFontSizeChange = viewModel::setFontSizeSp,
+            onLineHeightChange = viewModel::setLineHeightSp,
+            onWordSpacingChange = viewModel::setWordSpacingEm,
             onBack = { navigator.pop() },
         )
     }

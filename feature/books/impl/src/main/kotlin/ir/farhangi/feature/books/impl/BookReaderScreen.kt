@@ -15,13 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
@@ -42,6 +38,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ir.farhangi.core.designsystem.icon.FarhangiIcons
 import ir.farhangi.core.designsystem.theme.FarhangiSize
@@ -49,12 +46,22 @@ import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.LoadingState
 import ir.farhangi.core.ui.ReadingBackdrop
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 private const val SECONDARY_ALPHA = 0.7f
 private const val SWIPE_THRESHOLD_PX = 80f
 private const val FONT_STEP = 2
 private const val FONT_MIN_SP = 14
 private const val FONT_MAX_SP = 28
+private const val LINE_HEIGHT_STEP = 2
+private const val LINE_HEIGHT_MIN_SP = 20
+private const val LINE_HEIGHT_MAX_SP = 40
+private const val WORD_SPACING_STEP_EM = 0.05f
+private const val WORD_SPACING_MIN_EM = 0f
+private const val WORD_SPACING_MAX_EM = 0.35f
+private const val NAV_PREV_NEXT_WEIGHT = 1.15f
+private const val NAV_JUMP_WEIGHT = 0.7f
 
 @Composable
 fun BookReaderScreen(
@@ -65,6 +72,8 @@ fun BookReaderScreen(
     onToggleNight: () -> Unit,
     onToggleBookmark: () -> Unit,
     onFontSizeChange: (Int) -> Unit,
+    onLineHeightChange: (Int) -> Unit,
+    onWordSpacingChange: (Float) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -109,7 +118,6 @@ fun BookReaderScreen(
                             dragAccum = 0f
                         },
                         onHorizontalDrag = { _, dragAmount ->
-                            // RTL: swipe toward "next" (visual left / negative in LTR coords after RTL)
                             dragAccum += dragAmount
                         },
                     )
@@ -190,11 +198,37 @@ fun BookReaderScreen(
         )
     }
     if (showSettings) {
-        FontSettingsDialog(
+        ReadingSettingsDialog(
             fontSizeSp = uiState.fontSizeSp,
+            lineHeightSp = uiState.lineHeightSp,
+            wordSpacingEm = uiState.wordSpacingEm,
             onDismiss = { showSettings = false },
-            onDecrease = { onFontSizeChange((uiState.fontSizeSp - FONT_STEP).coerceAtLeast(FONT_MIN_SP)) },
-            onIncrease = { onFontSizeChange((uiState.fontSizeSp + FONT_STEP).coerceAtMost(FONT_MAX_SP)) },
+            onFontDecrease = {
+                onFontSizeChange((uiState.fontSizeSp - FONT_STEP).coerceAtLeast(FONT_MIN_SP))
+            },
+            onFontIncrease = {
+                onFontSizeChange((uiState.fontSizeSp + FONT_STEP).coerceAtMost(FONT_MAX_SP))
+            },
+            onLineHeightDecrease = {
+                onLineHeightChange(
+                    (uiState.lineHeightSp - LINE_HEIGHT_STEP).coerceAtLeast(LINE_HEIGHT_MIN_SP),
+                )
+            },
+            onLineHeightIncrease = {
+                onLineHeightChange(
+                    (uiState.lineHeightSp + LINE_HEIGHT_STEP).coerceAtMost(LINE_HEIGHT_MAX_SP),
+                )
+            },
+            onWordSpacingDecrease = {
+                onWordSpacingChange(
+                    (uiState.wordSpacingEm - WORD_SPACING_STEP_EM).coerceAtLeast(WORD_SPACING_MIN_EM),
+                )
+            },
+            onWordSpacingIncrease = {
+                onWordSpacingChange(
+                    (uiState.wordSpacingEm + WORD_SPACING_STEP_EM).coerceAtMost(WORD_SPACING_MAX_EM),
+                )
+            },
         )
     }
 }
@@ -215,18 +249,20 @@ private fun ColumnScope.ReaderBody(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TextButton(
             onClick = onBack,
             modifier = Modifier
+                .weight(1f)
                 .heightIn(min = FarhangiSize.touchTargetMin)
                 .semantics { contentDescription = "بازگشت از خواننده" },
         ) { Text("بازگشت", color = actionColor) }
         TextButton(
             onClick = onToggleNight,
             modifier = Modifier
+                .weight(1f)
                 .heightIn(min = FarhangiSize.touchTargetMin)
                 .semantics {
                     contentDescription = if (uiState.isNightMode) {
@@ -241,17 +277,14 @@ private fun ColumnScope.ReaderBody(
                 color = actionColor,
             )
         }
-        IconButton(
+        TextButton(
             onClick = onSettingsClick,
             modifier = Modifier
+                .weight(1f)
                 .heightIn(min = FarhangiSize.touchTargetMin)
                 .semantics { contentDescription = "تنظیمات خواندن" },
         ) {
-            Icon(
-                imageVector = Icons.Outlined.Settings,
-                contentDescription = null,
-                tint = actionColor,
-            )
+            Text("تنظیمات", color = actionColor)
         }
     }
     HorizontalDivider(
@@ -300,7 +333,11 @@ private fun ColumnScope.ReaderBody(
     Spacer(modifier = Modifier.height(FarhangiSpacing.xs))
     Text(
         text = uiState.pageText,
-        style = MaterialTheme.typography.bodyLarge.copy(fontSize = uiState.fontSizeSp.sp),
+        style = MaterialTheme.typography.bodyLarge.copy(
+            fontSize = uiState.fontSizeSp.sp,
+            lineHeight = uiState.lineHeightSp.sp,
+            letterSpacing = uiState.wordSpacingEm.em,
+        ),
         color = foreground,
         modifier = Modifier
             .weight(1f)
@@ -315,20 +352,20 @@ private fun ColumnScope.ReaderBody(
             onClick = onPrevious,
             enabled = uiState.page > 1,
             modifier = Modifier
-                .weight(1f)
+                .weight(NAV_PREV_NEXT_WEIGHT)
                 .heightIn(min = FarhangiSize.touchTargetMin),
         ) { Text("قبلی") }
         FilledTonalButton(
             onClick = onJumpClick,
             modifier = Modifier
-                .weight(1f)
+                .weight(NAV_JUMP_WEIGHT)
                 .heightIn(min = FarhangiSize.touchTargetMin),
         ) { Text("انتخابی") }
         FilledTonalButton(
             onClick = onNext,
             enabled = uiState.page < uiState.totalPages,
             modifier = Modifier
-                .weight(1f)
+                .weight(NAV_PREV_NEXT_WEIGHT)
                 .heightIn(min = FarhangiSize.touchTargetMin),
         ) { Text("بعدی") }
     }
@@ -370,29 +407,72 @@ private fun JumpPageDialog(
 }
 
 @Composable
-private fun FontSettingsDialog(
+private fun ReadingSettingsDialog(
     fontSizeSp: Int,
+    lineHeightSp: Int,
+    wordSpacingEm: Float,
     onDismiss: () -> Unit,
-    onDecrease: () -> Unit,
-    onIncrease: () -> Unit,
+    onFontDecrease: () -> Unit,
+    onFontIncrease: () -> Unit,
+    onLineHeightDecrease: () -> Unit,
+    onLineHeightIncrease: () -> Unit,
+    onWordSpacingDecrease: () -> Unit,
+    onWordSpacingIncrease: () -> Unit,
 ) {
+    val wordSpacingPercent = (wordSpacingEm * 100).toInt()
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("تنظیمات") },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm)) {
-                Text("اندازه قلم: ${fontSizeSp.toPersianDigits()}")
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    FilledTonalButton(onClick = onDecrease) { Text("کوچک‌تر") }
-                    FilledTonalButton(onClick = onIncrease) { Text("بزرگ‌تر") }
-                }
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.md),
+            ) {
+                SettingsStepper(
+                    label = "اندازه قلم: ${fontSizeSp.toPersianDigits()}",
+                    onDecrease = onFontDecrease,
+                    onIncrease = onFontIncrease,
+                    decreaseLabel = "کوچک‌تر",
+                    increaseLabel = "بزرگ‌تر",
+                )
+                SettingsStepper(
+                    label = "فاصله سطور: ${lineHeightSp.toPersianDigits()}",
+                    onDecrease = onLineHeightDecrease,
+                    onIncrease = onLineHeightIncrease,
+                    decreaseLabel = "کمتر",
+                    increaseLabel = "بیشتر",
+                )
+                SettingsStepper(
+                    label = "فاصله کلمات: ${wordSpacingPercent.toPersianDigits()}٪",
+                    onDecrease = onWordSpacingDecrease,
+                    onIncrease = onWordSpacingIncrease,
+                    decreaseLabel = "کمتر",
+                    increaseLabel = "بیشتر",
+                )
             }
         },
         confirmButton = {
             TextButton(onClick = onDismiss) { Text("بستن") }
         },
     )
+}
+
+@Composable
+private fun SettingsStepper(
+    label: String,
+    onDecrease: () -> Unit,
+    onIncrease: () -> Unit,
+    decreaseLabel: String,
+    increaseLabel: String,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs)) {
+        Text(label)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            FilledTonalButton(onClick = onDecrease) { Text(decreaseLabel) }
+            FilledTonalButton(onClick = onIncrease) { Text(increaseLabel) }
+        }
+    }
 }

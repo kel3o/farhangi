@@ -67,6 +67,15 @@ fun ArticleCard(
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                 )
+                if (article.summary.isNotBlank()) {
+                    Text(
+                        text = article.summary,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
