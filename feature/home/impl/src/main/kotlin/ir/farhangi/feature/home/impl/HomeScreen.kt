@@ -72,7 +72,6 @@ fun HomeScreen(
         if (showIncompleteDialog) {
             AlertDialog(
                 onDismissRequest = { /* باید متوجه شدم زده شود */ },
-                title = { Text("خانه") },
                 text = { Text("این بخش در حال تکمیل است") },
                 confirmButton = {
                     TextButton(onClick = { showIncompleteDialog = false }) {

@@ -1,19 +1,29 @@
 package ir.farhangi.app.ui
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import ir.farhangi.app.navigation.TopLevelDestination
@@ -41,6 +51,33 @@ fun FarhangiApp(
 ) {
     val topLevelRoutes = remember {
         TopLevelDestination.entries.map { it.route }.toSet()
+    }
+    var showExitDialog by remember { mutableStateOf(false) }
+    val activity = LocalContext.current as? Activity
+    val isAuthMode = navigator.isAuthMode
+    val topLevelRoute = navigator.topLevelRoute
+    val backStack = navigator.backStack
+
+    val atAppExitPoint = when {
+        backStack.isEmpty() -> true
+        isAuthMode -> backStack.size <= 1
+        backStack.size > 1 -> false
+        topLevelRoute != BooksRoute -> false
+        else -> true
+    }
+
+    fun handleNavigateBack() {
+        if (!navigator.pop()) {
+            showExitDialog = true
+        }
+    }
+
+    BackHandler(enabled = showExitDialog || atAppExitPoint) {
+        if (showExitDialog) {
+            showExitDialog = false
+        } else {
+            showExitDialog = true
+        }
     }
 
     LaunchedEffect(isAuthenticated, hasCompletedOnboarding, hasCompletedNotificationPrompt) {
@@ -79,9 +116,35 @@ fun FarhangiApp(
         }
     }
 
-    val isAuthMode = navigator.isAuthMode
-    val topLevelRoute = navigator.topLevelRoute
-    val backStack = navigator.backStack
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = {
+                Text(
+                    text = "خروج از برنامه",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                )
+            },
+            text = {
+                Text(
+                    text = "مطمئن هستید می‌خواهید از برنامه خارج شوید؟",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { activity?.finish() }) {
+                    Text("خارج می‌شود")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitDialog = false }) {
+                    Text("بازگشت")
+                }
+            },
+        )
+    }
 
     if (backStack.isEmpty()) {
         Box(
@@ -97,7 +160,7 @@ fun FarhangiApp(
     if (inGate) {
         NavDisplay(
             backStack = backStack,
-            onBack = { navigator.pop() },
+            onBack = { handleNavigateBack() },
             entryProvider = provider,
             modifier = modifier.fillMaxSize(),
         )
@@ -141,7 +204,7 @@ fun FarhangiApp(
         ) { innerPadding ->
             NavDisplay(
                 backStack = backStack,
-                onBack = { navigator.pop() },
+                onBack = { handleNavigateBack() },
                 entryProvider = provider,
                 modifier = Modifier
                     .fillMaxSize()

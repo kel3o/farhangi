@@ -3,6 +3,7 @@ package ir.farhangi.feature.books.impl
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -15,9 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
@@ -38,6 +44,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ir.farhangi.core.designsystem.icon.FarhangiIcons
@@ -46,8 +53,6 @@ import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.LoadingState
 import ir.farhangi.core.ui.ReadingBackdrop
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 
 private const val SECONDARY_ALPHA = 0.7f
 private const val SWIPE_THRESHOLD_PX = 80f
@@ -60,8 +65,8 @@ private const val LINE_HEIGHT_MAX_SP = 40
 private const val WORD_SPACING_STEP_EM = 0.05f
 private const val WORD_SPACING_MIN_EM = 0f
 private const val WORD_SPACING_MAX_EM = 0.35f
-private const val NAV_PREV_NEXT_WEIGHT = 1.15f
-private const val NAV_JUMP_WEIGHT = 0.7f
+private const val NAV_PREV_NEXT_WEIGHT = 1.1f
+private const val NAV_JUMP_WEIGHT = 0.9f
 
 @Composable
 fun BookReaderScreen(
@@ -422,57 +427,80 @@ private fun ReadingSettingsDialog(
     val wordSpacingPercent = (wordSpacingEm * 100).toInt()
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("تنظیمات") },
+        title = {
+            Text(
+                text = "تنظیمات",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+            )
+        },
         text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.md),
-            ) {
-                SettingsStepper(
+            Column(verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs)) {
+                SettingsStepperRow(
                     label = "اندازه قلم: ${fontSizeSp.toPersianDigits()}",
                     onDecrease = onFontDecrease,
                     onIncrease = onFontIncrease,
-                    decreaseLabel = "کوچک‌تر",
-                    increaseLabel = "بزرگ‌تر",
+                    decreaseDescription = "کوچک‌تر کردن قلم",
+                    increaseDescription = "بزرگ‌تر کردن قلم",
                 )
-                SettingsStepper(
+                SettingsStepperRow(
                     label = "فاصله سطور: ${lineHeightSp.toPersianDigits()}",
                     onDecrease = onLineHeightDecrease,
                     onIncrease = onLineHeightIncrease,
-                    decreaseLabel = "کمتر",
-                    increaseLabel = "بیشتر",
+                    decreaseDescription = "کاهش فاصله سطور",
+                    increaseDescription = "افزایش فاصله سطور",
                 )
-                SettingsStepper(
+                SettingsStepperRow(
                     label = "فاصله کلمات: ${wordSpacingPercent.toPersianDigits()}٪",
                     onDecrease = onWordSpacingDecrease,
                     onIncrease = onWordSpacingIncrease,
-                    decreaseLabel = "کمتر",
-                    increaseLabel = "بیشتر",
+                    decreaseDescription = "کاهش فاصله کلمات",
+                    increaseDescription = "افزایش فاصله کلمات",
                 )
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("بستن") }
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                TextButton(onClick = onDismiss) { Text("بستن") }
+            }
         },
     )
 }
 
 @Composable
-private fun SettingsStepper(
+private fun SettingsStepperRow(
     label: String,
     onDecrease: () -> Unit,
     onIncrease: () -> Unit,
-    decreaseLabel: String,
-    increaseLabel: String,
+    decreaseDescription: String,
+    increaseDescription: String,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs)) {
-        Text(label)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = FarhangiSize.touchTargetMin),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xxs),
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f),
+        )
+        IconButton(
+            onClick = onDecrease,
+            modifier = Modifier.semantics { contentDescription = decreaseDescription },
         ) {
-            FilledTonalButton(onClick = onDecrease) { Text(decreaseLabel) }
-            FilledTonalButton(onClick = onIncrease) { Text(increaseLabel) }
+            Icon(imageVector = Icons.Outlined.Remove, contentDescription = null)
+        }
+        IconButton(
+            onClick = onIncrease,
+            modifier = Modifier.semantics { contentDescription = increaseDescription },
+        ) {
+            Icon(imageVector = Icons.Outlined.Add, contentDescription = null)
         }
     }
 }

@@ -1,9 +1,12 @@
 package ir.farhangi.feature.courses.impl
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -12,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
-import androidx.compose.foundation.border
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +28,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -35,14 +39,17 @@ import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.Course
 import ir.farhangi.core.model.CourseSection
+import ir.farhangi.core.model.CourseType
 import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.BookCover
 import ir.farhangi.core.ui.EmptyState
 import ir.farhangi.core.ui.ExpandableBodyText
 import ir.farhangi.core.ui.LoadingState
+import ir.farhangi.core.ui.R as UiR
 
 private const val DESCRIPTION_COLLAPSED_LINES = 4
 private const val PROGRESS_PERCENT_BASE = 100
+private const val VIDEO_PLACEHOLDER_ASPECT = 16f / 9f
 private val TableBorderWidth = 1.dp
 
 @Composable
@@ -57,6 +64,7 @@ fun CourseDetailScreen(
         is CourseDetailUiState.Error -> EmptyState("خطا", uiState.message, modifier)
         is CourseDetailUiState.Success -> {
             val course = uiState.course
+            val isPractical = course.type == CourseType.PRACTICAL
             var descriptionExpanded by remember(course.id) { mutableStateOf(false) }
             LazyColumn(
                 modifier = modifier.fillMaxSize().padding(FarhangiSpacing.md),
@@ -97,7 +105,7 @@ fun CourseDetailScreen(
                     )
                 }
                 item {
-                    CourseMetaRow(course = course)
+                    CourseMetaRow(course = course, isPractical = isPractical)
                 }
                 item {
                     ExpandableBodyText(
@@ -108,28 +116,54 @@ fun CourseDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                item {
-                    CourseProgressSection(progress = course.progress)
-                }
-                item {
-                    Text(
-                        text = "جلسات آموزشی",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = FarhangiSpacing.xs),
-                        textAlign = TextAlign.Start,
-                    )
-                }
-                item {
-                    SessionsTableHeader()
-                }
-                itemsIndexed(course.sections, key = { _, section -> section.id }) { index, section ->
-                    SessionTableRow(
-                        index = index + 1,
-                        section = section,
-                        onStart = { onOpenLesson(section.id) },
-                    )
+                if (isPractical) {
+                    item {
+                        Image(
+                            painter = painterResource(UiR.drawable.video_placeholder),
+                            contentDescription = "محل قرارگیری ویدیو در آینده",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(VIDEO_PLACEHOLDER_ASPECT)
+                                .semantics {
+                                    contentDescription = "پیش‌نمایش پخش‌کننده ویدیو"
+                                },
+                            contentScale = ContentScale.Fit,
+                        )
+                    }
+                    val lessonBody = course.sections.firstOrNull()?.body.orEmpty()
+                    if (lessonBody.isNotBlank()) {
+                        item {
+                            Text(
+                                text = lessonBody,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                    }
+                } else {
+                    item {
+                        CourseProgressSection(progress = course.progress)
+                    }
+                    item {
+                        Text(
+                            text = "جلسات آموزشی",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = FarhangiSpacing.xs),
+                            textAlign = TextAlign.Start,
+                        )
+                    }
+                    item {
+                        SessionsTableHeader()
+                    }
+                    itemsIndexed(course.sections, key = { _, section -> section.id }) { index, section ->
+                        SessionTableRow(
+                            index = index + 1,
+                            section = section,
+                            onStart = { onOpenLesson(section.id) },
+                        )
+                    }
                 }
                 item {
                     Button(
@@ -295,17 +329,20 @@ private fun TableHeaderCell(
 @Composable
 private fun CourseMetaRow(
     course: Course,
+    isPractical: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs),
     ) {
-        MetaChip(
-            label = "جلسه",
-            value = course.sessionCount.toPersianDigits(),
-            modifier = Modifier.weight(1f),
-        )
+        if (!isPractical) {
+            MetaChip(
+                label = "جلسه",
+                value = course.sessionCount.toPersianDigits(),
+                modifier = Modifier.weight(1f),
+            )
+        }
         MetaChip(
             label = "مدت",
             value = "${course.totalDurationMinutes.toPersianDigits()} د",
