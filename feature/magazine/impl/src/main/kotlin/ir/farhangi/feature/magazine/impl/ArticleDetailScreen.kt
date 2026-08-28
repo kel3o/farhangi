@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
@@ -39,6 +40,7 @@ fun ArticleDetailScreen(
         is ArticleDetailUiState.Error -> EmptyState("خطا", uiState.message, modifier)
         is ArticleDetailUiState.Success -> {
             val article = uiState.article
+            val coverShape = MaterialTheme.shapes.extraLarge
             Column(
                 modifier = modifier
                     .fillMaxSize()
@@ -53,7 +55,8 @@ fun ArticleDetailScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .width(FarhangiSize.coverDetailWidth)
-                        .aspectRatio(DETAIL_COVER_ASPECT),
+                        .aspectRatio(DETAIL_COVER_ASPECT)
+                        .clip(coverShape),
                 )
                 Text(
                     text = article.title,

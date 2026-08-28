@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -119,7 +120,8 @@ fun ArticleCoverImage(
     modifier: Modifier = Modifier,
 ) {
     val drawableId = coverDrawableId(coverUrl)
-    Box(modifier = modifier) {
+    val shape = MaterialTheme.shapes.extraLarge
+    Box(modifier = modifier.clip(shape)) {
         if (drawableId != 0) {
             Image(
                 painter = painterResource(drawableId),
@@ -130,6 +132,7 @@ fun ArticleCoverImage(
         } else {
             Surface(
                 modifier = Modifier.fillMaxSize(),
+                shape = shape,
                 color = MaterialTheme.colorScheme.primaryContainer,
             ) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
