@@ -57,8 +57,23 @@ fun formatRemainingDaysAndMinutes(endsAt: Instant, now: Instant): String {
     val remainingMs = (endsAt.toEpochMilliseconds() - now.toEpochMilliseconds()).coerceAtLeast(0L)
     val totalMinutes = remainingMs / MILLIS_PER_MINUTE
     val days = totalMinutes / MINUTES_PER_DAY
-    val minutes = totalMinutes % MINUTES_PER_DAY
-    return "${days.toPersianDigits()} روز و ${minutes.toPersianDigits()} دقیقه"
+    val minutesAfterDays = totalMinutes % MINUTES_PER_DAY
+    val hours = minutesAfterDays / MINUTES_PER_HOUR
+    val minutes = minutesAfterDays % MINUTES_PER_HOUR
+    return buildString {
+        append(days.toPersianDigits())
+        append(" روز")
+        if (hours > 0L) {
+            append(" و ")
+            append(hours.toPersianDigits())
+            append(" ساعت")
+        }
+        if (minutes > 0L || hours == 0L) {
+            append(" و ")
+            append(minutes.toPersianDigits())
+            append(" دقیقه")
+        }
+    }
 }
 
 fun formatPublishedDate(instant: Instant): String {
@@ -96,5 +111,6 @@ private fun monthLengths(leap: Boolean): List<Long> = listOf(
 
 private const val SECONDS_PER_MINUTE = 60
 private const val MILLIS_PER_MINUTE = 60_000L
+private const val MINUTES_PER_HOUR = 60L
 private const val MINUTES_PER_DAY = 24 * 60
 private const val MILLIS_PER_DAY = 86_400_000L

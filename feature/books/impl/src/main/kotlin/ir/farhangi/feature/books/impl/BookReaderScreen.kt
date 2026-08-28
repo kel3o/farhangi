@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +46,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ir.farhangi.core.designsystem.icon.FarhangiIcons
@@ -65,8 +67,11 @@ private const val LINE_HEIGHT_MAX_SP = 40
 private const val WORD_SPACING_STEP_EM = 0.05f
 private const val WORD_SPACING_MIN_EM = 0f
 private const val WORD_SPACING_MAX_EM = 0.35f
-private const val NAV_PREV_NEXT_WEIGHT = 1.1f
-private const val NAV_JUMP_WEIGHT = 0.9f
+private const val NAV_BUTTON_WEIGHT = 1f
+private val ReaderChromeContentPadding = PaddingValues(
+    horizontal = FarhangiSpacing.xs,
+    vertical = FarhangiSpacing.xxs,
+)
 
 @Composable
 fun BookReaderScreen(
@@ -259,13 +264,22 @@ private fun ColumnScope.ReaderBody(
     ) {
         TextButton(
             onClick = onBack,
+            contentPadding = ReaderChromeContentPadding,
             modifier = Modifier
                 .weight(1f)
                 .heightIn(min = FarhangiSize.touchTargetMin)
                 .semantics { contentDescription = "بازگشت از خواننده" },
-        ) { Text("بازگشت", color = actionColor) }
+        ) {
+            Text(
+                text = "بازگشت",
+                color = actionColor,
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+            )
+        }
         TextButton(
             onClick = onToggleNight,
+            contentPadding = ReaderChromeContentPadding,
             modifier = Modifier
                 .weight(1f)
                 .heightIn(min = FarhangiSize.touchTargetMin)
@@ -280,20 +294,28 @@ private fun ColumnScope.ReaderBody(
             Text(
                 text = if (uiState.isNightMode) "حالت روز" else "حالت شب",
                 color = actionColor,
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
             )
         }
         TextButton(
             onClick = onSettingsClick,
+            contentPadding = ReaderChromeContentPadding,
             modifier = Modifier
                 .weight(1f)
                 .heightIn(min = FarhangiSize.touchTargetMin)
                 .semantics { contentDescription = "تنظیمات خواندن" },
         ) {
-            Text("تنظیمات", color = actionColor)
+            Text(
+                text = "تنظیمات",
+                color = actionColor,
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+            )
         }
     }
     HorizontalDivider(
-        modifier = Modifier.padding(vertical = FarhangiSpacing.xs),
+        modifier = Modifier.padding(vertical = FarhangiSpacing.xxs),
         color = secondary.copy(alpha = 0.35f),
     )
     Row(
@@ -356,24 +378,44 @@ private fun ColumnScope.ReaderBody(
         FilledTonalButton(
             onClick = onPrevious,
             enabled = uiState.page > 1,
+            contentPadding = ReaderChromeContentPadding,
             modifier = Modifier
-                .weight(NAV_PREV_NEXT_WEIGHT)
+                .weight(NAV_BUTTON_WEIGHT)
                 .heightIn(min = FarhangiSize.touchTargetMin),
-        ) { Text("قبلی") }
+        ) {
+            ReaderNavLabel("قبلی")
+        }
         FilledTonalButton(
             onClick = onJumpClick,
+            contentPadding = ReaderChromeContentPadding,
             modifier = Modifier
-                .weight(NAV_JUMP_WEIGHT)
+                .weight(NAV_BUTTON_WEIGHT)
                 .heightIn(min = FarhangiSize.touchTargetMin),
-        ) { Text("انتخابی") }
+        ) {
+            ReaderNavLabel("انتخابی")
+        }
         FilledTonalButton(
             onClick = onNext,
             enabled = uiState.page < uiState.totalPages,
+            contentPadding = ReaderChromeContentPadding,
             modifier = Modifier
-                .weight(NAV_PREV_NEXT_WEIGHT)
+                .weight(NAV_BUTTON_WEIGHT)
                 .heightIn(min = FarhangiSize.touchTargetMin),
-        ) { Text("بعدی") }
+        ) {
+            ReaderNavLabel("بعدی")
+        }
     }
+}
+
+@Composable
+private fun ReaderNavLabel(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelMedium,
+        maxLines = 1,
+        softWrap = false,
+        overflow = TextOverflow.Clip,
+    )
 }
 
 @Composable

@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -18,6 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
+import ir.farhangi.core.designsystem.icon.FarhangiIcons
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.toPersianDigits
@@ -43,15 +48,30 @@ fun OnboardingScreen(
             val item = PAGES[page]
             Column(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.spacedBy(
+                    FarhangiSpacing.md,
+                    Alignment.CenterVertically,
+                ),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(text = item.title, style = MaterialTheme.typography.headlineSmall)
-                Spacer(Modifier.height(FarhangiSpacing.md))
+                Icon(
+                    imageVector = item.icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(FarhangiSize.avatar),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = item.title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
                 Text(
                     text = item.body,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -59,7 +79,10 @@ fun OnboardingScreen(
             text = "${(pagerState.currentPage + 1).toPersianDigits()} از ${PAGES.size.toPersianDigits()}",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally),
         )
         Spacer(Modifier.height(FarhangiSpacing.md))
         Button(
@@ -87,11 +110,31 @@ fun OnboardingScreen(
     }
 }
 
-private data class OnboardingPage(val title: String, val body: String)
+private data class OnboardingPage(
+    val title: String,
+    val body: String,
+    val icon: ImageVector,
+)
 
 private val PAGES = listOf(
-    OnboardingPage("کتابخانه همیشه همراه", "هزاران کتاب را آنلاین بخوانید و در کتاب‌خانه من ذخیره کنید."),
-    OnboardingPage("آموزش به دو شیوه", "دوره‌های تخصصی چندجلسه و دوره‌های کاربردی تک‌محتوا، فعلاً رایگان."),
-    OnboardingPage("مسابقه و هم‌خوان", "در آزمون‌ها شرکت کنید و با مطالعه سالم در جدول هفته و ماه رقابت کنید."),
-    OnboardingPage("مجله روزانه", "خبر، روایت و مقاله فرهنگی برای خانواده و جامعه."),
+    OnboardingPage(
+        title = "کتابخانه همیشه همراه",
+        body = "هزاران کتاب را آنلاین بخوانید و در کتاب‌خانه من ذخیره کنید.",
+        icon = FarhangiIcons.Books,
+    ),
+    OnboardingPage(
+        title = "آموزش به دو شیوه",
+        body = "دوره‌های تخصصی چندجلسه و دوره‌های کاربردی تک‌محتوا، فعلاً رایگان.",
+        icon = FarhangiIcons.Courses,
+    ),
+    OnboardingPage(
+        title = "مسابقه و هم‌خوان",
+        body = "در آزمون‌ها شرکت کنید و با مطالعه سالم در جدول هفته و ماه رقابت کنید.",
+        icon = FarhangiIcons.Competitions,
+    ),
+    OnboardingPage(
+        title = "مجله روزانه",
+        body = "خبر، روایت و مقاله فرهنگی برای خانواده و جامعه.",
+        icon = FarhangiIcons.Magazine,
+    ),
 )

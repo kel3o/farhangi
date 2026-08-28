@@ -61,12 +61,12 @@ fun LibraryScreen(
                     columns = GridCells.Fixed(LIBRARY_COLUMNS),
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
-                        start = FarhangiSpacing.md,
-                        end = FarhangiSpacing.md,
+                        start = FarhangiSpacing.lg,
+                        end = FarhangiSpacing.lg,
                         top = FarhangiSpacing.sm,
                         bottom = contentPadding.calculateBottomPadding() + FarhangiSpacing.lg,
                     ),
-                    horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
+                    horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.md),
                     verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.md),
                 ) {
                     items(uiState.books, key = { it.id }) { book ->

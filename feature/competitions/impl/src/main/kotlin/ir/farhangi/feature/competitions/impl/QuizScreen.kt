@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
@@ -21,8 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.formatDurationClock
@@ -75,45 +80,78 @@ private fun ReadyContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(FarhangiSpacing.lg),
-            verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
         ) {
-            Text(uiState.contestTitle, style = MaterialTheme.typography.titleMedium)
-            Text(
-                text = "زمان باقی‌مانده: ${formatDurationClock(uiState.remainingSeconds)}",
-                style = MaterialTheme.typography.titleSmall,
-                color = if (uiState.remainingSeconds <= LOW_TIME_SECONDS) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.primary
-                },
-            )
-            Text(
-                text = "سؤال ${(uiState.currentIndex + 1).toPersianDigits()} از ${uiState.questions.size.toPersianDigits()}",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(question.prompt, style = MaterialTheme.typography.titleLarge)
-            question.options.forEachIndexed { index, option ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = FarhangiSize.touchTargetMin)
-                        .selectable(
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
+            ) {
+                Text(
+                    text = uiState.contestTitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    text = "زمان باقی‌مانده: ${formatDurationClock(uiState.remainingSeconds)}",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = if (uiState.remainingSeconds <= LOW_TIME_SECONDS) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    },
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    text = "سؤال ${(uiState.currentIndex + 1).toPersianDigits()} از ${uiState.questions.size.toPersianDigits()}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    text = question.prompt,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontSize = QUESTION_FONT_SIZE_SP.sp,
+                        lineHeight = QUESTION_LINE_HEIGHT_SP.sp,
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                question.options.forEachIndexed { index, option ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = FarhangiSize.touchTargetMin)
+                            .selectable(
+                                selected = selected == index,
+                                onClick = { onSelectOption(question.id, index) },
+                                role = Role.RadioButton,
+                            ),
+                        horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs),
+                    ) {
+                        RadioButton(
                             selected = selected == index,
                             onClick = { onSelectOption(question.id, index) },
-                            role = Role.RadioButton,
-                        ),
-                    horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs),
-                ) {
-                    RadioButton(selected = selected == index, onClick = { onSelectOption(question.id, index) })
-                    Text(option, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = FarhangiSpacing.sm))
+                        )
+                        Text(
+                            option,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(top = FarhangiSpacing.sm),
+                        )
+                    }
                 }
             }
             val isLast = uiState.currentIndex == uiState.questions.lastIndex
             Button(
                 onClick = if (isLast) onSubmit else onNext,
                 enabled = selected != null,
-                modifier = Modifier.fillMaxWidth().heightIn(min = FarhangiSize.touchTargetMin),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = FarhangiSpacing.md)
+                    .heightIn(min = FarhangiSize.touchTargetMin),
             ) {
                 Text(if (isLast) "ثبت پاسخ‌ها" else "سؤال بعد")
             }
@@ -179,10 +217,27 @@ private fun SubmittedContent(
                     value = "${result.pointsAwarded.toPersianDigits()} امتیاز",
                 )
                 HorizontalDivider()
-                ResultRow(
-                    label = "مدت زمان پایان مسابقه",
-                    value = remaining,
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = FarhangiSize.touchTargetMin)
+                        .padding(vertical = FarhangiSpacing.xs),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xxs),
+                ) {
+                    Text(
+                        text = "مدت زمان پایان مسابقه",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Text(
+                        text = remaining,
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
         Button(
@@ -211,3 +266,5 @@ private fun ResultRow(
 }
 
 private const val LOW_TIME_SECONDS = 30
+private const val QUESTION_FONT_SIZE_SP = 20
+private const val QUESTION_LINE_HEIGHT_SP = 32

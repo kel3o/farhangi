@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import ir.farhangi.core.designsystem.icon.FarhangiIcons
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
@@ -43,11 +44,15 @@ fun NotificationPermissionScreen(
         Text(
             text = "آماده‌سازی اطلاع‌رسانی",
             style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
         )
         Text(
             text = "جهت اطلاع‌رسانی‌های نرم‌افزار لطفاً دسترسی به اعلان‌ها بدهید.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
         )
         Button(
             onClick = onAllow,

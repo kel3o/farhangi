@@ -35,13 +35,21 @@ fun BookCard(
         )
         Text(
             text = book.title,
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 2,
+            style = if (compact) {
+                MaterialTheme.typography.titleSmall
+            } else {
+                MaterialTheme.typography.bodySmall
+            },
+            maxLines = if (compact) 2 else 1,
             overflow = TextOverflow.Ellipsis,
         )
         Text(
             text = book.author,
-            style = MaterialTheme.typography.bodySmall,
+            style = if (compact) {
+                MaterialTheme.typography.bodySmall
+            } else {
+                MaterialTheme.typography.labelSmall
+            },
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

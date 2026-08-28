@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -81,6 +82,7 @@ fun BookDetailScreen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 Text(
                     text = "${book.totalPages.toPersianDigits()} صفحه · دسته‌بندی: ${
                         book.categories.joinToString("، ").ifBlank { "—" }
@@ -89,6 +91,7 @@ fun BookDetailScreen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 ExpandableDescription(
                     text = book.description,
                     expanded = descriptionExpanded,
