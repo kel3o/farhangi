@@ -7,6 +7,7 @@ import ir.farhangi.core.common.result.Result
 import ir.farhangi.core.data.repository.AuthRepository
 import ir.farhangi.core.data.repository.EngagementRepository
 import ir.farhangi.core.data.repository.UserRepository
+import ir.farhangi.core.model.Gender
 import ir.farhangi.core.model.PointsBreakdown
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    userRepository: UserRepository,
+    private val userRepository: UserRepository,
     private val authRepository: AuthRepository,
     private val engagementRepository: EngagementRepository,
 ) : ViewModel() {
@@ -45,6 +46,12 @@ class ProfileViewModel @Inject constructor(
 
     fun signOut() {
         viewModelScope.launch { authRepository.signOut() }
+    }
+
+    fun updateAudienceProfile(fullName: String, gender: Gender, age: Int) {
+        viewModelScope.launch {
+            userRepository.updateAudienceProfile(fullName, gender, age)
+        }
     }
 
     companion object {

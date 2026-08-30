@@ -8,6 +8,8 @@ data class UserProfile(
     val phone: String,
     val displayName: String = "",
     val avatarUrl: String? = null,
+    val gender: Gender? = null,
+    val age: Int? = null,
     val role: UserRole = UserRole.USER,
     val booksRead: Int = 0,
     val coursesCompleted: Int = 0,

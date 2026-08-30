@@ -1,6 +1,7 @@
 package ir.farhangi.feature.books.impl
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -29,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -44,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -84,6 +88,7 @@ fun BookReaderScreen(
     onFontSizeChange: (Int) -> Unit,
     onLineHeightChange: (Int) -> Unit,
     onWordSpacingChange: (Float) -> Unit,
+    onBoldChange: (Boolean) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -212,6 +217,7 @@ fun BookReaderScreen(
             fontSizeSp = uiState.fontSizeSp,
             lineHeightSp = uiState.lineHeightSp,
             wordSpacingEm = uiState.wordSpacingEm,
+            isBold = uiState.isBold,
             onDismiss = { showSettings = false },
             onFontDecrease = {
                 onFontSizeChange((uiState.fontSizeSp - FONT_STEP).coerceAtLeast(FONT_MIN_SP))
@@ -239,6 +245,7 @@ fun BookReaderScreen(
                     (uiState.wordSpacingEm + WORD_SPACING_STEP_EM).coerceAtMost(WORD_SPACING_MAX_EM),
                 )
             },
+            onBoldChange = onBoldChange,
         )
     }
 }
@@ -324,26 +331,34 @@ private fun ColumnScope.ReaderBody(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = uiState.bookTitle,
-            style = MaterialTheme.typography.titleSmall,
+            text = "خلاصه کتاب ${uiState.bookTitle}",
+            style = MaterialTheme.typography.bodyMedium,
             color = foreground,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xxs),
+        ) {
             Text(
                 text = "صفحه ${uiState.page.toPersianDigits()}",
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.labelSmall,
                 color = secondary,
             )
-            IconButton(
-                onClick = onToggleBookmark,
-                modifier = Modifier.semantics {
-                    contentDescription = if (uiState.isBookmarked) {
-                        "حذف ذخیره صفحه"
-                    } else {
-                        "ذخیره صفحه"
-                    }
-                },
+            Box(
+                modifier = Modifier
+                    .size(FarhangiSize.touchTargetMin)
+                    .clickable(onClick = onToggleBookmark)
+                    .semantics {
+                        contentDescription = if (uiState.isBookmarked) {
+                            "حذف ذخیره صفحه"
+                        } else {
+                            "ذخیره صفحه"
+                        }
+                    },
+                contentAlignment = Alignment.CenterStart,
             ) {
                 Icon(
                     imageVector = if (uiState.isBookmarked) {
@@ -353,6 +368,7 @@ private fun ColumnScope.ReaderBody(
                     },
                     contentDescription = null,
                     tint = actionColor,
+                    modifier = Modifier.size(FarhangiSize.iconDefault),
                 )
             }
         }
@@ -364,6 +380,7 @@ private fun ColumnScope.ReaderBody(
             fontSize = uiState.fontSizeSp.sp,
             lineHeight = uiState.lineHeightSp.sp,
             letterSpacing = uiState.wordSpacingEm.em,
+            fontWeight = if (uiState.isBold) FontWeight.Bold else FontWeight.Normal,
         ),
         color = foreground,
         modifier = Modifier
@@ -458,6 +475,7 @@ private fun ReadingSettingsDialog(
     fontSizeSp: Int,
     lineHeightSp: Int,
     wordSpacingEm: Float,
+    isBold: Boolean,
     onDismiss: () -> Unit,
     onFontDecrease: () -> Unit,
     onFontIncrease: () -> Unit,
@@ -465,6 +483,7 @@ private fun ReadingSettingsDialog(
     onLineHeightIncrease: () -> Unit,
     onWordSpacingDecrease: () -> Unit,
     onWordSpacingIncrease: () -> Unit,
+    onBoldChange: (Boolean) -> Unit,
 ) {
     val wordSpacingPercent = (wordSpacingEm * 100).toInt()
     AlertDialog(
@@ -499,6 +518,27 @@ private fun ReadingSettingsDialog(
                     decreaseDescription = "کاهش فاصله کلمات",
                     increaseDescription = "افزایش فاصله کلمات",
                 )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = FarhangiSize.touchTargetMin),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs),
+                ) {
+                    Text(
+                        text = "متن پر رنگ (Bold)",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        text = if (isBold) "بله" else "خیر",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                    Switch(
+                        checked = isBold,
+                        onCheckedChange = onBoldChange,
+                    )
+                }
             }
         },
         confirmButton = {

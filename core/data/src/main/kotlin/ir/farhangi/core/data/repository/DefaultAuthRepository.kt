@@ -6,6 +6,7 @@ import ir.farhangi.core.model.Session
 import ir.farhangi.core.network.gateway.AuthGateway
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -56,6 +57,14 @@ class DefaultAuthRepository @Inject constructor(
 
     override suspend fun completeNotificationPrompt() {
         sessionLocalDataSource.setNotificationPromptCompleted()
+    }
+
+    override suspend fun updateDisplayName(displayName: String): Result<Session> {
+        val current = sessionLocalDataSource.observeSession().first()
+            ?: return Result.Error(IllegalStateException("کاربر وارد نشده است"))
+        val updated = current.copy(displayName = displayName.trim())
+        sessionLocalDataSource.saveSession(updated)
+        return Result.Success(updated)
     }
 
     override suspend fun signOut(): Result<Unit> {

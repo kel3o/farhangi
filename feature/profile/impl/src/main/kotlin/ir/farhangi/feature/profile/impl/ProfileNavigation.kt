@@ -45,6 +45,7 @@ fun EntryProviderScope<NavKey>.profileEntries(navigator: Navigator) {
             onOrgInboxClick = { navigator.navigate(OrgInboxRoute) },
             onReportsClick = { navigator.navigate(ReportsRoute) },
             onRolesClick = { navigator.navigate(RolesRoute) },
+            onSaveProfile = viewModel::updateAudienceProfile,
         )
     }
 }

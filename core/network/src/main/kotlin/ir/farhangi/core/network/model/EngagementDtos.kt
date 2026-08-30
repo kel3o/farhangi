@@ -51,6 +51,7 @@ data class TrophyDto(
     val period: String,
     val board: String,
     @SerialName("label") val weekOrMonthLabel: String,
+    val rank: Int = 1,
 )
 
 @Serializable
@@ -62,6 +63,8 @@ data class OrgMessageDto(
     val body: String,
     @SerialName("created_at") val createdAt: String,
     @SerialName("is_read") val isRead: Boolean,
+    val recipient: String = "CULTURAL_DEPUTY",
+    @SerialName("image_url") val imageUrl: String? = null,
 )
 
 @Serializable

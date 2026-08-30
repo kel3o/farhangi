@@ -53,6 +53,23 @@ fun BookCover(
     }
 }
 
+@Composable
+fun ContentImage(
+    coverUrl: String?,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+) {
+    val drawableId = coverDrawableId(coverUrl)
+    if (drawableId != 0) {
+        Image(
+            painter = painterResource(drawableId),
+            contentDescription = contentDescription,
+            modifier = modifier,
+            contentScale = ContentScale.Fit,
+        )
+    }
+}
+
 internal fun coverDrawableId(coverUrl: String?): Int = when (coverUrl) {
     "cover_golestan" -> R.drawable.cover_golestan
     "cover_kimiagar" -> R.drawable.cover_kimiagar

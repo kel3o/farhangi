@@ -6,6 +6,7 @@ import ir.farhangi.core.model.ContestStatus
 import ir.farhangi.core.model.LeaderboardEntry
 import ir.farhangi.core.model.LeaderboardPeriod
 import ir.farhangi.core.model.NamedCount
+import ir.farhangi.core.model.OrgInboxRecipient
 import ir.farhangi.core.model.OrgMessage
 import ir.farhangi.core.model.PlatformReport
 import ir.farhangi.core.model.PointsBreakdown
@@ -68,6 +69,7 @@ fun TrophyDto.toDomain(): Trophy = Trophy(
     period = runCatching { LeaderboardPeriod.valueOf(period) }.getOrDefault(LeaderboardPeriod.WEEKLY),
     board = runCatching { ScoreBoard.valueOf(board) }.getOrDefault(ScoreBoard.OVERALL),
     weekOrMonthLabel = weekOrMonthLabel,
+    rank = rank.coerceAtLeast(1),
 )
 
 fun OrgMessageDto.toDomain(): OrgMessage = OrgMessage(
@@ -78,6 +80,9 @@ fun OrgMessageDto.toDomain(): OrgMessage = OrgMessage(
     body = body,
     createdAt = Instant.parse(createdAt),
     isRead = isRead,
+    recipient = runCatching { OrgInboxRecipient.valueOf(recipient) }
+        .getOrDefault(OrgInboxRecipient.CULTURAL_DEPUTY),
+    imageUrl = imageUrl,
 )
 
 fun PlatformReportDto.toDomain(): PlatformReport = PlatformReport(

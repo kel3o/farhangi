@@ -8,9 +8,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ir.farhangi.core.database.FarhangiDatabase
+import ir.farhangi.core.database.dao.AudienceProfileDao
 import ir.farhangi.core.database.dao.BookProgressDao
 import ir.farhangi.core.database.dao.BookmarkDao
 import ir.farhangi.core.database.dao.HighlightDao
+import ir.farhangi.core.database.dao.OrgMessageDao
 import javax.inject.Singleton
 
 @Module
@@ -39,6 +41,14 @@ object DatabaseModule {
     @Provides
     fun provideHighlightDao(database: FarhangiDatabase): HighlightDao =
         database.highlightDao()
+
+    @Provides
+    fun provideAudienceProfileDao(database: FarhangiDatabase): AudienceProfileDao =
+        database.audienceProfileDao()
+
+    @Provides
+    fun provideOrgMessageDao(database: FarhangiDatabase): OrgMessageDao =
+        database.orgMessageDao()
 
     private const val DATABASE_NAME = "farhangi.db"
 }

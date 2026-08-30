@@ -1,7 +1,6 @@
 package ir.farhangi.feature.home.impl
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,20 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.Announcement
 import ir.farhangi.core.model.Article
@@ -35,12 +25,10 @@ import ir.farhangi.core.ui.BookCard
 import ir.farhangi.core.ui.ContestCard
 import ir.farhangi.core.ui.CourseCard
 import ir.farhangi.core.ui.EmptyState
+import ir.farhangi.core.ui.HonorsRow
 import ir.farhangi.core.ui.LoadingState
 import ir.farhangi.core.ui.PointsSummaryCard
 import ir.farhangi.core.ui.SectionHeader
-
-private val HomeBlurRadius = 6.dp
-private const val HOME_DIM_ALPHA = 0.20f
 
 @Composable
 fun HomeScreen(
@@ -50,48 +38,6 @@ fun HomeScreen(
     onArticleClick: (Article) -> Unit,
     onContestClick: (Contest) -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
-    modifier: Modifier = Modifier,
-) {
-    var showIncompleteDialog by remember { mutableStateOf(true) }
-    val interactionsEnabled = false
-
-    Box(modifier = modifier.fillMaxSize()) {
-        HomeContent(
-            uiState = uiState,
-            onBookClick = if (interactionsEnabled) onBookClick else { {} },
-            onCourseClick = if (interactionsEnabled) onCourseClick else { {} },
-            onArticleClick = if (interactionsEnabled) onArticleClick else { {} },
-            onContestClick = if (interactionsEnabled) onContestClick else { {} },
-            interactionsEnabled = interactionsEnabled,
-            contentPadding = contentPadding,
-            modifier = Modifier
-                .fillMaxSize()
-                .blur(HomeBlurRadius)
-                .graphicsLayer { alpha = 1f - HOME_DIM_ALPHA },
-        )
-        if (showIncompleteDialog) {
-            AlertDialog(
-                onDismissRequest = { /* باید متوجه شدم زده شود */ },
-                text = { Text("این بخش در حال تکمیل است") },
-                confirmButton = {
-                    TextButton(onClick = { showIncompleteDialog = false }) {
-                        Text("متوجه شدم")
-                    }
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun HomeContent(
-    uiState: HomeUiState,
-    onBookClick: (Book) -> Unit,
-    onCourseClick: (Course) -> Unit,
-    onArticleClick: (Article) -> Unit,
-    onContestClick: (Contest) -> Unit,
-    interactionsEnabled: Boolean,
-    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     when (uiState) {
@@ -109,7 +55,6 @@ private fun HomeContent(
                     bottom = contentPadding.calculateBottomPadding() + FarhangiSpacing.lg,
                 ),
                 verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.md),
-                userScrollEnabled = true,
             ) {
                 item {
                     PointsSummaryCard(
@@ -120,26 +65,11 @@ private fun HomeContent(
                     )
                 }
                 if (uiState.trophies.isNotEmpty()) {
-                    item { SectionHeader(title = "جام‌های شما") }
+                    item { SectionHeader(title = "افتخارات شما") }
                     item {
-                        Text(
-                            text = uiState.trophies.joinToString(" · ") { it.title },
-                            style = MaterialTheme.typography.bodyMedium,
+                        HonorsRow(
+                            trophies = uiState.trophies,
                             modifier = Modifier.padding(horizontal = FarhangiSpacing.md),
-                        )
-                    }
-                }
-                item {
-                    Surface(
-                        modifier = Modifier.padding(horizontal = FarhangiSpacing.md),
-                        shape = MaterialTheme.shapes.large,
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                    ) {
-                        Text(
-                            text = uiState.dailyQuote,
-                            modifier = Modifier.padding(FarhangiSpacing.md),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer,
                         )
                     }
                 }
@@ -158,7 +88,6 @@ private fun HomeContent(
                         BookRow(
                             books = uiState.continueReading,
                             onBookClick = onBookClick,
-                            interactionsEnabled = interactionsEnabled,
                         )
                     }
                 }
@@ -167,7 +96,7 @@ private fun HomeContent(
                     items(uiState.continueCourses, key = { it.id }) { course ->
                         CourseCard(
                             course = course,
-                            onClick = { if (interactionsEnabled) onCourseClick(course) },
+                            onClick = { onCourseClick(course) },
                             modifier = Modifier.padding(horizontal = FarhangiSpacing.md),
                         )
                     }
@@ -177,7 +106,7 @@ private fun HomeContent(
                     items(uiState.liveContests, key = { it.id }) { contest ->
                         ContestCard(
                             contest = contest,
-                            onClick = { if (interactionsEnabled) onContestClick(contest) },
+                            onClick = { onContestClick(contest) },
                             modifier = Modifier.padding(horizontal = FarhangiSpacing.md),
                         )
                     }
@@ -187,14 +116,13 @@ private fun HomeContent(
                     BookRow(
                         books = uiState.recommendedBooks,
                         onBookClick = onBookClick,
-                        interactionsEnabled = interactionsEnabled,
                     )
                 }
                 item { SectionHeader(title = "تازه‌های مجله") }
                 items(uiState.latestArticles, key = { it.id }) { article ->
                     ArticleCard(
                         article = article,
-                        onClick = { if (interactionsEnabled) onArticleClick(article) },
+                        onClick = { onArticleClick(article) },
                         modifier = Modifier.padding(horizontal = FarhangiSpacing.md),
                     )
                 }
@@ -207,17 +135,15 @@ private fun HomeContent(
 private fun BookRow(
     books: List<Book>,
     onBookClick: (Book) -> Unit,
-    interactionsEnabled: Boolean,
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = FarhangiSpacing.md),
         horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
-        userScrollEnabled = true,
     ) {
         items(books, key = { it.id }) { book ->
             BookCard(
                 book = book,
-                onClick = { if (interactionsEnabled) onBookClick(book) },
+                onClick = { onBookClick(book) },
             )
         }
     }

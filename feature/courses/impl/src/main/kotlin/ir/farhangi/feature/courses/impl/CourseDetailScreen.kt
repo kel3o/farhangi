@@ -251,10 +251,10 @@ private fun SessionsTableHeader(modifier: Modifier = Modifier) {
             .padding(vertical = FarhangiSpacing.xs, horizontal = FarhangiSpacing.xxs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TableHeaderCell("شماره", Modifier.weight(SESSION_COL_NUMBER))
-        TableHeaderCell("عنوان", Modifier.weight(SESSION_COL_TITLE))
-        TableHeaderCell("مدت (د)", Modifier.weight(SESSION_COL_DURATION))
-        TableHeaderCell("شروع", Modifier.weight(SESSION_COL_ACTION))
+        TableHeaderCell("شماره", Modifier.weight(SESSION_COL_NUMBER), TextAlign.Center)
+        TableHeaderCell("عنوان", Modifier.weight(SESSION_COL_TITLE), TextAlign.Start)
+        TableHeaderCell("مدت (د)", Modifier.weight(SESSION_COL_DURATION), TextAlign.Center)
+        TableHeaderCell("شروع", Modifier.weight(SESSION_COL_ACTION), TextAlign.Center)
     }
 }
 
@@ -283,6 +283,7 @@ private fun SessionTableRow(
         Text(
             text = section.title,
             style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Start,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(SESSION_COL_TITLE),
@@ -314,12 +315,13 @@ private fun SessionTableRow(
 private fun TableHeaderCell(
     text: String,
     modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Center,
 ) {
     Text(
         text = text,
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        textAlign = TextAlign.Center,
+        textAlign = textAlign,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = modifier,

@@ -26,5 +26,6 @@ data class ReaderUiState(
     val fontSizeSp: Int = 16,
     val lineHeightSp: Int = 24,
     val wordSpacingEm: Float = 0f,
+    val isBold: Boolean = false,
     val isLoading: Boolean = true,
 )

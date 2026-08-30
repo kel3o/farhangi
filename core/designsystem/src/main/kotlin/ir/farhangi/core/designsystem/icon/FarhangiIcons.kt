@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalLibrary
 import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.MilitaryTech
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
@@ -38,5 +39,7 @@ object FarhangiIcons {
     val Profile: ImageVector = Icons.Filled.Person
     val ProfileOutlined: ImageVector = Icons.Outlined.Person
     val Trophy: ImageVector = Icons.Filled.WorkspacePremium
+    val WeeklyMedal: ImageVector = Icons.Filled.MilitaryTech
+    val MonthlyMedal: ImageVector = Icons.Filled.WorkspacePremium
     val Notifications: ImageVector = Icons.Filled.Notifications
 }

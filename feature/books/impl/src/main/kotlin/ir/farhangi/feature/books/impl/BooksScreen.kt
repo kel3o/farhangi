@@ -32,7 +32,7 @@ fun BooksScreen(
         item {
             HubTile(
                 title = "کتابخانه",
-                subtitle = "آرشیو موضوعی و مطالعه آنلاین",
+                subtitle = "آرشیو موضوعی و خلاصه کتاب",
                 icon = FarhangiIcons.Library,
                 onClick = onLibraryClick,
             )

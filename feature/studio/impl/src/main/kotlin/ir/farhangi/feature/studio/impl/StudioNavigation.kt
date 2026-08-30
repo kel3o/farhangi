@@ -1,5 +1,6 @@
 package ir.farhangi.feature.studio.impl
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -17,6 +18,7 @@ import ir.farhangi.feature.studio.api.CreateBookRoute
 import ir.farhangi.feature.studio.api.CreateContestRoute
 import ir.farhangi.feature.studio.api.CreateCourseRoute
 import ir.farhangi.feature.studio.api.OrgInboxRoute
+import ir.farhangi.feature.studio.api.OrgMessageDetailRoute
 import ir.farhangi.feature.studio.api.ReportsRoute
 import ir.farhangi.feature.studio.api.RolesRoute
 import ir.farhangi.feature.studio.api.StudioHomeRoute
@@ -91,6 +93,19 @@ fun EntryProviderScope<NavKey>.studioEntries(navigator: Navigator) {
         OrgInboxScreen(
             uiState = uiState,
             onSend = viewModel::send,
+            onMarkRead = viewModel::markRead,
+            onView = { navigator.navigate(OrgMessageDetailRoute(it)) },
+            onBack = { navigator.pop() },
+        )
+    }
+    entry<OrgMessageDetailRoute> { key ->
+        val viewModel: OrgMessageDetailViewModel = hiltViewModel()
+        LaunchedEffect(key.messageId) { viewModel.load(key.messageId) }
+        val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+        OrgMessageDetailScreen(
+            uiState = uiState,
+            onMarkRead = viewModel::markRead,
+            onSendReply = viewModel::sendReply,
             onBack = { navigator.pop() },
         )
     }

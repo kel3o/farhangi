@@ -2,6 +2,7 @@ package ir.farhangi.core.data.mapper
 
 import ir.farhangi.core.model.Article
 import ir.farhangi.core.model.Book
+import ir.farhangi.core.model.DEFAULT_BOOK_PURCHASE_URL
 import ir.farhangi.core.model.Course
 import ir.farhangi.core.model.CourseSection
 import ir.farhangi.core.model.CourseType
@@ -27,6 +28,7 @@ fun BookDto.toDomain(isSaved: Boolean = false): Book = Book(
     pdfUrl = pdfUrl,
     pages = pages,
     isSaved = isSaved,
+    purchaseUrl = purchaseUrl.ifBlank { DEFAULT_BOOK_PURCHASE_URL },
 )
 
 fun CourseDto.toDomain(): Course = Course(

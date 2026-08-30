@@ -16,6 +16,7 @@ data class BookDto(
     val description: String = "",
     @SerialName("pdf_url") val pdfUrl: String? = null,
     val pages: List<String> = emptyList(),
+    @SerialName("purchase_url") val purchaseUrl: String = "",
 )
 
 @Serializable

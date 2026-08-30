@@ -27,7 +27,9 @@ object FarhangiSize {
     val courseCover: Dp = 96.dp
     val avatar: Dp = 72.dp
     val avatarSmall: Dp = 40.dp
+    val contestGridMin: Dp = 160.dp
     val iconLarge: Dp = 32.dp
+    val honorMedal: Dp = 40.dp
     val chartHeight: Dp = 160.dp
     val barMinWidth: Dp = 16.dp
 }

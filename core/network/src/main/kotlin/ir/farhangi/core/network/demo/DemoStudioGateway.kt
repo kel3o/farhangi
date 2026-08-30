@@ -47,7 +47,11 @@ class DemoStudioGateway @Inject constructor(
         return Result.Success(store.orgMessages.value)
     }
 
-    override suspend fun sendOrgMessage(title: String, body: String): Result<OrgMessageDto> {
+    override suspend fun sendOrgMessage(
+        title: String,
+        body: String,
+        recipient: String,
+    ): Result<OrgMessageDto> {
         delay(NETWORK_DELAY_MS)
         return Result.Success(
             store.sendOrgMessage(
@@ -55,8 +59,19 @@ class DemoStudioGateway @Inject constructor(
                 fromRole = "ORGANIZATIONAL",
                 title = title,
                 body = body,
+                recipient = recipient,
             ),
         )
+    }
+
+    override suspend fun markOrgMessageRead(id: String): Result<OrgMessageDto> {
+        delay(NETWORK_DELAY_MS)
+        val updated = store.markOrgMessageRead(id)
+        return if (updated != null) {
+            Result.Success(updated)
+        } else {
+            Result.Error(NoSuchElementException("پیام یافت نشد"))
+        }
     }
 
     override suspend fun getReport(): Result<PlatformReportDto> {

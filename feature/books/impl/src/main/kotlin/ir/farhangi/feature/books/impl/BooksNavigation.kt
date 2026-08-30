@@ -121,6 +121,7 @@ fun EntryProviderScope<NavKey>.booksEntries(navigator: Navigator) {
             onFontSizeChange = viewModel::setFontSizeSp,
             onLineHeightChange = viewModel::setLineHeightSp,
             onWordSpacingChange = viewModel::setWordSpacingEm,
+            onBoldChange = viewModel::setBold,
             onBack = { navigator.pop() },
         )
     }

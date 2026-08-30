@@ -30,4 +30,5 @@ dependencies {
     api(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.material3)
+    implementation(libs.kotlinx.coroutines.android)
 }

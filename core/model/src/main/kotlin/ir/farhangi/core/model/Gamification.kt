@@ -30,6 +30,22 @@ fun LeaderboardPeriod.persianLabel(): String = when (this) {
     LeaderboardPeriod.MONTHLY -> "این ماه"
 }
 
+fun LeaderboardPeriod.honorCategoryLabel(): String = when (this) {
+    LeaderboardPeriod.WEEKLY -> "هفتگی"
+    LeaderboardPeriod.MONTHLY -> "ماهیانه"
+}
+
+const val RANK_FIRST = 1
+const val RANK_SECOND = 2
+const val RANK_THIRD = 3
+
+fun honorMedalLabel(rank: Int): String = when (rank) {
+    RANK_FIRST -> "طلایی"
+    RANK_SECOND -> "نقره‌ای"
+    RANK_THIRD -> "برنزی"
+    else -> "افتخار"
+}
+
 @Serializable
 data class PointsBreakdown(
     val reading: Int,
@@ -56,6 +72,7 @@ data class Trophy(
     val period: LeaderboardPeriod,
     val board: ScoreBoard,
     val weekOrMonthLabel: String,
+    val rank: Int = RANK_FIRST,
 )
 
 @Serializable

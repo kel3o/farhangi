@@ -35,7 +35,6 @@ data class HomeFeed(
     val weeklyRank: Int?,
     val readingMinutesThisWeek: Int,
     val trophies: List<Trophy>,
-    val dailyQuote: String,
 )
 
 class GetHomeFeed @Inject constructor(
@@ -115,13 +114,11 @@ class GetHomeFeed @Inject constructor(
                 weeklyRank = weeklyRank,
                 readingMinutesThisWeek = points.reading,
                 trophies = trophies,
-                dailyQuote = DAILY_QUOTE,
             ),
         )
     }
 
     companion object {
-        private const val DAILY_QUOTE = "«توانا بود هر که دانا بود» — فردوسی"
         private const val RECENTLY_ADDED_COUNT = 4
         private const val RECOMMENDED_COUNT = 6
         private const val LATEST_ARTICLES_COUNT = 4

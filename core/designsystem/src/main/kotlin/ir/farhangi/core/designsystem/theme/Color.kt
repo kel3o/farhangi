@@ -67,3 +67,17 @@ internal object FarhangiPalette {
     val OutlineDark = Color(0xFF89938E)
     val OutlineVariantDark = Color(0xFF3F4944)
 }
+
+/** Explicit purchase action — distinct from the teal primary seed. */
+object FarhangiActionColors {
+    val Purchase = Color(0xFF2E7D32)
+    val OnPurchase = Color(0xFFFFFFFF)
+}
+
+/** Representational medal metals — not Material color roles. */
+object FarhangiHonorColors {
+    val Gold = Color(0xFFC9A227)
+    val Silver = Color(0xFF8A9199)
+    val Bronze = Color(0xFFB87333)
+    val OnMedal = Color(0xFFFFFFFF)
+}

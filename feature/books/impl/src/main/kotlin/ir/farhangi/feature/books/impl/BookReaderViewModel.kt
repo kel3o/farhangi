@@ -62,6 +62,7 @@ class BookReaderViewModel @Inject constructor(
                         fontSizeSp = FONT_DEFAULT_SP,
                         lineHeightSp = LINE_HEIGHT_DEFAULT_SP,
                         wordSpacingEm = WORD_SPACING_MIN_EM,
+                        isBold = false,
                         isLoading = false,
                     )
                     persistProgress()
@@ -116,6 +117,10 @@ class BookReaderViewModel @Inject constructor(
         }
     }
 
+    fun setBold(enabled: Boolean) {
+        _uiState.update { it.copy(isBold = enabled) }
+    }
+
     fun onToggleBookmark() {
         val state = _uiState.value
         viewModelScope.launch {
@@ -154,16 +159,10 @@ class BookReaderViewModel @Inject constructor(
         }
     }
 
-    private fun samplePage(title: String, page: Int): String =
-        "صفحه $page از کتاب «$title».\n\n" +
-            "در این صفحه می‌خوانید که چگونه اندیشه‌های کوتاه، مسیر زندگی روزمره را روشن می‌کنند.\n" +
-            "هر بند فرصتی است برای مکث؛ نه شتاب برای تمام کردن جلد.\n" +
-            "خانه وقتی آرام‌تر می‌شود که چند خط با صدای معمولی خوانده شود.\n" +
-            "کتابخانهٔ شخصی از همین صفحه‌ها ساخته می‌شود: صفحه به صفحه، روز به روز.\n" +
-            "اگر جمله را دوباره بخوانید، معنای تازه‌ای پیدا می‌کند.\n" +
-            "تمرین امروز ساده است: یک جمله را برای فردا علامت بگذارید.\n" +
-            "مطالعه فقط جمع‌کردن اطلاعات نیست؛ تمرین ادب و صبر است.\n" +
-            "پایان این صفحه آغاز صفحه بعد است؛ نفس بکشید و ورق بزنید."
+    private fun samplePage(title: String, page: Int): String {
+        val body = FALLBACK_PAGE_BODIES[(page - 1).coerceAtLeast(0) % FALLBACK_PAGE_BODIES.size]
+        return "صفحه $page از خلاصه کتاب «$title».\n\n$body"
+    }
 
     companion object {
         private const val READING_MINUTE_PER_PAGE = 1
@@ -175,5 +174,17 @@ class BookReaderViewModel @Inject constructor(
         private const val LINE_HEIGHT_MAX_SP = 40
         private const val WORD_SPACING_MIN_EM = 0f
         private const val WORD_SPACING_MAX_EM = 0.35f
+        private val FALLBACK_PAGE_BODIES = listOf(
+            "خانه وقتی آرام‌تر می‌شود که چند خط با صدای معمولی خوانده شود، نه با عجلهٔ اعلان‌ها.\nمکث میان بندها بخشی از خواندن است؛ شتاب، معنا را لاغر می‌کند.",
+            "کتابخانهٔ شخصی از همین صفحه‌ها ساخته می‌شود: صفحه به صفحه، روز به روز.\nنشانک فقط جای توقف نیست؛ یادآوری تصمیمی است که می‌خواهید به آن برگردید.",
+            "خواندن بلند در خانه، زبان مشترک خانواده را زنده نگه می‌دارد.\nیک سؤال کوتاه بعد از متن کافی است؛ لازم نیست همه صفحه را توضیح دهید.",
+            "متن ماندگار معمولاً ساده می‌نماید و سخت فهمیده می‌شود.\nجزئیات کوچک مسیر فکر را عوض می‌کنند؛ همان علامت صفحه کار را راه می‌اندازد.",
+            "هر خلاصه فرصتی است برای انتخاب، نه جایگزین جلد کامل.\nاگر بندی شما را نگه داشت، همان را دوباره بخوانید و بگذارید در روز بماند.",
+            "زمان مطالعه را به دقیقه بسنجید، نه به تمام کردن کتاب.\nده دقیقه آرام بهتر از یک ساعت پراکنده است.",
+            "یادداشت ذهنی بعد از صفحه، ماندگاری متن را چند برابر می‌کند.\nاز خود بپرسید این بند چه تغییری در رفتار امروز می‌گذارد.",
+            "حلقه کتاب‌خوانی وقتی زنده است که همه حق سکوت و حرف داشته باشند.\nنقل قول کوتاه بهتر از خلاصه طولانی است.",
+            "خستگی چشم نشانه توقف است، نه ضعف اراده.\nخط را کمی درشت‌تر کنید و فاصله خطوط را باز بگذارید.",
+            "پایان هر صفحه باید حس تمام‌شدن داشته باشد، نه بریدگی.\nاگر معنا گم شد، یک بند عقب برگردید و بعد ورق بزنید.",
+        )
     }
 }

@@ -33,8 +33,10 @@ class DemoPlatformStore @Inject constructor() {
     val points = MutableStateFlow(PointsDto(reading = 240, courses = 80, contests = 60, magazine = 35))
     val trophies = MutableStateFlow(
         listOf(
-            TrophyDto("t1", "جام هفته مطالعه", "WEEKLY", "READING", "هفته جاری"),
-            TrophyDto("t2", "جام ماه هم‌خوان", "MONTHLY", "OVERALL", "مرداد ۱۴۰۵"),
+            TrophyDto("t1", "رتبه اول مطالعه", "WEEKLY", "READING", "هفته جاری", rank = 1),
+            TrophyDto("t2", "رتبه دوم هم‌خوان", "MONTHLY", "OVERALL", "مرداد ۱۴۰۵", rank = 2),
+            TrophyDto("t3", "رتبه سوم مسابقه", "MONTHLY", "CONTESTS", "تیر ۱۴۰۵", rank = 3),
+            TrophyDto("t4", "رتبه اول هم‌خوان", "MONTHLY", "OVERALL", "شهریور ۱۴۰۵", rank = 1),
         ),
     )
     val orgMessages = MutableStateFlow(seedOrgMessages())
@@ -113,7 +115,13 @@ class DemoPlatformStore @Inject constructor() {
         return percent
     }
 
-    fun sendOrgMessage(fromName: String, fromRole: String, title: String, body: String): OrgMessageDto {
+    fun sendOrgMessage(
+        fromName: String,
+        fromRole: String,
+        title: String,
+        body: String,
+        recipient: String,
+    ): OrgMessageDto {
         val message = OrgMessageDto(
             id = "msg-${UUID.randomUUID()}",
             fromName = fromName,
@@ -122,9 +130,24 @@ class DemoPlatformStore @Inject constructor() {
             body = body,
             createdAt = "2026-08-18T12:00:00Z",
             isRead = false,
+            recipient = recipient,
         )
         orgMessages.update { listOf(message) + it }
         return message
+    }
+
+    fun markOrgMessageRead(id: String): OrgMessageDto? {
+        var updated: OrgMessageDto? = null
+        orgMessages.update { list ->
+            list.map { message ->
+                if (message.id == id) {
+                    message.copy(isRead = true).also { updated = it }
+                } else {
+                    message
+                }
+            }
+        }
+        return updated
     }
 
     fun updateRole(userId: String, role: String): StaffMemberDto? {
@@ -421,8 +444,27 @@ private fun seedQuestions(): Map<String, List<QuizQuestionDto>> = mapOf(
 )
 
 private fun seedOrgMessages(): List<OrgMessageDto> = listOf(
-    OrgMessageDto("msg-1", "مدیرکل", "SUPER_ADMIN", "اولویت محتوا در شهریور", "روی مسابقه گلستان و دوره‌های خانواده تمرکز کنید. گزارش هفتگی تا چهارشنبه.", "2026-08-17T09:00:00Z", false),
-    OrgMessageDto("msg-2", "هماهنگ‌کننده استان", "ORGANIZATIONAL", "درخواست نشست کتابخانه‌ای", "برای هفته کتاب، دو نشست قصه‌خوانی در کتابخانه مرکزی پیشنهاد می‌شود.", "2026-08-16T14:20:00Z", true),
+    OrgMessageDto(
+        id = "msg-1",
+        fromName = "مدیرکل",
+        fromRole = "SUPER_ADMIN",
+        title = "اولویت محتوا در شهریور",
+        body = "روی مسابقه گلستان و دوره‌های خانواده تمرکز کنید. گزارش هفتگی تا چهارشنبه.",
+        createdAt = "2026-08-17T09:00:00Z",
+        isRead = false,
+        recipient = "LIBRARIES",
+        imageUrl = "cover_article_1",
+    ),
+    OrgMessageDto(
+        id = "msg-2",
+        fromName = "هماهنگ‌کننده استان",
+        fromRole = "ORGANIZATIONAL",
+        title = "درخواست نشست کتابخانه‌ای",
+        body = "برای هفته کتاب، دو نشست قصه‌خوانی در کتابخانه مرکزی پیشنهاد می‌شود.",
+        createdAt = "2026-08-16T14:20:00Z",
+        isRead = true,
+        recipient = "FAMILY_AFFAIRS",
+    ),
 )
 
 private fun seedStaff(): List<StaffMemberDto> = listOf(

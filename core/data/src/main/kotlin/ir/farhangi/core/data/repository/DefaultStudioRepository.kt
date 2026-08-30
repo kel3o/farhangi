@@ -3,10 +3,13 @@ package ir.farhangi.core.data.repository
 import ir.farhangi.core.common.result.Result
 import ir.farhangi.core.common.result.map
 import ir.farhangi.core.data.mapper.toDomain
+import ir.farhangi.core.data.mapper.toEntity
+import ir.farhangi.core.database.dao.OrgMessageDao
 import ir.farhangi.core.model.Article
 import ir.farhangi.core.model.Book
 import ir.farhangi.core.model.Contest
 import ir.farhangi.core.model.Course
+import ir.farhangi.core.model.OrgInboxRecipient
 import ir.farhangi.core.model.OrgMessage
 import ir.farhangi.core.model.PlatformReport
 import ir.farhangi.core.model.QuizQuestion
@@ -25,6 +28,7 @@ import javax.inject.Singleton
 @Singleton
 class DefaultStudioRepository @Inject constructor(
     private val studioGateway: StudioGateway,
+    private val orgMessageDao: OrgMessageDao,
 ) : StudioRepository {
 
     override suspend fun upsertBook(book: Book): Result<Book> =
@@ -51,11 +55,62 @@ class DefaultStudioRepository @Inject constructor(
         return studioGateway.upsertContest(contest.toDto(), questionDtos).map { it.toDomain() }
     }
 
-    override suspend fun getOrgMessages(): Result<List<OrgMessage>> =
-        studioGateway.getOrgMessages().map { list -> list.map { it.toDomain() } }
+    override suspend fun getOrgMessages(): Result<List<OrgMessage>> {
+        return when (val remote = studioGateway.getOrgMessages()) {
+            is Result.Success -> {
+                orgMessageDao.upsertAll(remote.data.map { it.toEntity() })
+                Result.Success(orgMessageDao.getAll().map { it.toDomain() })
+            }
+            is Result.Error -> {
+                val local = orgMessageDao.getAll()
+                if (local.isNotEmpty()) {
+                    Result.Success(local.map { it.toDomain() })
+                } else {
+                    remote
+                }
+            }
+            Result.Loading -> Result.Loading
+        }
+    }
 
-    override suspend fun sendOrgMessage(title: String, body: String): Result<OrgMessage> =
-        studioGateway.sendOrgMessage(title, body).map { it.toDomain() }
+    override suspend fun getOrgMessage(id: String): Result<OrgMessage> {
+        val local = orgMessageDao.getById(id)
+        if (local != null) return Result.Success(local.toDomain())
+        return when (val messages = getOrgMessages()) {
+            is Result.Success -> {
+                val found = messages.data.firstOrNull { it.id == id }
+                if (found != null) Result.Success(found)
+                else Result.Error(NoSuchElementException("پیام یافت نشد"))
+            }
+            is Result.Error -> messages
+            Result.Loading -> Result.Loading
+        }
+    }
+
+    override suspend fun sendOrgMessage(
+        title: String,
+        body: String,
+        recipient: OrgInboxRecipient,
+    ): Result<OrgMessage> =
+        studioGateway.sendOrgMessage(title, body, recipient.name).map { dto ->
+            orgMessageDao.upsert(dto.toEntity())
+            dto.toDomain()
+        }
+
+    override suspend fun markOrgMessageRead(id: String): Result<OrgMessage> {
+        orgMessageDao.markRead(id)
+        return when (val remote = studioGateway.markOrgMessageRead(id)) {
+            is Result.Success -> {
+                orgMessageDao.upsert(remote.data.toEntity())
+                Result.Success(remote.data.toDomain())
+            }
+            is Result.Error -> {
+                val local = orgMessageDao.getById(id)
+                if (local != null) Result.Success(local.toDomain()) else remote
+            }
+            Result.Loading -> Result.Loading
+        }
+    }
 
     override suspend fun getReport(): Result<PlatformReport> =
         studioGateway.getReport().map { it.toDomain() }
@@ -79,6 +134,7 @@ private fun Book.toDto(): BookDto = BookDto(
     description = description,
     pdfUrl = pdfUrl,
     pages = pages,
+    purchaseUrl = purchaseUrl,
 )
 
 private fun Course.toDto(): CourseDto = CourseDto(

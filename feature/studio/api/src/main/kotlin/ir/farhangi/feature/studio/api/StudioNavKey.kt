@@ -22,6 +22,9 @@ data object CreateContestRoute : NavKey
 data object OrgInboxRoute : NavKey
 
 @Serializable
+data class OrgMessageDetailRoute(val messageId: String) : NavKey
+
+@Serializable
 data object ReportsRoute : NavKey
 
 @Serializable

@@ -22,7 +22,6 @@ sealed interface HomeUiState {
         val weeklyRank: Int?,
         val readingMinutesThisWeek: Int,
         val trophies: List<Trophy>,
-        val dailyQuote: String,
     ) : HomeUiState
     data class Error(val message: String) : HomeUiState
 }

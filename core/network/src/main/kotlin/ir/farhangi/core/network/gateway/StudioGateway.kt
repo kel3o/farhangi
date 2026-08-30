@@ -16,7 +16,8 @@ interface StudioGateway {
     suspend fun upsertArticle(article: ArticleDto): Result<ArticleDto>
     suspend fun upsertContest(contest: ContestDto, questions: List<QuizQuestionDto>): Result<ContestDto>
     suspend fun getOrgMessages(): Result<List<OrgMessageDto>>
-    suspend fun sendOrgMessage(title: String, body: String): Result<OrgMessageDto>
+    suspend fun sendOrgMessage(title: String, body: String, recipient: String): Result<OrgMessageDto>
+    suspend fun markOrgMessageRead(id: String): Result<OrgMessageDto>
     suspend fun getReport(): Result<PlatformReportDto>
     suspend fun getStaff(): Result<List<StaffMemberDto>>
     suspend fun updateStaffRole(userId: String, role: String): Result<StaffMemberDto>

@@ -13,5 +13,6 @@ interface AuthRepository {
     fun observeNotificationPromptCompleted(): Flow<Boolean>
     suspend fun completeOnboarding()
     suspend fun completeNotificationPrompt()
+    suspend fun updateDisplayName(displayName: String): Result<Session>
     suspend fun signOut(): Result<Unit>
 }

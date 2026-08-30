@@ -34,7 +34,6 @@ class HomeViewModel @Inject constructor(
                         weeklyRank = feed.weeklyRank,
                         readingMinutesThisWeek = feed.readingMinutesThisWeek,
                         trophies = feed.trophies,
-                        dailyQuote = feed.dailyQuote,
                     ),
                 )
             }

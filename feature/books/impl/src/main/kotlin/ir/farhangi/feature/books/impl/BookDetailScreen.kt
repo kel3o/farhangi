@@ -1,5 +1,7 @@
 package ir.farhangi.feature.books.impl
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,10 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import ir.farhangi.core.designsystem.theme.FarhangiActionColors
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
+import ir.farhangi.core.model.DEFAULT_BOOK_PURCHASE_URL
 import ir.farhangi.core.model.toPersianDigits
 import ir.farhangi.core.ui.BookCover
 import ir.farhangi.core.ui.EmptyState
@@ -48,6 +54,7 @@ fun BookDetailScreen(
         is BookDetailUiState.Error -> EmptyState("خطا", uiState.message, modifier)
         is BookDetailUiState.Success -> {
             val book = uiState.book
+            val context = LocalContext.current
             var descriptionExpanded by remember(book.id) { mutableStateOf(false) }
             Column(
                 modifier = modifier
@@ -99,7 +106,20 @@ fun BookDetailScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Button(onClick = onReadClick, modifier = Modifier.fillMaxWidth()) {
-                    Text("مطالعه آنلاین")
+                    Text("مطالعه خلاصه کتاب")
+                }
+                Button(
+                    onClick = {
+                        val url = book.purchaseUrl.ifBlank { DEFAULT_BOOK_PURCHASE_URL }
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = FarhangiActionColors.Purchase,
+                        contentColor = FarhangiActionColors.OnPurchase,
+                    ),
+                ) {
+                    Text("تهیه کتاب از طاقچه")
                 }
                 Button(onClick = onSaveClick, modifier = Modifier.fillMaxWidth()) {
                     Text(if (book.isSaved) "حذف از کتابخانه من" else "ذخیره در کتابخانه من")
