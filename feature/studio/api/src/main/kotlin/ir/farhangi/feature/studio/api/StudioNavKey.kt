@@ -7,16 +7,31 @@ import kotlinx.serialization.Serializable
 data object StudioHomeRoute : NavKey
 
 @Serializable
-data object CreateBookRoute : NavKey
+data object StudioBooksRoute : NavKey
 
 @Serializable
-data object CreateCourseRoute : NavKey
+data class StudioBookEditorRoute(val bookId: String = "") : NavKey
 
 @Serializable
-data object CreateArticleRoute : NavKey
+data object StudioCoursesRoute : NavKey
 
 @Serializable
-data object CreateContestRoute : NavKey
+data class StudioCourseEditorRoute(val courseId: String = "") : NavKey
+
+@Serializable
+data object StudioArticlesRoute : NavKey
+
+@Serializable
+data class StudioArticleEditorRoute(val articleId: String = "") : NavKey
+
+@Serializable
+data object StudioContestsRoute : NavKey
+
+@Serializable
+data class StudioContestEditorRoute(val contestId: String = "") : NavKey
+
+@Serializable
+data class StudioContestStatsRoute(val contestId: String) : NavKey
 
 @Serializable
 data object OrgInboxRoute : NavKey

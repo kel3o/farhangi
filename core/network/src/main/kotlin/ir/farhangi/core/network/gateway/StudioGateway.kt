@@ -4,6 +4,7 @@ import ir.farhangi.core.common.result.Result
 import ir.farhangi.core.network.model.ArticleDto
 import ir.farhangi.core.network.model.BookDto
 import ir.farhangi.core.network.model.ContestDto
+import ir.farhangi.core.network.model.ContestReportDto
 import ir.farhangi.core.network.model.CourseDto
 import ir.farhangi.core.network.model.OrgMessageDto
 import ir.farhangi.core.network.model.PlatformReportDto
@@ -15,6 +16,11 @@ interface StudioGateway {
     suspend fun upsertCourse(course: CourseDto): Result<CourseDto>
     suspend fun upsertArticle(article: ArticleDto): Result<ArticleDto>
     suspend fun upsertContest(contest: ContestDto, questions: List<QuizQuestionDto>): Result<ContestDto>
+    suspend fun deleteBook(id: String): Result<Unit>
+    suspend fun deleteCourse(id: String): Result<Unit>
+    suspend fun deleteArticle(id: String): Result<Unit>
+    suspend fun deleteContest(id: String): Result<Unit>
+    suspend fun getContestReport(contestId: String): Result<ContestReportDto>
     suspend fun getOrgMessages(): Result<List<OrgMessageDto>>
     suspend fun sendOrgMessage(title: String, body: String, recipient: String): Result<OrgMessageDto>
     suspend fun markOrgMessageRead(id: String): Result<OrgMessageDto>

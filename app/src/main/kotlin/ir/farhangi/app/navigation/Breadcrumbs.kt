@@ -25,10 +25,15 @@ import ir.farhangi.feature.magazine.api.ArticleDetailRoute
 import ir.farhangi.feature.magazine.api.MagazineRoute
 import ir.farhangi.feature.profile.api.ProfileRoute
 import ir.farhangi.feature.search.api.SearchRoute
-import ir.farhangi.feature.studio.api.CreateArticleRoute
-import ir.farhangi.feature.studio.api.CreateBookRoute
-import ir.farhangi.feature.studio.api.CreateContestRoute
-import ir.farhangi.feature.studio.api.CreateCourseRoute
+import ir.farhangi.feature.studio.api.StudioArticleEditorRoute
+import ir.farhangi.feature.studio.api.StudioArticlesRoute
+import ir.farhangi.feature.studio.api.StudioBookEditorRoute
+import ir.farhangi.feature.studio.api.StudioBooksRoute
+import ir.farhangi.feature.studio.api.StudioContestEditorRoute
+import ir.farhangi.feature.studio.api.StudioContestStatsRoute
+import ir.farhangi.feature.studio.api.StudioContestsRoute
+import ir.farhangi.feature.studio.api.StudioCourseEditorRoute
+import ir.farhangi.feature.studio.api.StudioCoursesRoute
 import ir.farhangi.feature.studio.api.OrgInboxRoute
 import ir.farhangi.feature.studio.api.ReportsRoute
 import ir.farhangi.feature.studio.api.RolesRoute
@@ -64,10 +69,15 @@ private fun NavKey.breadcrumbLabel(): String? = when (this) {
     is ProfileRoute -> "پروفایل"
     is SearchRoute -> "جستجو"
     is StudioHomeRoute -> "استودیو"
-    is CreateBookRoute -> "کتاب جدید"
-    is CreateCourseRoute -> "دوره جدید"
-    is CreateArticleRoute -> "مقاله جدید"
-    is CreateContestRoute -> "مسابقه جدید"
+    is StudioBooksRoute -> "کتاب‌ها"
+    is StudioBookEditorRoute -> if (bookId.isBlank()) "کتاب جدید" else "ویرایش کتاب"
+    is StudioCoursesRoute -> "آموزش‌ها"
+    is StudioCourseEditorRoute -> if (courseId.isBlank()) "دوره جدید" else "ویرایش دوره"
+    is StudioArticlesRoute -> "مجله"
+    is StudioArticleEditorRoute -> if (articleId.isBlank()) "مطلب جدید" else "ویرایش مطلب"
+    is StudioContestsRoute -> "مسابقه‌ها"
+    is StudioContestEditorRoute -> if (contestId.isBlank()) "مسابقه جدید" else "ویرایش مسابقه"
+    is StudioContestStatsRoute -> "آمار مسابقه"
     is OrgInboxRoute -> "پیام‌ها"
     is ReportsRoute -> "گزارش‌ها"
     is RolesRoute -> "نقش‌ها"

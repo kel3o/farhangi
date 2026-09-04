@@ -4,6 +4,8 @@ import ir.farhangi.core.network.model.AnnouncementDto
 import ir.farhangi.core.network.model.ArticleDto
 import ir.farhangi.core.network.model.BookDto
 import ir.farhangi.core.network.model.ContestDto
+import ir.farhangi.core.network.model.ContestParticipantDto
+import ir.farhangi.core.network.model.ContestReportDto
 import ir.farhangi.core.network.model.CourseDto
 import ir.farhangi.core.network.model.LeaderboardEntryDto
 import ir.farhangi.core.network.model.NamedCountDto
@@ -42,6 +44,7 @@ class DemoPlatformStore @Inject constructor() {
     val orgMessages = MutableStateFlow(seedOrgMessages())
     val staff = MutableStateFlow(seedStaff())
     val quizScores = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val participantsByContest = MutableStateFlow(seedContestParticipants())
 
     fun upsertBook(book: BookDto): BookDto {
         val stored = if (book.id.isBlank()) book.copy(id = "book-${UUID.randomUUID()}") else book
@@ -71,13 +74,57 @@ class DemoPlatformStore @Inject constructor() {
     }
 
     fun upsertContest(contest: ContestDto, questions: List<QuizQuestionDto>): ContestDto {
-        val stored = if (contest.id.isBlank()) contest.copy(id = "contest-${UUID.randomUUID()}") else contest
+        val id = if (contest.id.isBlank()) "contest-${UUID.randomUUID()}" else contest.id
+        val stored = contest.copy(id = id, questionCount = questions.size)
         contests.update { current ->
             val without = current.filterNot { it.id == stored.id }
             listOf(stored) + without
         }
-        questionsByContest.update { it + (stored.id to questions) }
+        questionsByContest.update { current -> current + (stored.id to questions) }
+        participantsByContest.update { current ->
+            if (stored.id in current) current else current + (stored.id to emptyList())
+        }
         return stored
+    }
+
+    fun deleteBook(id: String): Boolean {
+        val existed = books.value.any { it.id == id }
+        books.update { current -> current.filterNot { it.id == id } }
+        return existed
+    }
+
+    fun deleteCourse(id: String): Boolean {
+        val existed = courses.value.any { it.id == id }
+        courses.update { current -> current.filterNot { it.id == id } }
+        return existed
+    }
+
+    fun deleteArticle(id: String): Boolean {
+        val existed = articles.value.any { it.id == id }
+        articles.update { current -> current.filterNot { it.id == id } }
+        return existed
+    }
+
+    fun deleteContest(id: String): Boolean {
+        val existed = contests.value.any { it.id == id }
+        contests.update { current -> current.filterNot { it.id == id } }
+        questionsByContest.update { current -> current - id }
+        participantsByContest.update { current -> current - id }
+        return existed
+    }
+
+    fun contestReport(contestId: String): ContestReportDto? {
+        val contest = contests.value.find { it.id == contestId } ?: return null
+        val ranked = rankedParticipants(contestId)
+        return ContestReportDto(
+            contestId = contest.id,
+            title = contest.title,
+            participantCount = contest.participantCount,
+            maleCount = ranked.count { it.gender == "MALE" },
+            femaleCount = ranked.count { it.gender == "FEMALE" },
+            unspecifiedCount = ranked.count { it.gender.isNullOrBlank() },
+            participants = ranked,
+        )
     }
 
     fun toggleSaved(bookId: String): Set<String> {
@@ -107,13 +154,47 @@ class DemoPlatformStore @Inject constructor() {
         val pointsPerCorrect = contests.value.find { it.id == contestId }?.pointsPerCorrect
             ?: CONTEST_POINT_PER_CORRECT
         points.update { it.copy(contests = it.contests + correct * pointsPerCorrect) }
+        val previous = participantsByContest.value[contestId].orEmpty()
+        val isNew = previous.none { it.userId == CURRENT_USER_ID }
+        val attempt = ContestParticipantDto(
+            userId = CURRENT_USER_ID,
+            displayName = CURRENT_USER_DISPLAY_NAME,
+            gender = null,
+            correctCount = correct,
+            totalCount = questions.size,
+            percent = percent,
+            submittedAt = "2026-09-04T12:00:00Z",
+        )
+        participantsByContest.update { current ->
+            val withoutUser = previous.filterNot { it.userId == CURRENT_USER_ID }
+            current + (contestId to (withoutUser + attempt))
+        }
         contests.update { list ->
             list.map { contest ->
-                if (contest.id == contestId) contest.copy(userScorePercent = percent) else contest
+                if (contest.id != contestId) {
+                    contest
+                } else {
+                    contest.copy(
+                        userScorePercent = percent,
+                        participantCount = if (isNew) {
+                            contest.participantCount + 1
+                        } else {
+                            contest.participantCount
+                        },
+                    )
+                }
             }
         }
         return percent
     }
+
+    private fun rankedParticipants(contestId: String): List<ContestParticipantDto> =
+        participantsByContest.value[contestId].orEmpty()
+            .sortedWith(
+                compareByDescending<ContestParticipantDto> { it.percent }
+                    .thenBy { it.displayName },
+            )
+            .mapIndexed { index, item -> item.copy(rank = index + 1) }
 
     fun sendOrgMessage(
         fromName: String,
@@ -208,6 +289,7 @@ class DemoPlatformStore @Inject constructor() {
 
     companion object {
         const val CURRENT_USER_ID = "demo-user"
+        private const val CURRENT_USER_DISPLAY_NAME = "شما"
         private const val PERCENT_BASE = 100
         private const val CONTEST_POINT_PER_CORRECT = 10
         private const val TOP_ITEMS = 3
@@ -491,6 +573,46 @@ private fun expandSeedQuestions(
         List(target) { index ->
             val source = questions[index % questions.size]
             source.copy(id = "$contestId-q${index + 1}")
+        }
+    }
+}
+
+private fun seedContestParticipants(): Map<String, List<ContestParticipantDto>> {
+    val names = listOf(
+        "زهرا محمدی" to "FEMALE",
+        "علی رضایی" to "MALE",
+        "مریم حسینی" to "FEMALE",
+        "حسین کاظمی" to "MALE",
+        "فاطمه نوری" to "FEMALE",
+        "رضا اکبری" to "MALE",
+        "سارا کریمی" to "FEMALE",
+        "مهدی جعفری" to "MALE",
+        "نرگس امینی" to "FEMALE",
+        "کامران نادری" to null,
+        "لیلا صادقی" to "FEMALE",
+        "امین توکلی" to "MALE",
+    )
+    val counts = mapOf(
+        "contest-1" to 12,
+        "contest-2" to 10,
+        "contest-3" to 12,
+        "contest-4" to 8,
+        "contest-5" to 12,
+    )
+    return counts.mapValues { (contestId, size) ->
+        List(size) { index ->
+            val (name, gender) = names[index % names.size]
+            val percent = (92 - index * 4).coerceAtLeast(48)
+            val total = 5
+            ContestParticipantDto(
+                userId = "$contestId-user-$index",
+                displayName = name,
+                gender = gender,
+                correctCount = ((percent * total) / 100).coerceIn(0, total),
+                totalCount = total,
+                percent = percent,
+                submittedAt = "2026-08-20T10:00:00Z",
+            )
         }
     }
 }

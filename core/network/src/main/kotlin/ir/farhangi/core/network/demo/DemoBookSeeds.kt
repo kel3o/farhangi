@@ -564,6 +564,7 @@ internal fun seedBooks(): List<BookDto> = listOf(
         author = "محمدرضا طاهری",
         publisher = "انتشارات انقلاب اسلامی",
         coverUrl = MARG_TAJERANE_COVER_KEY,
+        purchaseUrl = MARG_TAJERANE_PURCHASE_URL,
         categories = listOf("مذهبی", "دفاع مقدس", "خلاصه کتاب"),
         totalPages = margTajeranePages().size,
         rating = 4.8,

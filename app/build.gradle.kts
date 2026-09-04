@@ -15,8 +15,8 @@ android {
         applicationId = "ir.farhangi.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 236
-        versionName = "2.3.6"
+        versionCode = 241
+        versionName = "2.4.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

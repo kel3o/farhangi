@@ -5,6 +5,7 @@ import ir.farhangi.core.network.gateway.StudioGateway
 import ir.farhangi.core.network.model.ArticleDto
 import ir.farhangi.core.network.model.BookDto
 import ir.farhangi.core.network.model.ContestDto
+import ir.farhangi.core.network.model.ContestReportDto
 import ir.farhangi.core.network.model.CourseDto
 import ir.farhangi.core.network.model.OrgMessageDto
 import ir.farhangi.core.network.model.PlatformReportDto
@@ -40,6 +41,36 @@ class DemoStudioGateway @Inject constructor(
     ): Result<ContestDto> {
         delay(NETWORK_DELAY_MS)
         return Result.Success(store.upsertContest(contest, questions))
+    }
+
+    override suspend fun deleteBook(id: String): Result<Unit> {
+        delay(NETWORK_DELAY_MS)
+        return if (store.deleteBook(id)) Result.Success(Unit) else Result.Error(NoSuchElementException("کتاب یافت نشد"))
+    }
+
+    override suspend fun deleteCourse(id: String): Result<Unit> {
+        delay(NETWORK_DELAY_MS)
+        return if (store.deleteCourse(id)) Result.Success(Unit) else Result.Error(NoSuchElementException("دوره یافت نشد"))
+    }
+
+    override suspend fun deleteArticle(id: String): Result<Unit> {
+        delay(NETWORK_DELAY_MS)
+        return if (store.deleteArticle(id)) Result.Success(Unit) else Result.Error(NoSuchElementException("مطلب یافت نشد"))
+    }
+
+    override suspend fun deleteContest(id: String): Result<Unit> {
+        delay(NETWORK_DELAY_MS)
+        return if (store.deleteContest(id)) Result.Success(Unit) else Result.Error(NoSuchElementException("مسابقه یافت نشد"))
+    }
+
+    override suspend fun getContestReport(contestId: String): Result<ContestReportDto> {
+        delay(NETWORK_DELAY_MS)
+        val report = store.contestReport(contestId)
+        return if (report != null) {
+            Result.Success(report)
+        } else {
+            Result.Error(NoSuchElementException("گزارش مسابقه یافت نشد"))
+        }
     }
 
     override suspend fun getOrgMessages(): Result<List<OrgMessageDto>> {

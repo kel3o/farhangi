@@ -79,7 +79,32 @@ data class QuizQuestion(
     val id: String,
     val prompt: String,
     val options: List<String>,
+    val correctIndex: Int = 0,
 )
+
+@Serializable
+data class ContestParticipant(
+    val rank: Int,
+    val userId: String,
+    val displayName: String,
+    val gender: Gender? = null,
+    val correctCount: Int,
+    val totalCount: Int,
+    val percent: Int,
+)
+
+@Serializable
+data class ContestReport(
+    val contestId: String,
+    val title: String,
+    val participantCount: Int,
+    val maleCount: Int,
+    val femaleCount: Int,
+    val unspecifiedCount: Int,
+    val participants: List<ContestParticipant>,
+)
+
+const val QUIZ_OPTION_COUNT = 4
 
 @Serializable
 data class QuizSubmissionResult(

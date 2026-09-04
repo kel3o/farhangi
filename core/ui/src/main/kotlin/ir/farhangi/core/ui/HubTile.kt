@@ -23,10 +23,10 @@ import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 @Composable
 fun HubTile(
     title: String,
-    subtitle: String,
     icon: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    subtitle: String? = null,
 ) {
     Surface(
         modifier = modifier
@@ -49,11 +49,13 @@ fun HubTile(
             )
             Column(verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.xxs)) {
                 Text(text = title, style = MaterialTheme.typography.titleMedium)
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                if (!subtitle.isNullOrBlank()) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         }
     }

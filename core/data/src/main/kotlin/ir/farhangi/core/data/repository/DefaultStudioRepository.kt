@@ -8,6 +8,7 @@ import ir.farhangi.core.database.dao.OrgMessageDao
 import ir.farhangi.core.model.Article
 import ir.farhangi.core.model.Book
 import ir.farhangi.core.model.Contest
+import ir.farhangi.core.model.ContestReport
 import ir.farhangi.core.model.Course
 import ir.farhangi.core.model.OrgInboxRecipient
 import ir.farhangi.core.model.OrgMessage
@@ -45,15 +46,27 @@ class DefaultStudioRepository @Inject constructor(
         questions: List<QuizQuestion>,
     ): Result<Contest> {
         val questionDtos = questions.mapIndexed { index, question ->
+            val lastOption = (question.options.size - 1).coerceAtLeast(0)
             QuizQuestionDto(
                 id = question.id.ifBlank { "q$index" },
                 prompt = question.prompt,
                 options = question.options,
-                correctIndex = 0,
+                correctIndex = question.correctIndex.coerceIn(0, lastOption),
             )
         }
         return studioGateway.upsertContest(contest.toDto(), questionDtos).map { it.toDomain() }
     }
+
+    override suspend fun deleteBook(id: String): Result<Unit> = studioGateway.deleteBook(id)
+
+    override suspend fun deleteCourse(id: String): Result<Unit> = studioGateway.deleteCourse(id)
+
+    override suspend fun deleteArticle(id: String): Result<Unit> = studioGateway.deleteArticle(id)
+
+    override suspend fun deleteContest(id: String): Result<Unit> = studioGateway.deleteContest(id)
+
+    override suspend fun getContestReport(contestId: String): Result<ContestReport> =
+        studioGateway.getContestReport(contestId).map { it.toDomain() }
 
     override suspend fun getOrgMessages(): Result<List<OrgMessage>> {
         return when (val remote = studioGateway.getOrgMessages()) {

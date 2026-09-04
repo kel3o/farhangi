@@ -8,10 +8,20 @@ enum class CourseType {
     PROFESSIONAL,
 }
 
+fun CourseType.persianLabel(): String = when (this) {
+    CourseType.PRACTICAL -> "کاربردی"
+    CourseType.PROFESSIONAL -> "تخصصی"
+}
+
 @Serializable
 enum class LessonContentType {
     VIDEO,
     ARTICLE,
+}
+
+fun LessonContentType.persianLabel(): String = when (this) {
+    LessonContentType.VIDEO -> "ویدیو"
+    LessonContentType.ARTICLE -> "متن"
 }
 
 @Serializable

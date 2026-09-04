@@ -1,14 +1,13 @@
 package ir.farhangi.feature.studio.impl
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -16,7 +15,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
@@ -27,35 +25,30 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
-import ir.farhangi.core.model.ContestCategory
-import ir.farhangi.core.model.STUDIO_CONTEST_CATEGORIES
-import ir.farhangi.core.model.fromPersianDigits
-import ir.farhangi.core.model.studioLabel
+import ir.farhangi.core.model.MagazineCategory
+import ir.farhangi.core.model.persianLabel
+import ir.farhangi.core.ui.LoadingState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateContestScreen(
-    onSubmit: (title: String, category: ContestCategory, body: String, durationMinutes: Int?, sourceUrl: String?) -> Unit,
+fun StudioArticleEditorScreen(
+    uiState: StudioArticleEditorUiState,
+    onDraftChange: ((StudioArticleDraft) -> StudioArticleDraft) -> Unit,
+    onCoverPicked: (Uri) -> Unit,
+    onPublish: () -> Unit,
     onBack: () -> Unit,
     onPublishedConfirmed: () -> Unit,
-    statusMessage: String?,
     modifier: Modifier = Modifier,
 ) {
-    var name by rememberSaveable { mutableStateOf("") }
-    var category by rememberSaveable { mutableStateOf(ContestCategory.BOOK.name) }
-    var body by rememberSaveable { mutableStateOf("") }
-    var durationMinutes by rememberSaveable { mutableStateOf("") }
-    var hasSource by rememberSaveable { mutableStateOf(false) }
-    var sourceUrl by rememberSaveable { mutableStateOf("") }
+    if (uiState.isLoading) {
+        LoadingState(modifier)
+        return
+    }
+    val draft = uiState.draft
     var categoryMenuOpen by rememberSaveable { mutableStateOf(false) }
-    val selectedCategory = ContestCategory.entries.find { it.name == category }
-        ?: ContestCategory.BOOK
-    val published = statusMessage == CONTEST_PUBLISHED_MESSAGE
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -63,15 +56,23 @@ fun CreateContestScreen(
             .padding(FarhangiSpacing.lg),
         verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.md),
     ) {
-        Text("مسابقه تازه", style = MaterialTheme.typography.headlineSmall)
         Text(
-            text = "عنوان، دسته، توضیح کوتاه و مدت پاسخ را وارد کنید.",
+            text = if (draft.id.isBlank()) "مطلب تازه مجله" else "ویرایش مطلب",
+            style = MaterialTheme.typography.headlineSmall,
+        )
+        Text(
+            text = "تصویر، عنوان، دسته و متن همان چیزهایی هستند که در مجله دیده می‌شود.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        StudioCoverPicker(
+            coverUrl = draft.coverUrl,
+            title = draft.title,
+            onCoverPicked = onCoverPicked,
+        )
         OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
+            value = draft.title,
+            onValueChange = { value -> onDraftChange { it.copy(title = value) } },
             modifier = Modifier.fillMaxWidth(),
             label = { Text("عنوان") },
         )
@@ -80,7 +81,7 @@ fun CreateContestScreen(
             onExpandedChange = { categoryMenuOpen = it },
         ) {
             OutlinedTextField(
-                value = selectedCategory.studioLabel(),
+                value = draft.category.persianLabel(),
                 onValueChange = {},
                 readOnly = true,
                 modifier = Modifier
@@ -93,11 +94,11 @@ fun CreateContestScreen(
                 expanded = categoryMenuOpen,
                 onDismissRequest = { categoryMenuOpen = false },
             ) {
-                STUDIO_CONTEST_CATEGORIES.forEach { option ->
+                MagazineCategory.entries.forEach { option ->
                     DropdownMenuItem(
-                        text = { Text(option.studioLabel()) },
+                        text = { Text(option.persianLabel()) },
                         onClick = {
-                            category = option.name
+                            onDraftChange { it.copy(category = option) }
                             categoryMenuOpen = false
                         },
                     )
@@ -105,58 +106,26 @@ fun CreateContestScreen(
             }
         }
         OutlinedTextField(
-            value = body,
-            onValueChange = { body = it },
+            value = draft.summary,
+            onValueChange = { value -> onDraftChange { it.copy(summary = value) } },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("توضیح کوتاه") },
-            minLines = 4,
+            label = { Text("خلاصه کارت") },
+            supportingText = { Text("اگر خالی بماند از ابتدای متن ساخته می‌شود.") },
+            minLines = 2,
         )
         OutlinedTextField(
-            value = durationMinutes,
-            onValueChange = { durationMinutes = it.filter { char -> char.isDigit() } },
+            value = draft.body,
+            onValueChange = { value -> onDraftChange { it.copy(body = value) } },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("مدت پاسخ (دقیقه)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            label = { Text("متن مطلب") },
+            minLines = 8,
         )
-        Text("آیا مسابقه «منبع» دارد؟", style = MaterialTheme.typography.titleSmall)
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.xs),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            FilterChip(
-                selected = hasSource,
-                onClick = { hasSource = true },
-                label = { Text("بله") },
-            )
-            FilterChip(
-                selected = !hasSource,
-                onClick = { hasSource = false },
-                label = { Text("خیر") },
-            )
-        }
-        if (hasSource) {
-            OutlinedTextField(
-                value = sourceUrl,
-                onValueChange = { sourceUrl = it },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("پیوند منبع") },
-                supportingText = { Text("پیوند وب یا شناسه کتاب مانند book-17") },
-            )
-        }
-        if (!statusMessage.isNullOrBlank() && !published) {
-            Text(statusMessage, color = MaterialTheme.colorScheme.error)
+        if (!uiState.statusMessage.isNullOrBlank() && !uiState.published) {
+            Text(uiState.statusMessage, color = MaterialTheme.colorScheme.error)
         }
         Button(
-            onClick = {
-                onSubmit(
-                    name,
-                    selectedCategory,
-                    body,
-                    durationMinutes.fromPersianDigits().toIntOrNull(),
-                    sourceUrl.trim().takeIf { hasSource && it.isNotEmpty() },
-                )
-            },
-            enabled = name.isNotBlank() && !published,
+            onClick = onPublish,
+            enabled = draft.title.isNotBlank() && !uiState.published,
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = FarhangiSize.touchTargetMin),
@@ -168,16 +137,14 @@ fun CreateContestScreen(
                 .heightIn(min = FarhangiSize.touchTargetMin),
         ) { Text("بازگشت") }
     }
-    if (published) {
+    if (uiState.published) {
         AlertDialog(
             onDismissRequest = onPublishedConfirmed,
             confirmButton = {
                 TextButton(onClick = onPublishedConfirmed) { Text("تأیید") }
             },
-            title = { Text("مسابقه ثبت شد") },
-            text = { Text("مسابقه با موفقیت ثبت شد.") },
+            title = { Text("مطلب ثبت شد") },
+            text = { Text("مطلب مجله با موفقیت منتشر شد.") },
         )
     }
 }
-
-internal const val CONTEST_PUBLISHED_MESSAGE = "مسابقه ثبت شد"

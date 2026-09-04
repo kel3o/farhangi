@@ -12,3 +12,9 @@ fun Gender.persianLabel(): String = when (this) {
     Gender.MALE -> "مرد"
     Gender.FEMALE -> "زن"
 }
+
+fun Gender?.contestAudienceLabel(): String = when (this) {
+    Gender.MALE -> "آقا"
+    Gender.FEMALE -> "خانم"
+    null -> "نامشخص"
+}

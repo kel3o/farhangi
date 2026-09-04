@@ -2,7 +2,10 @@ package ir.farhangi.core.data.mapper
 
 import ir.farhangi.core.model.Contest
 import ir.farhangi.core.model.ContestCategory
+import ir.farhangi.core.model.ContestParticipant
+import ir.farhangi.core.model.ContestReport
 import ir.farhangi.core.model.ContestStatus
+import ir.farhangi.core.model.Gender
 import ir.farhangi.core.model.LeaderboardEntry
 import ir.farhangi.core.model.LeaderboardPeriod
 import ir.farhangi.core.model.NamedCount
@@ -16,6 +19,8 @@ import ir.farhangi.core.model.StaffMember
 import ir.farhangi.core.model.Trophy
 import ir.farhangi.core.model.UserRole
 import ir.farhangi.core.network.model.ContestDto
+import ir.farhangi.core.network.model.ContestParticipantDto
+import ir.farhangi.core.network.model.ContestReportDto
 import ir.farhangi.core.network.model.LeaderboardEntryDto
 import ir.farhangi.core.network.model.NamedCountDto
 import ir.farhangi.core.network.model.OrgMessageDto
@@ -47,6 +52,7 @@ fun QuizQuestionDto.toDomain(): QuizQuestion = QuizQuestion(
     id = id,
     prompt = prompt,
     options = options,
+    correctIndex = correctIndex.coerceAtLeast(0),
 )
 
 fun LeaderboardEntryDto.toDomain(currentUserId: String): LeaderboardEntry = LeaderboardEntry(
@@ -100,4 +106,29 @@ fun StaffMemberDto.toDomain(): StaffMember = StaffMember(
     displayName = displayName,
     phone = phone,
     role = runCatching { UserRole.valueOf(role) }.getOrDefault(UserRole.USER),
+)
+
+fun ContestReportDto.toDomain(): ContestReport {
+    val ranked = participants
+        .sortedByDescending { it.percent }
+        .mapIndexed { index, item -> item.toDomain(rank = index + 1) }
+    return ContestReport(
+        contestId = contestId,
+        title = title,
+        participantCount = participantCount,
+        maleCount = ranked.count { it.gender == Gender.MALE },
+        femaleCount = ranked.count { it.gender == Gender.FEMALE },
+        unspecifiedCount = ranked.count { it.gender == null },
+        participants = ranked,
+    )
+}
+
+fun ContestParticipantDto.toDomain(rank: Int): ContestParticipant = ContestParticipant(
+    rank = rank,
+    userId = userId,
+    displayName = displayName,
+    gender = gender?.let { runCatching { Gender.valueOf(it) }.getOrNull() },
+    correctCount = correctCount,
+    totalCount = totalCount,
+    percent = percent,
 )

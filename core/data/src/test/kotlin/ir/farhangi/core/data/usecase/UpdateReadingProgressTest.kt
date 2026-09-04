@@ -56,6 +56,7 @@ class UpdateReadingProgressTest {
         override fun observeNotificationPromptCompleted(): Flow<Boolean> = flowOf(true)
         override suspend fun completeOnboarding() = Unit
         override suspend fun completeNotificationPrompt() = Unit
+        override suspend fun updateDisplayName(displayName: String) = Result.Error(IllegalStateException())
         override suspend fun signOut() = Result.Success(Unit)
     }
 

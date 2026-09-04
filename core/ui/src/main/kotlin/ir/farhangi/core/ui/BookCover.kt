@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import coil.compose.AsyncImage
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 
 const val BOOK_COVER_ASPECT_RATIO = 2f / 3f
@@ -23,33 +24,17 @@ fun BookCover(
     title: String,
     modifier: Modifier = Modifier,
 ) {
-    val drawableId = coverDrawableId(coverUrl)
     Surface(
         modifier = modifier.aspectRatio(BOOK_COVER_ASPECT_RATIO),
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.primaryContainer,
         tonalElevation = FarhangiSpacing.xxs,
     ) {
-        if (drawableId != 0) {
-            Image(
-                painter = painterResource(drawableId),
-                contentDescription = title,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-            )
-        } else {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = title.take(1),
-                    modifier = Modifier.padding(FarhangiSpacing.md),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                )
-            }
-        }
+        CoverImageContent(
+            coverUrl = coverUrl,
+            title = title,
+            contentScale = ContentScale.Crop,
+        )
     }
 }
 
@@ -60,15 +45,67 @@ fun ContentImage(
     modifier: Modifier = Modifier,
 ) {
     val drawableId = coverDrawableId(coverUrl)
-    if (drawableId != 0) {
-        Image(
+    when {
+        drawableId != 0 -> Image(
             painter = painterResource(drawableId),
+            contentDescription = contentDescription,
+            modifier = modifier,
+            contentScale = ContentScale.Fit,
+        )
+        isLoadableCoverUrl(coverUrl) -> AsyncImage(
+            model = coverUrl,
             contentDescription = contentDescription,
             modifier = modifier,
             contentScale = ContentScale.Fit,
         )
     }
 }
+
+@Composable
+internal fun CoverImageContent(
+    coverUrl: String?,
+    title: String,
+    contentScale: ContentScale,
+    modifier: Modifier = Modifier,
+) {
+    val drawableId = coverDrawableId(coverUrl)
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        when {
+            drawableId != 0 -> Image(
+                painter = painterResource(drawableId),
+                contentDescription = title,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = contentScale,
+            )
+            isLoadableCoverUrl(coverUrl) -> AsyncImage(
+                model = coverUrl,
+                contentDescription = title,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = contentScale,
+            )
+            else -> Text(
+                text = title.take(1).ifBlank { "—" },
+                modifier = Modifier.padding(FarhangiSpacing.md),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+        }
+    }
+}
+
+internal fun isLoadableCoverUrl(coverUrl: String?): Boolean {
+    if (coverUrl.isNullOrBlank()) return false
+    return coverUrl.startsWith(CONTENT_URI_PREFIX) ||
+        coverUrl.startsWith(FILE_URI_PREFIX) ||
+        coverUrl.startsWith(HTTP_URI_PREFIX) ||
+        coverUrl.startsWith(HTTPS_URI_PREFIX)
+}
+
+private const val CONTENT_URI_PREFIX = "content:"
+private const val FILE_URI_PREFIX = "file:"
+private const val HTTP_URI_PREFIX = "http:"
+private const val HTTPS_URI_PREFIX = "https:"
+
 
 internal fun coverDrawableId(coverUrl: String?): Int = when (coverUrl) {
     "cover_golestan" -> R.drawable.cover_golestan

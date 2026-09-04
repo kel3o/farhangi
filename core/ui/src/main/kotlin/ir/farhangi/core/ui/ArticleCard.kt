@@ -1,6 +1,5 @@
 package ir.farhangi.core.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import ir.farhangi.core.designsystem.icon.FarhangiIcons
@@ -119,30 +117,18 @@ fun ArticleCoverImage(
     title: String,
     modifier: Modifier = Modifier,
 ) {
-    val drawableId = coverDrawableId(coverUrl)
     val shape = MaterialTheme.shapes.extraLarge
     Box(modifier = modifier.clip(shape)) {
-        if (drawableId != 0) {
-            Image(
-                painter = painterResource(drawableId),
-                contentDescription = title,
-                modifier = Modifier.fillMaxSize(),
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            shape = shape,
+            color = MaterialTheme.colorScheme.primaryContainer,
+        ) {
+            CoverImageContent(
+                coverUrl = coverUrl,
+                title = title,
                 contentScale = ContentScale.Crop,
             )
-        } else {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                shape = shape,
-                color = MaterialTheme.colorScheme.primaryContainer,
-            ) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = title.take(1),
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
-                }
-            }
         }
     }
 }

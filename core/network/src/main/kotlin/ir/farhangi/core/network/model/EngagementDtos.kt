@@ -89,3 +89,26 @@ data class StaffMemberDto(
     val phone: String,
     val role: String,
 )
+
+@Serializable
+data class ContestParticipantDto(
+    val rank: Int = 0,
+    @SerialName("user_id") val userId: String,
+    @SerialName("display_name") val displayName: String,
+    val gender: String? = null,
+    @SerialName("correct_count") val correctCount: Int,
+    @SerialName("total_count") val totalCount: Int,
+    val percent: Int,
+    @SerialName("submitted_at") val submittedAt: String = "",
+)
+
+@Serializable
+data class ContestReportDto(
+    @SerialName("contest_id") val contestId: String,
+    val title: String,
+    @SerialName("participant_count") val participantCount: Int,
+    @SerialName("male_count") val maleCount: Int = 0,
+    @SerialName("female_count") val femaleCount: Int = 0,
+    @SerialName("unspecified_count") val unspecifiedCount: Int = 0,
+    val participants: List<ContestParticipantDto> = emptyList(),
+)

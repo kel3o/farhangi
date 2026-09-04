@@ -2,6 +2,8 @@ package ir.farhangi.core.network.demo
 
 internal const val MARG_TAJERANE_BOOK_ID = "book-17"
 internal const val MARG_TAJERANE_COVER_KEY = "cover_marg_tajerane"
+internal const val MARG_TAJERANE_PURCHASE_URL =
+    "https://www.ghbook.ir/index.php?option=com_dbook&task=viewbook&book_id=19204&Itemid=&lang=fa"
 
 internal fun margTajeranePages(): List<String> = listOf(
     """
