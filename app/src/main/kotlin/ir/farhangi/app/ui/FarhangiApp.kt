@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,7 +36,7 @@ import ir.farhangi.feature.auth.api.NotificationPermissionRoute
 import ir.farhangi.feature.auth.api.OnboardingRoute
 import ir.farhangi.feature.auth.api.OtpRoute
 import ir.farhangi.feature.auth.api.PhoneRoute
-import ir.farhangi.feature.books.api.BooksRoute
+import ir.farhangi.feature.home.api.HomeRoute
 import ir.farhangi.feature.profile.api.ProfileRoute
 import ir.farhangi.feature.search.api.SearchRoute
 
@@ -62,7 +63,7 @@ fun FarhangiApp(
         backStack.isEmpty() -> true
         isAuthMode -> backStack.size <= 1
         backStack.size > 1 -> false
-        topLevelRoute != BooksRoute -> false
+        topLevelRoute != HomeRoute -> false
         else -> true
     }
 
@@ -82,7 +83,7 @@ fun FarhangiApp(
 
     LaunchedEffect(isAuthenticated, hasCompletedOnboarding, hasCompletedNotificationPrompt) {
         navigator.configureMain(
-            start = BooksRoute,
+            start = HomeRoute,
             topLevels = topLevelRoutes,
         )
         val current = navigator.backStack.lastOrNull()
@@ -100,10 +101,10 @@ fun FarhangiApp(
                     navigator.replaceAll(NotificationPermissionRoute)
                 }
             }
-            navigator.backStack.isEmpty() -> navigator.enterMain(BooksRoute)
+            navigator.backStack.isEmpty() -> navigator.enterMain(HomeRoute)
             navigator.isAuthMode || current is PhoneRoute || current is OtpRoute ||
                 current is OnboardingRoute || current is NotificationPermissionRoute -> {
-                navigator.enterMain(BooksRoute)
+                navigator.enterMain(HomeRoute)
             }
         }
     }
@@ -168,9 +169,10 @@ fun FarhangiApp(
     }
 
     val selected = TopLevelDestination.entries.firstOrNull { it.route == topLevelRoute }
-        ?: TopLevelDestination.BOOKS
+        ?: TopLevelDestination.HOME
 
     NavigationSuiteScaffold(
+        layoutType = NavigationSuiteType.NavigationBar,
         navigationSuiteItems = {
             TopLevelDestination.entries.forEach { destination ->
                 item(
