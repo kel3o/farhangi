@@ -92,22 +92,31 @@ class StudioViewModel @Inject constructor(
         }
     }
 
-    fun createContest(title: String, category: String, body: String, durationMinutes: Int? = null) {
+    fun clearStatus() {
+        _status.value = null
+    }
+
+    fun createContest(
+        title: String,
+        category: ContestCategory,
+        body: String,
+        durationMinutes: Int? = null,
+        sourceUrl: String? = null,
+    ) {
         viewModelScope.launch {
-            val contestCategory = ContestCategory.entries.find { it.name.contains(category, ignoreCase = true) }
-                ?: ContestCategory.GENERAL_KNOWLEDGE
             val durationSeconds = (durationMinutes ?: (MIN_CONTEST_MINUTES..MAX_CONTEST_MINUTES).random()) * SECONDS_PER_MINUTE
             val result = studioRepository.upsertContest(
                 Contest(
                     id = "",
                     title = title,
                     summary = body,
-                    category = contestCategory,
+                    category = category,
                     status = ContestStatus.LIVE,
                     questionCount = 1,
                     participantCount = 0,
                     endsAt = Instant.parse("2026-09-01T20:00:00Z"),
                     durationSeconds = durationSeconds,
+                    sourceUrl = sourceUrl?.trim()?.takeIf { it.isNotEmpty() },
                 ),
                 listOf(
                     QuizQuestion(
@@ -117,7 +126,7 @@ class StudioViewModel @Inject constructor(
                     ),
                 ),
             )
-            _status.value = if (result is Result.Success) "مسابقه ثبت شد" else "خطا در ثبت مسابقه"
+            _status.value = if (result is Result.Success) CONTEST_PUBLISHED_MESSAGE else "خطا در ثبت مسابقه"
         }
     }
 

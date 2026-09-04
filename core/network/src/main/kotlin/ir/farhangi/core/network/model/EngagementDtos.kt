@@ -18,6 +18,7 @@ data class ContestDto(
     @SerialName("user_score_percent") val userScorePercent: Int? = null,
     @SerialName("duration_seconds") val durationSeconds: Int = 180,
     @SerialName("points_per_correct") val pointsPerCorrect: Int = 10,
+    @SerialName("source_url") val sourceUrl: String? = null,
 )
 
 @Serializable

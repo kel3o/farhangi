@@ -30,6 +30,8 @@ object FarhangiSize {
     val contestGridMin: Dp = 160.dp
     val iconLarge: Dp = 32.dp
     val honorMedal: Dp = 40.dp
+    val honorMedalTall: Dp = 56.dp
+    val contestStatCellMin: Dp = 56.dp
     val chartHeight: Dp = 160.dp
     val barMinWidth: Dp = 16.dp
 }

@@ -106,7 +106,7 @@ class GetHomeFeed @Inject constructor(
                 continueReading = continueReading,
                 latestArticles = articles.take(LATEST_ARTICLES_COUNT),
                 recommendedBooks = books.take(RECOMMENDED_COUNT),
-                recentlyAdded = books.takeLast(RECENTLY_ADDED_COUNT).reversed(),
+                recentlyAdded = books.take(RECENTLY_ADDED_COUNT),
                 announcements = announcements,
                 continueCourses = courses.filter { it.progress > 0f }.ifEmpty { courses.take(1) },
                 liveContests = contests.filter { it.status == ContestStatus.LIVE }.take(LIVE_CONTEST_COUNT),

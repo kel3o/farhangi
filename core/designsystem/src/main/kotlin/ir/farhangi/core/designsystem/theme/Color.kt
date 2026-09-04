@@ -77,7 +77,21 @@ object FarhangiActionColors {
 /** Representational medal metals — not Material color roles. */
 object FarhangiHonorColors {
     val Gold = Color(0xFFC9A227)
+    val GoldDeep = Color(0xFF7A5C00)
     val Silver = Color(0xFF8A9199)
+    val SilverDeep = Color(0xFF4A5056)
     val Bronze = Color(0xFFB87333)
+    val BronzeDeep = Color(0xFF6B3F1A)
     val OnMedal = Color(0xFFFFFFFF)
+    val WeeklyRibbon = Color(0xFF1565C0)
+    val MonthlyRibbon = Color(0xFFC62828)
+    val Wreath = Color(0xFF3D4A3D)
+}
+
+/** Semantic contest status fills — pale green / pale red as specified. */
+object FarhangiContestColors {
+    val LiveContainer = Color(0xFFC8E6C9)
+    val OnLive = Color(0xFF1B5E20)
+    val FinishedContainer = Color(0xFFFFCDD2)
+    val OnFinished = Color(0xFFB71C1C)
 }

@@ -22,12 +22,12 @@ import javax.inject.Singleton
 @Singleton
 class DemoPlatformStore @Inject constructor() {
 
-    val books = MutableStateFlow(seedBooks())
+    val books = MutableStateFlow(seedBooks().reversed())
     val courses = MutableStateFlow(seedCourses())
     val articles = MutableStateFlow(seedArticles())
     val announcements = MutableStateFlow(seedAnnouncements())
     val contests = MutableStateFlow(seedContests())
-    val questionsByContest = MutableStateFlow(seedQuestions())
+    val questionsByContest = MutableStateFlow(expandSeedQuestions(seedQuestions()))
     val savedBookIds = MutableStateFlow(setOf("book-1", "book-4"))
     val savedArticleIds = MutableStateFlow(setOf("article-1"))
     val points = MutableStateFlow(PointsDto(reading = 240, courses = 80, contests = 60, magazine = 35))
@@ -235,7 +235,7 @@ private fun seedArticles(): List<ArticleDto> = listOf(
         "سنت وقتی زنده است که محل رفت‌وآمد باشد؛ نه ویترینی خاموش پشت شیشه.",
         "سنت را اگر فقط پشت شیشه بگذاریم، می‌میرد. چایخانه یعنی حرف زدن با صدای معمولی درباره چیزهای مهم. در چایخانه می‌شود از کتاب تازه گفت، از خاطره مادربزرگ، و از برنامه‌ای که فردا برای محله داریم. زنده بودن سنت یعنی رفت‌وآمد، نه ویترین. اگر جای امنی برای حرف زدن نباشد، فرهنگ به عکس و قاب تقلیل پیدا می‌کند. پس چایخانه را نه به‌عنوان نوستالژی، که به‌عنوان فضای عمومی کوچک ببینیم. وقتی مردم دور یک استکان جمع می‌شوند، اختلاف‌ها نرم‌تر شنیده می‌شوند و شباهت‌ها زودتر پیدا می‌شوند. همین رفت‌وآمد ساده، حافظه جمعی را زنده نگه می‌دارد. اگر فقط نمایش بگذاریم و حضور نسازیم، نسل بعد سنت را داستان موزه می‌داند نه بخشی از زندگی. پس هر محله به یک فضای امن گفت‌وگو نیاز دارد؛ کوچک، در دسترس و بدون تکلف. چایخانه استعاره است از جایی که فرهنگ نفس می‌کشد.",
         null,
-        "cover_article_1",
+        "cover_article_8",
         "2026-08-17T08:00:00Z",
     ),
     ArticleDto(
@@ -336,10 +336,10 @@ private fun seedContests(): List<ContestDto> = listOf(
     ContestDto(
         "contest-1",
         "مسابقه گلستان",
-        "چهار سؤال چهارگزینه‌ای از حکایت‌های آغاز گلستان سعدی. هدف این مسابقه فقط حفظ کردن نیست؛ می‌خواهیم ببینید پیام اخلاقی حکایت‌ها را چقدر در زندگی روزمره تشخیص می‌دهید. زمان محدود است، پس آرام و دقیق بخوانید. پس از ارسال پاسخ، درصد شما ذخیره می‌شود و می‌توانید بعداً در جدول هم‌خوان پیشرفت خود را ببینید. اگر هنوز کتاب را ورق نزده‌اید، یک صفحه از گلستان را مرور کنید و برگردید.",
+        "سؤال‌هایی چهارگزینه‌ای از حکایت‌های آغاز گلستان سعدی. هدف این مسابقه فقط حفظ کردن نیست؛ می‌خواهیم ببینید پیام اخلاقی حکایت‌ها را چقدر در زندگی روزمره تشخیص می‌دهید. زمان محدود است، پس آرام و دقیق بخوانید. پس از ارسال پاسخ، درصد شما ذخیره می‌شود و می‌توانید بعداً در جدول هم‌خوان پیشرفت خود را ببینید. اگر هنوز کتاب را ورق نزده‌اید، یک صفحه از گلستان را مرور کنید و برگردید.",
         "BOOK",
         "LIVE",
-        4,
+        5,
         218,
         "book-1",
         null,
@@ -354,7 +354,7 @@ private fun seedContests(): List<ContestDto> = listOf(
         "سؤال‌هایی از عادت خانه، مدیریت زمان خانواده و مطالعه مشترک. این آزمون برای والدینی طراحی شده که می‌خواهند بدون شعار، قدم‌های کوچک و واقعی بردارند. هر سؤال یک موقعیت آشنا را مطرح می‌کند. پاسخ درست معمولاً ساده‌ترین و پایدارترین انتخاب است، نه سخت‌ترین. زمان پاسخ‌گویی محدود است و نتیجه در پرونده فرهنگی شما ثبت می‌شود.",
         "LIFESTYLE",
         "LIVE",
-        4,
+        7,
         96,
         null,
         "course-2",
@@ -369,7 +369,7 @@ private fun seedContests(): List<ContestDto> = listOf(
         "ترکیبی از تاریخ، هنر، کتاب و نمادهای فرهنگی ایران و جهان. مناسب کسانی است که مجله و بخش کتاب را دنبال می‌کنند. سؤال‌ها کوتاه‌اند اما گزینه‌های انحرافی دارند؛ عجله نکنید. این مسابقه برای سنجش دانش سطحی نیست؛ برای زنده نگه داشتن کنجکاوی فرهنگی است. پس از پایان، می‌توانید منابع پیشنهادی را در مجله بخوانید.",
         "GENERAL_KNOWLEDGE",
         "LIVE",
-        4,
+        6,
         154,
         null,
         null,
@@ -396,10 +396,10 @@ private fun seedContests(): List<ContestDto> = listOf(
     ContestDto(
         "contest-5",
         "مسابقه کیمیاگر",
-        "مسابقه کتاب کیمیاگر به پایان رسیده و نتایج اعلام شده است. چهار سؤال از پیام اصلی داستان، مسیر چوپان و مفهوم افسانه شخصی مطرح شده بود. اگر شرکت کرده‌اید، درصد نهایی‌تان را در همین صفحه می‌بینید. برای دور بعدی مسابقات کتاب، اعلان‌های مجله و خانه را دنبال کنید. مرور دوباره چند صفحه از کتاب هنوز هم ارزش دارد.",
+        "مسابقه کتاب کیمیاگر به پایان رسیده و نتایج اعلام شده است. سؤال‌هایی از پیام اصلی داستان، مسیر چوپان و مفهوم افسانه شخصی مطرح شده بود. اگر شرکت کرده‌اید، درصد نهایی‌تان را در همین صفحه می‌بینید. برای دور بعدی مسابقات کتاب، اعلان‌های مجله و خانه را دنبال کنید. مرور دوباره چند صفحه از کتاب هنوز هم ارزش دارد.",
         "BOOK",
         "FINISHED",
-        4,
+        5,
         310,
         "book-2",
         null,
@@ -407,6 +407,7 @@ private fun seedContests(): List<ContestDto> = listOf(
         75,
         270,
         10,
+        MARG_TAJERANE_BOOK_ID,
     ),
 )
 
@@ -474,3 +475,22 @@ private fun seedStaff(): List<StaffMemberDto> = listOf(
     StaffMemberDto("u-admin", "مدیرکل فرهنگی", "09333333333", "SUPER_ADMIN"),
     StaffMemberDto("u-user", "مینا صالحی", "09120000000", "USER"),
 )
+
+private fun expandSeedQuestions(
+    base: Map<String, List<QuizQuestionDto>>,
+): Map<String, List<QuizQuestionDto>> {
+    val counts = mapOf(
+        "contest-1" to 5,
+        "contest-2" to 7,
+        "contest-3" to 6,
+        "contest-4" to 4,
+        "contest-5" to 5,
+    )
+    return base.mapValues { (contestId, questions) ->
+        val target = counts[contestId] ?: questions.size
+        List(target) { index ->
+            val source = questions[index % questions.size]
+            source.copy(id = "$contestId-q${index + 1}")
+        }
+    }
+}

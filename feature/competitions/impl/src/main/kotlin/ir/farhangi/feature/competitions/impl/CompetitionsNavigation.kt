@@ -12,6 +12,7 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.multibindings.IntoSet
 import ir.farhangi.core.navigation.EntryProviderInstaller
 import ir.farhangi.core.navigation.Navigator
+import ir.farhangi.feature.books.api.BookDetailRoute
 import ir.farhangi.feature.competitions.api.CompetitionsRoute
 import ir.farhangi.feature.competitions.api.ContestDetailRoute
 import ir.farhangi.feature.competitions.api.QuizRoute
@@ -44,6 +45,7 @@ fun EntryProviderScope<NavKey>.competitionsEntries(navigator: Navigator) {
         ContestDetailScreen(
             uiState = uiState,
             onStartQuiz = { navigator.navigate(QuizRoute(key.contestId)) },
+            onOpenBookSource = { bookId -> navigator.navigate(BookDetailRoute(bookId)) },
             onBack = { navigator.pop() },
         )
     }

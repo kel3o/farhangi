@@ -5,16 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import ir.farhangi.core.designsystem.theme.FarhangiSize
 import ir.farhangi.core.designsystem.theme.FarhangiSpacing
 import ir.farhangi.core.model.Contest
 import ir.farhangi.core.model.ContestCategory
@@ -80,8 +77,7 @@ fun CompetitionsScreen(
             if (uiState.contests.isEmpty()) {
                 EmptyState("موردی نیست", "مسابقه‌ای با این فیلتر نیست.", Modifier.padding(FarhangiSpacing.lg))
             } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = FarhangiSize.contestGridMin),
+                LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
                         start = FarhangiSpacing.md,
@@ -90,7 +86,6 @@ fun CompetitionsScreen(
                         bottom = contentPadding.calculateBottomPadding() + FarhangiSpacing.lg,
                     ),
                     verticalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
-                    horizontalArrangement = Arrangement.spacedBy(FarhangiSpacing.sm),
                 ) {
                     items(uiState.contests, key = { it.id }) { contest ->
                         ContestCard(contest = contest, onClick = { onContestClick(contest) })

@@ -87,6 +87,7 @@ internal fun coverDrawableId(coverUrl: String?): Int = when (coverUrl) {
     "cover_animal_farm" -> R.drawable.cover_animal_farm
     "cover_psychology" -> R.drawable.cover_psychology
     "cover_parenting" -> R.drawable.cover_parenting
+    "cover_marg_tajerane" -> R.drawable.cover_marg_tajerane
     "cover_course_empathy" -> R.drawable.cover_course_empathy
     "cover_course_geometry" -> R.drawable.cover_course_geometry
     "cover_course_network" -> R.drawable.cover_course_network

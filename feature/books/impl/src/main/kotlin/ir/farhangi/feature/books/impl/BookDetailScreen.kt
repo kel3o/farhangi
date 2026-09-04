@@ -119,7 +119,7 @@ fun BookDetailScreen(
                         contentColor = FarhangiActionColors.OnPurchase,
                     ),
                 ) {
-                    Text("تهیه کتاب از طاقچه")
+                    Text("نسخه کامل کتاب")
                 }
                 Button(onClick = onSaveClick, modifier = Modifier.fillMaxWidth()) {
                     Text(if (book.isSaved) "حذف از کتابخانه من" else "ذخیره در کتابخانه من")

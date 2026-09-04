@@ -42,7 +42,9 @@ class DemoContentGateway @Inject constructor(
 
     override suspend fun getArticles(query: String?): Result<List<ArticleDto>> {
         delay(NETWORK_DELAY_MS)
-        val filtered = store.articles.value.filterByQuery(query) { it.title + it.category }
+        val filtered = store.articles.value
+            .filterByQuery(query) { it.title + it.category }
+            .sortedByDescending { it.publishedAt }
         return Result.Success(filtered)
     }
 

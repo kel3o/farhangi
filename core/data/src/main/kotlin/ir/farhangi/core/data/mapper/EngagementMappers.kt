@@ -40,6 +40,7 @@ fun ContestDto.toDomain(): Contest = Contest(
     userScorePercent = userScorePercent,
     durationSeconds = durationSeconds,
     pointsPerCorrect = pointsPerCorrect,
+    sourceUrl = sourceUrl,
 )
 
 fun QuizQuestionDto.toDomain(): QuizQuestion = QuizQuestion(

@@ -188,4 +188,5 @@ private fun Contest.toDto(): ContestDto = ContestDto(
     userScorePercent = userScorePercent,
     durationSeconds = durationSeconds,
     pointsPerCorrect = pointsPerCorrect,
+    sourceUrl = sourceUrl,
 )
